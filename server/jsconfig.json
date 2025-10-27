@@ -1,0 +1,10 @@
+{
+    "typeAcquisition": {
+      "include": ["node"]
+    },
+    "compilerOptions": {
+      "module": "commonjs"
+    },
+    "include": ["**/*.js"]
+  }
+  
