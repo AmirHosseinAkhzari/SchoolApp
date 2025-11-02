@@ -1,18 +1,10 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "date-fns-tz": "^3.2.0",
-    "moment-jalaali": "^0.10.4",
-    "moment-timezone": "^0.6.0",
+    "express": "^5.1.0",
+    "jalaali-js": "^1.2.8",
+    "melipayamak": "^1.0.5",
+    "melipayamak-api": "^0.1.0",
+    "mongoos": "^0.0.1-security",
     "mongoose": "^8.19.2"
   }
 }

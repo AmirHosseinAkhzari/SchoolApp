@@ -25,6 +25,12 @@ const classSchema = new mongoose.Schema({
     name : String , 
 })
 
+const otpSchema = new mongoose.Schema({
+    code : String  , 
+    studentId : mongoose.Schema.Types.ObjectId , 
+    checkIn : String
+})
+
 
 
 
@@ -46,6 +52,9 @@ const Class = mongoose.model('Class' , classSchema)
 const Student = mongoose.model('Student', studentSchema)
 
 const Attendance = mongoose.model("Attendance" ,  attendanceSchema)
+
+const Otp = mongoose.model("Otp" ,  otpSchema)
+
 
 async function ConnectTodb() {
   try {
@@ -149,6 +158,72 @@ async function ConnectTodb() {
             } , 
             getall : async () => {
                 return await Attendance.find()
+            }
+        } , 
+        otp : {
+            add : async (num) => {
+    
+            
+                const code = global.utils.random.getOtpCode()
+                
+
+                const student = await Student.findOne({  
+                    number : num 
+                })
+
+                console.log(student)
+                
+                if (!student){ 
+                    return {message : "دسترسی غیر مجاز" , code : 500}
+                }
+
+                const otpBlock = await Otp.findOne({
+                    studentId  : student._id
+                })
+
+
+                console.log(otpBlock )
+                if (otpBlock){
+                    console.log("hi")
+                    const checkTime = global.utils.time.CheckOtp(otpBlock.checkIn)
+
+                    if (checkTime){
+                        await global.sms.send.otp(num  ,code)
+
+                        await otpBlock.deleteOne()
+
+                        const o= Otp({
+                        checkIn  : global.utils.time.iran2() , 
+                        code : code ,
+                        studentId : student._id
+                        })
+
+                        o.save()
+
+                        return {message : "کد ارسال شد !!!" , code : 200}
+                    }else{
+                        return {message : "لطفا دقایق دیگر تلاش کنید" , code : 500}
+                    }
+
+                }else{
+                    
+                    await global.sms.send.otp(num ,code)
+
+                    const o= Otp({
+                        checkIn  : global.utils.time.iran2() , 
+                        code : code ,
+                        studentId : student._id
+                    })
+
+                    o.save()
+
+
+                    return {message : "کد ارسال شد !!!" , code : 200}
+
+
+                }
+
+
             }
         }
     }
