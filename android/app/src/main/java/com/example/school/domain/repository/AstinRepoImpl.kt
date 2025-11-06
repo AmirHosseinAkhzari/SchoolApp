@@ -6,36 +6,88 @@ import android.util.Log
 import com.example.school.R
 import com.example.school.data.model.NfcManager
 import com.example.school.data.remote.AstinApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.example.school.data.remote.ReqCheckOtp
+import com.example.school.data.remote.ReqOtpNum
+import com.example.school.data.remote.ReqOtpUid
+import com.example.school.data.remote.ResCheckOtp
+import com.example.school.data.remote.ResOtp
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import retrofit2.HttpException
 
+/**
+ * Repository implementation that handles NFC reading and API login operations.
+ */
 class AstinRepoImpl(
-    private val api : AstinApi ,
-    private val nfcManager: NfcManager ,
-    private val appContext : Application
+    private val api: AstinApi,
+    private val nfcManager: NfcManager,
+    private val appContext: Application
 ) : AstinRepo {
 
+    // SharedFlow used to emit new NFC tag UIDs
+    private val _nfcData = MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 1)
+    override val nfcData: SharedFlow<String> = _nfcData
 
+    // Holds the last detected NFC UID to prevent duplicate reads
+    override var lastUid: String? = null
 
-    init {
-        val appName = appContext.getText(R.string.app_name)
-        println("hello from repo $appName")
-        Log.d("test" ,"hello from repo $appName" )
-    }
-
-    private val _nfcData = MutableStateFlow<String?>(null)
-    override val nfcData = _nfcData.asStateFlow()
-    override  fun readNfc(activity: Activity) {
-        nfcManager.onTagRead = {uid ->
-            _nfcData.value = uid
-            Log.d("test" ,uid )
+    /**
+     * Starts reading NFC tags and emits the UID when a new tag is detected.
+     */
+    override fun readNfc(activity: Activity) {
+        nfcManager.onTagRead = { uid ->
+            if (uid != lastUid) {
+                lastUid = uid
+                _nfcData.tryEmit(uid)
+            }
         }
         nfcManager.enableReader(activity)
     }
 
-    override  fun stopReading(activity: Activity) {
+    /**
+     * Stops NFC reading.
+     */
+    override fun stopReading(activity: Activity) {
         nfcManager.disableReader(activity)
     }
 
+    /**
+     * Sends a login request using a phone number.
+     */
+    override suspend fun LoginWithNumber(number: String): Result<ResOtp?> =
+        runCatching { api.loginWithNumber(ReqOtpNum(number)).body() }
+            .onFailure { e -> handleError(e) }
+
+    /**
+     * Sends a login request using an NFC UID.
+     */
+    override suspend fun LoginWithUid(uid: String): Result<ResOtp?> =
+        runCatching { api.loginWithUid(ReqOtpUid(uid)).body() }
+            .onFailure { e -> handleError(e) }
+
+    /**
+     * Handles network and HTTP exceptions in API calls.
+     */
+    private fun handleError(e: Throwable) {
+        if (e is HttpException) {
+            e.response()?.errorBody()?.string()
+        }
+    }
+
+
+    /**
+     * Check the Otp Code with Server
+     */
+
+
+    override suspend fun LoginCheckOtp(number: String, code: String): Result<ResCheckOtp?> =
+        runCatching {
+            val response = api.logincheck(ReqCheckOtp(number, code))
+            response.body()
+        }.onFailure { e ->
+            Log.e("TEST_API", "Error: ${e.message}")
+            handleError(e)
+        }
+
 }
+

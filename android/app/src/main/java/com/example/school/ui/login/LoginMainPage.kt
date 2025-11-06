@@ -70,6 +70,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.navigation.NavController
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
@@ -90,7 +91,7 @@ enum class LoginPages{
 
 
 @Composable
-fun LoginPage(modifier: Modifier = Modifier) {
+fun LoginPage(modifier: Modifier = Modifier , MainNavHost : NavController) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Top,
@@ -116,7 +117,6 @@ fun LoginPage(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(370.dp, 450.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(LightSurmeh)
                 .shadow(elevation = 300.dp)
 
         ) {
@@ -124,26 +124,16 @@ fun LoginPage(modifier: Modifier = Modifier) {
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(LightSurmeh)
+                    .background(MaterialTheme.colorScheme.onBackground)
 
             ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(70.dp)
-                            .padding(10.dp)
-                            .align(Alignment.TopStart),
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "back",
-                        tint = Surmeh,
-                        )
-
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
                     AnimatedVisibility(true) {
-                        navHost()
+                        navHost(MainNavHost)
                     }
 
                 }

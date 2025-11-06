@@ -2,9 +2,11 @@
   "dependencies": {
     "express": "^5.1.0",
     "jalaali-js": "^1.2.8",
+    "jsonwebtoken": "^9.0.2",
     "melipayamak": "^1.0.5",
     "melipayamak-api": "^0.1.0",
     "mongoos": "^0.0.1-security",
-    "mongoose": "^8.19.2"
+    "mongoose": "^8.19.2",
+    "morgan": "^1.10.1"
   }
 }

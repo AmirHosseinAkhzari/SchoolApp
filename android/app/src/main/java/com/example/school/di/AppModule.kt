@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -26,11 +27,13 @@ object AppModule {
     fun ProvideAstinApi() : AstinApi {
         return Retrofit
             .Builder()
-            .baseUrl("https://test.com")
+            .baseUrl("http://192.168.1.9:3000/")
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AstinApi::class.java)
-
     }
+
+
 
     @Provides
     @Singleton

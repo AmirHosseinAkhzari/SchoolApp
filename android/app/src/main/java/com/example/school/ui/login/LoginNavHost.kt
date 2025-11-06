@@ -8,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 
 
 @Composable
-fun navHost() {
+fun navHost(MainNavController : NavController) {
 
     val navController = rememberNavController()
 
@@ -31,9 +31,8 @@ fun navHost() {
         }
 
         composable(route = "LoginOtpCode"){
-            LoginOtpCode(navController)
+            LoginOtpCode(navController , MainNavController)
         }
-
 
     }
 }

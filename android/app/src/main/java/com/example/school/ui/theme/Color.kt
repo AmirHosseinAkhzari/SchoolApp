@@ -12,7 +12,7 @@ val Black = Color(0xFF000000)
 
 val Surmeh = Color(0xFF1B3C59)
 
-val LightSurmeh = Color(0xFF456173)
+val LightSurmeh = Color(0xFF394E5D)
 val Aqua = Color(0xFF11BFAE)
 val Milky = Color(0xFFF2F2F0)
 val LightBlue = Color(0xFF01394B)

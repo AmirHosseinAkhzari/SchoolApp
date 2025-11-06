@@ -7,8 +7,10 @@ const utils = require('../utils/utils')
 
 const jalaali = require('jalaali-js');
 
-// ------- Student Schema -------
-const studentSchema = new mongoose.Schema({
+const jwt  = require('jsonwebtoken')
+
+// ------- User Schema -------
+const userSchema = new mongoose.Schema({
     firstname : String , 
     lastname : String , 
     birthday : Date , 
@@ -16,45 +18,56 @@ const studentSchema = new mongoose.Schema({
     number : String , 
     ParentNumber : String , 
     LocalNumber : String , 
-    classId : mongoose.Schema.Types.ObjectId 
+    classId : mongoose.Schema.Types.ObjectId  , 
+    role : String
 })
 
 
-// ------- class Schema -------2
+// ------- class Schema -------
 const classSchema = new mongoose.Schema({
     name : String , 
 })
 
+
+// ----------- OPT Schema ------------
 const otpSchema = new mongoose.Schema({
     code : String  , 
-    studentId : mongoose.Schema.Types.ObjectId , 
+    number : String ,  
     checkIn : String
 })
 
 
+// ----------- card Schema ----------------
+
+const cardSchema = new mongoose.Schema({
+    ownerId : mongoose.Schema.Types.ObjectId , 
+    role : String , 
+    uid : String
+})
 
 
 
 //  ----- attendance Schema -------
 const attendanceSchema = new mongoose.Schema({
-    studentId : mongoose.Schema.Types.ObjectId , 
+    userId : mongoose.Schema.Types.ObjectId , 
     classId : mongoose.Schema.Types.ObjectId , 
-    studentFullName : String , 
+    userFullName : String , 
     className : String , 
     checkIn : String , 
     status : String , 
-    date : String
+    date : String , 
 
 })
 
 const Class = mongoose.model('Class' , classSchema)
 
-const Student = mongoose.model('Student', studentSchema)
+const User = mongoose.model('User', userSchema)
 
 const Attendance = mongoose.model("Attendance" ,  attendanceSchema)
 
 const Otp = mongoose.model("Otp" ,  otpSchema)
 
+const Card = mongoose.model("Card" , cardSchema)
 
 async function ConnectTodb() {
   try {
@@ -63,26 +76,26 @@ async function ConnectTodb() {
     utils()
 
      global.db = {
-        student : { 
+        user : { 
             add : async (data) => { 
-                const s = new Student(data)
+                const s = new User(data)
                 await s.save()    
             } , 
             update : async (id , data) => { 
-                await Student.findByIdAndUpdate(id , data , {new : true})
+                await User.findByIdAndUpdate(id , data , {new : true})
             }  , 
             delete : async ( id) => { 
-                await Student.findByIdAndDelete(id )
+                await User.findByIdAndDelete(id )
             }  ,
             getall : async () => {
-                const data = await Student.find()
+                const data = await User.find()
                 return data
             } ,
             getone : async (id) =>{
-                return await Student.findById(id)
+                return await User.findById(id)
             },
             deleteAll : async () => {
-                await Student.deleteMany({})
+                await User.deleteMany({})
             }
         }, 
         class : {
@@ -109,7 +122,7 @@ async function ConnectTodb() {
         attendance : { 
             check : async (stuId , cId) => {
 
-                const stu = (await Student.findById(stuId))
+                const stu = (await User.findById(stuId))
 
                 const fullname = stu.firstname + " " + stu.lastname
 
@@ -133,7 +146,7 @@ async function ConnectTodb() {
 
                 const date  = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
                 const existing = await Attendance.findOne({
-                    studentId: stuId,
+                    userId: stuId,
                     classId: cId,
                     date: date
                 });
@@ -147,11 +160,11 @@ async function ConnectTodb() {
 
                 const check = Attendance({
                     className: cName , 
-                    studentId:stuId ,
+                    userId:stuId ,
                     classId : cId,
                     checkIn : time  ,
                     status : status ,
-                    studentFullName :  fullname , 
+                    userFullName :  fullname , 
                     date :date
                     })
                 check.save()
@@ -161,24 +174,24 @@ async function ConnectTodb() {
             }
         } , 
         otp : {
-            add : async (num) => {
+            SendWithNumber : async (num) => {
     
             
                 const code = global.utils.random.getOtpCode()
                 
 
-                const student = await Student.findOne({  
+                const user = await User.findOne({  
                     number : num 
                 })
 
-                console.log(student)
+                console.log(user)
                 
-                if (!student){ 
+                if (!user){ 
                     return {message : "دسترسی غیر مجاز" , code : 500}
                 }
 
                 const otpBlock = await Otp.findOne({
-                    studentId  : student._id
+                    number  : num
                 })
 
 
@@ -195,7 +208,7 @@ async function ConnectTodb() {
                         const o= Otp({
                         checkIn  : global.utils.time.iran2() , 
                         code : code ,
-                        studentId : student._id
+                        number : num
                         })
 
                         o.save()
@@ -212,7 +225,7 @@ async function ConnectTodb() {
                     const o= Otp({
                         checkIn  : global.utils.time.iran2() , 
                         code : code ,
-                        studentId : student._id
+                        number : num
                     })
 
                     o.save()
@@ -224,6 +237,132 @@ async function ConnectTodb() {
                 }
 
 
+            } , 
+            SendWithUid : async (uid) => {
+    
+            
+                const code = global.utils.random.getOtpCode()
+                
+                const card = await Card.findOne({uid : uid})
+
+                if(!card){
+                    return {message : "این کارت وجود ندارد" , code : 500}
+
+                }
+
+                const user = await User.findById(card.ownerId)
+
+                console.log(user)
+
+                const num = user.number
+                
+                if (!user){ 
+                    return {message : "دسترسی غیر مجاز" , code : 500}
+                }
+
+                const otpBlock = await Otp.findOne({
+                    number  : num
+                })
+
+
+                console.log(otpBlock )
+                if (otpBlock){
+
+                    const checkTime = global.utils.time.CheckOtp(otpBlock.checkIn)
+
+                    if (checkTime){
+                        await global.sms.send.otp(num  ,code)
+
+                        await otpBlock.deleteOne()
+
+                        const o= Otp({
+                        checkIn  : global.utils.time.iran2() , 
+                        code : code ,
+                        number : num
+                        })
+
+                        o.save()
+
+                        return {message : "کد ارسال شد !!!" , code : 200}
+                    }else{
+                        return {message : "لطفا دقایق دیگر تلاش کنید" , code : 500}
+                    }
+
+                }else{
+                    
+                    await global.sms.send.otp(num ,code)
+
+                    const o= Otp({
+                        checkIn  : global.utils.time.iran2() , 
+                        code : code ,
+                        number : num
+                    })
+
+                    o.save()
+
+
+                    return {message : "کد ارسال شد !!!" , code : 200}
+
+
+                }
+
+
+            } , 
+            check : async (number , code) => { 
+                
+                const data  = await Otp.findOne({number : number , code : code })
+
+                if(!data){
+                    return {message : "کد اشتباه است" , code : 500}
+                }
+
+                await data.deleteOne()
+
+                const SECRET_KEY = "asdeashndjoasndfekswfeiw0mrfmn4rj24u9fr"
+
+                const payload  = {
+                    number : number , 
+                }
+
+                const token = jwt.sign(payload , SECRET_KEY )
+
+                return {message : "کد وارد شده درست است !!!" , code : 200 , token : token}
+
+            }
+        } , 
+        card : { 
+            add : async (uid , ownerId) => {
+
+
+                const checkUid = await Card.findOne({uid : uid})
+
+
+                if(checkUid != null){
+                    return {message : "این کارت برای فرد دیگری ثبت شده است" , code : 500}
+                }
+
+                const user = await User.findById(ownerId)
+
+                const role = user.role
+
+                console.log(role)
+
+                if(user == null){
+                    return {message : "این یوزر وجود ندارد" , code : 500}
+                }
+
+
+
+
+                const c = Card({
+                    uid : uid , 
+                    ownerId : ownerId , 
+                    role  : role
+                })
+
+                c.save()
+
+                return {message : "کارت با موفقیت اضافه شد !!" , code : 200}
             }
         }
     }
