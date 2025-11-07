@@ -2,24 +2,22 @@ package com.example.school.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val attendanceColor = Color(0xFF89EC8D)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Black = Color(0xFF000000)
+val libraryColor = Color(0xFFD7CCC8)
 
-val Surmeh = Color(0xFF1B3C59)
+val cafeteriaColor = Color(0xFFF5E6CC)
 
-val LightSurmeh = Color(0xFF394E5D)
-val Aqua = Color(0xFF11BFAE)
-val Milky = Color(0xFFF2F2F0)
-val LightBlue = Color(0xFF01394B)
-val DarkGreen = Color(0xFF054619)
+val pollColor = Color(0xFF74C7FF)
 
-val LightSurmehDark = Color(0xFF8CA3AF)
-val AquaDark = Color(0xFF3FD7C8)
-val MilkyDark = Color(0xFF2A2A28)
-val LightBlueDark = Color(0xFF1B5C70)
-val DarkGreenDark = Color(0xFF198B3C)
+val importantColor = Color(0xFFF53046)
+
+val scoreColor = Color(0xFFF8C01F)
+
+
+val attendanceColorDark = Color(0xFF3FAF46)
+val libraryColorDark = Color(0xFF8D7B75)
+val cafeteriaColorDark = Color(0xFFB08968)
+val pollColorDark = Color(0xFF2196F3)
+val importantColorDark = Color(0xFFCF2C3E)
+val scoreColorDark = Color(0xFFE1B12C)

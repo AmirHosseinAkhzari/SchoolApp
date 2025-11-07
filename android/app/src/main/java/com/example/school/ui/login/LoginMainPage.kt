@@ -52,10 +52,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.school.R
-import com.example.school.ui.theme.DarkGreen
-import com.example.school.ui.theme.LightSurmeh
-import com.example.school.ui.theme.Milky
-import com.example.school.ui.theme.Surmeh
+
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime

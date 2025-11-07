@@ -65,9 +65,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.school.R
-import com.example.school.ui.theme.DarkGreen
-import com.example.school.ui.theme.Milky
-import com.example.school.ui.theme.Surmeh
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
