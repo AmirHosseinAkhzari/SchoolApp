@@ -1,0 +1,106 @@
+body {
+  background: #000;
+  color: white;
+  font-family: "Vazir", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  filter: grayscale(100%);
+  position: relative;
+  transition: background-color 0.8s ease, color 0.8s ease;
+}
+
+
+body.error-mode {
+  background-color: #b00020; /* قرمز خطا */
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+@keyframes flashError {
+  0% { background-color: #000; }
+  50% { background-color: #b00020; }
+  100% { background-color: #000; }
+}
+
+
+.logo {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  filter: brightness(0) saturate(100%) invert(65%) sepia(98%) saturate(400%) hue-rotate(180deg);
+  animation: fadeInLogo 1.5s ease-out forwards;
+  z-index: 2;
+}
+
+@keyframes fadeInLogo {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+h1, #nameBox {
+  z-index: 2;
+  transition: color 0.5s ease;
+}
+
+h1 {
+  font-size: 70px;
+  text-align: center;
+  opacity: 0;
+  animation: showTitle 1.5s ease-out forwards;
+}
+
+@keyframes showTitle {
+  to { opacity: 1; transform: scale(1); }
+}
+
+#nameBox {
+  font-size: 36px;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: popName 1s ease-out forwards;
+  animation-delay: 2s;
+}
+
+@keyframes popName {
+  to { opacity: 1; transform: scale(1); }
+}
+
+.flash-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200vmax;
+  height: 200vmax;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+
+.expand {
+  animation: expandCircle 0.5s ease-out forwards;
+}
+
+.shrink {
+  animation: shrinkCircle 0.5s ease-in forwards;
+}
+
+@keyframes expandCircle {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes shrinkCircle {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+}

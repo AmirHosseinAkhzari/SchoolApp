@@ -120,54 +120,96 @@ async function ConnectTodb() {
             }
         } , 
         attendance : { 
-            check : async (stuId , cId) => {
+            check : async (uid ) => {
 
-                const stu = (await User.findById(stuId))
 
-                const fullname = stu.firstname + " " + stu.lastname
+                const CardData = await Card.findOne({
+                    uid : uid
+                })
 
-                const cName = (await Class.findById(cId)).name
+                if(!CardData){
+                    return {
+                        message : "این کارت وجود ندارد" ,
+                        code : 400 ,
+                    }
+                }
 
-                console.log(cName)
+                const user = await User.findById(CardData.ownerId)
 
+                const fullname = user.firstname + " " + user.lastname
+
+
+                if(!user){
+                    return {
+                        message : "این دانش آموز وجود ندارد",
+                        code : 400 ,
+                    }
+                }
+
+                const _class = await Class.findById(user.classId)
+
+                console.log(_class)
+
+                if(!_class){
+                    return {
+                        message : "این کلاس وجود ندارد" ,
+                        code : 400 ,
+                    }
+                }
+
+                
                 const time = global.utils.time.iran()
+
+                console.log(time)
 
                 const config = await global.utils.config.read()
 
                 console.log(config)
 
-                console.log(time)
-
-                console.log(config.time.start)
-
-                console.log(config.time.end)
-
                 const jDate = jalaali.toJalaali(new Date())
 
                 const date  = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
+
+                console.log(date)
+
                 const existing = await Attendance.findOne({
-                    userId: stuId,
-                    classId: cId,
+                    userId: user._id,
                     date: date
                 });
 
-                if (existing) {
-                    return;
+                console.log(existing)
+
+                if(existing){
+                    return {
+                        message :"حضور شما ثبت شده" ,
+                        code : 500 ,
+                    }
                 }
 
-                console.log(jDate)
                 const status = global.utils.time.checkStatus(time, config.time.start , config.time.end)
 
-                const check = Attendance({
-                    className: cName , 
-                    userId:stuId ,
-                    classId : cId,
+                console.log(status)
+
+
+                const data = Attendance({
+                    className: _class.name , 
+                    userId: user._id ,
+                    classId : _class._id,
                     checkIn : time  ,
                     status : status ,
-                    userFullName :  fullname , 
+                    userFullName :fullname, 
                     date :date
                     })
-                check.save()
+
+
+                data.save()
+
+                    return {
+                        message : fullname ,
+                        code : 200 ,
+                    }
+
+
             } , 
             getall : async () => {
                 return await Attendance.find()
