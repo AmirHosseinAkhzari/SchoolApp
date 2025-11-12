@@ -40,19 +40,20 @@ async function main() {
 // })
 
 
-  global.db.user.add({
-    firstname : "امیرحسین" , 
-    lastname : "اخضری" , 
-    birthday : Date.now() , 
-    nationalid : "2500766111"  , 
-    number : "09304682860" , 
-    classId : "690000926aa70ec7aa4d4731" , 
-    role : "Student"
+  // global.db.user.add({
+  //   firstname : "امیرحسین" , 
+  //   lastname : "اخضری" , 
+  //   birthday : Date.now() , 
+  //   nationalid : "2500766111"  , 
+  //   number : "09304682860" , 
+  //   classId : "690000926aa70ec7aa4d4731" , 
+  //   role : "Student"
+  // })
 
-  })
+
   app.use('/login', loginRoutes)
   app.use('/attendance', AttendanceRoutes)
-  app.use( "/attendance", express.static(path.join(__dirname, "public")))
+  app.use( "/attendance", express.static(path.join(__dirname, "public/attendanceDevice")))
 
 const PORT = process.env.PORT || 3000;
 app.listen(3000, "0.0.0.0", () => {
