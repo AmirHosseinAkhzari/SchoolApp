@@ -21,6 +21,21 @@
     </div>
   </div>
 
+
+  <!-- ➕ پاپ‌آپ افزودن کلاس -->
+<div class="popup-overlay" id="addClassPopup">
+  <div class="popup-box">
+    <h3>افزودن کلاس جدید</h3>
+    <p style="font-size:13px; color:var(--text-muted);">نام کلاس را وارد کنید:</p>
+    <input type="text" id="addClassInput" placeholder="مثلاً دوازدهم تجربی">
+    <div class="popup-buttons" style="margin-top:30px;">
+      <button type="button" id="cancelAddClass">انصراف</button>
+      <button type="submit" id="confirmAddClass">افزودن</button>
+    </div>
+  </div>
+</div>
+
+
   <!-- 🧑‍🎓 پاپ‌آپ ویرایش دانش‌آموز -->
   <div class="popup-overlay full" id="editStudentPopup">
     <div class="popup-box full-box">
@@ -63,6 +78,65 @@
       </form>
     </div>
   </div>
+
+
+  <!-- 🧾 پاپ‌آپ جزئیات حضور -->
+<div class="popup-overlay" id="attendanceDetailPopup">
+  <div class="popup-box">
+    <h3>جزئیات حضور</h3>
+    <div class="attendance-details">
+      <p><strong>نام:</strong> <span id="detailName">—</span></p>
+      <p><strong>کلاس:</strong> <span id="detailClass">—</span></p>
+      <p><strong>تاریخ:</strong> <span id="detailDate">—</span></p>
+      <p><strong>ساعت ورود:</strong> <span id="detailCheckIn">—</span></p>
+      <p><strong>وضعیت:</strong> <span id="detailStatus" class="status-text">—</span></p>
+    </div>
+    <div class="popup-buttons">
+      <button id="closeAttendanceDetail">بستن</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ⚙ پاپ‌آپ تنظیمات حضور و غیاب -->
+<!-- ⚙ پاپ‌آپ تنظیمات حضور و غیاب -->
+<div id="settingsPopup" class="popup-overlay">
+  <div class="popup-box settings-popup">
+    <h3>تنظیمات حضور و غیاب</h3>
+    <p class="desc">مدیریت ساعت پایان و روزهای تعطیل</p>
+
+    <!-- زمان پایان -->
+    <div class="form-row">
+      <label for="attendanceEndTime">⏰ زمان پایان حضور و غیاب</label>
+      <input type="text" id="attendanceEndTime" placeholder="مثلاً 14:45" maxlength="5">
+      <small>فرمت ۲۴ ساعته (HH:MM)</small>
+    </div>
+
+    <!-- روزهای تعطیل -->
+    <div class="form-row">
+      <label>📅 روزهای تعطیل</label>
+      <div class="days-picker">
+        <div class="day">ش</div>
+        <div class="day">ی</div>
+        <div class="day">د</div>
+        <div class="day">س</div>
+        <div class="day">چ</div>
+        <div class="day">پ</div>
+        <div class="day">ج</div>
+      </div>
+    </div>
+
+    <!-- دکمه‌ها -->
+    <div class="popup-buttons">
+      <button id="cancelSettings">انصراف</button>
+      <button id="saveSettings" class="confirm">ذخیره</button>
+    </div>
+  </div>
+</div>
+
+
+
+
 
   <!-- ➕ پاپ‌آپ افزودن دانش‌آموز -->
   <div class="popup-overlay full" id="addStudentPopup">
@@ -199,7 +273,6 @@
       <div class="item" data-page="attendance">حضور و غیاب</div>
       <div class="item" data-page="students">دانش‌آموزها</div>
       <div class="item" data-page="classes">کلاس‌ها</div>
-      <div class="item" data-page="settings">تنظیمات</div>
     </div>
   </aside>
 
@@ -232,19 +305,9 @@
           <div class="card-title">غیبت‌ها</div>
           <div class="card-value">—</div>
         </div>
-        <div class="card">
-          <div class="card-title">دانش‌آموز فعال</div>
-          <div class="card-value">—</div>
-        </div>
-        <div class="card">
-          <div class="card-title">آخرین همگام‌سازی</div>
-          <div class="card-value" style="font-size:12px;">درحال‌بارگذاری…</div>
-        </div>
       </div>
 
-      <div class="placeholder">
-        اینجا بعداً جدول حضور / نمودار / لیست رو می‌ذاریم
-      </div>
+
     </main>
   </div>
 
@@ -271,20 +334,120 @@ function renderPage(page) {
       <div class="cards">
         <div class="card"><div class="card-title">حضور امروز</div><div class="card-value">—</div></div>
         <div class="card"><div class="card-title">غیبت‌ها</div><div class="card-value">—</div></div>
-        <div class="card"><div class="card-title">دانش‌آموز فعال</div><div class="card-value">—</div></div>
-        <div class="card"><div class="card-title">آخرین همگام‌سازی</div><div class="card-value" style="font-size:12px;">درحال‌بارگذاری…</div></div>
       </div>
-      <div class="placeholder" style="margin-top:14px;">اینجا بعداً جدول حضور / نمودار / لیست رو می‌ذاریم</div>
     `;
   }
+  
+  else if (page === 'classes') {
+  const classesData = [
+    { name: "هفتم" }, { name: "هشتم" }, { name: "نهم" }, { name: "دهم ریاضی" }, { name: "یازدهم تجربی" }
+  ];
 
-  else if (page === 'attendance') {
-    content.innerHTML = `
-      <h2>حضور و غیاب</h2>
-      <p style="color:var(--text-muted); font-size:13px;">لیست آخرین کارت‌زنی‌ها</p>
-      <div class="placeholder">لیست کارت‌ها (بعداً از API پر می‌کنیم)</div>
-    `;
-  }
+  const rows = classesData.map((cls, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${cls.name}</td>
+      <td class="actions">
+        <button class="edit-btn"><img src="icons/edit.svg" alt="edit"></button>
+        <button class="delete-btn"><img src="icons/delete.svg" alt="delete"></button>
+      </td>
+    </tr>
+  `).join('');
+
+  content.innerHTML = `
+    <h2>کلاس‌ها</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <p style="color:var(--text-muted); font-size:13px;">مدیریت کلاس‌ها</p>
+      <button id="addClassBtn" class="add-btn">➕ افزودن کلاس</button>
+    </div>
+    <div class="table-wrap">
+      <table class="class-table">
+        <thead><tr><th>#</th><th>نام کلاس</th><th>عملیات</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+
+else if (page === 'attendance') {
+  const attendanceData = [
+    { userId: '1', userFullName: 'امیرحسین اخضری', className: 'هشتم الف', status: 'حاضر', profileLink: 'https://i.pravatar.cc/150?u=1' },
+    { userId: '2', userFullName: 'علی رضایی', className: 'نهم', status: 'دیر اومده', profileLink: 'https://i.pravatar.cc/150?u=2' },
+    { userId: '3', userFullName: 'محمد حسینی', className: 'هشتم', status: 'غایب', profileLink: 'https://i.pravatar.cc/150?u=3' }
+  ];
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'حاضر': return '#2ecc71';
+      case 'دیر اومده': return '#f39c12';
+      case 'غایب': return '#e74c3c';
+      default: return 'var(--text)';
+    }
+  };
+
+  const rows = attendanceData.map((item, i) => `
+    <tr data-id="${item.userId}">
+      <td>${i + 1}</td>
+      <td><img src="${item.profileLink}" class="profile-pic"></td>
+      <td>${item.userFullName}</td>
+      <td>${item.className}</td>
+      <td><span class="status-text" style="color:${getStatusColor(item.status)}">${item.status}</span></td>
+      <td class="actions">
+        <div class="status-switch">
+          <div class="dot green ${item.status === 'حاضر' ? 'active' : ''}" data-status="حاضر"></div>
+          <div class="dot orange ${item.status === 'دیر اومده' ? 'active' : ''}" data-status="دیر اومده"></div>
+          <div class="dot red ${item.status === 'غایب' ? 'active' : ''}" data-status="غایب"></div>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+content.innerHTML = `
+  <h2>حضور و غیاب</h2>
+  <div class="filter-bar">
+  <button id="settingsBtn" class="settings-btn">تنظیمات</button>
+    <div class="filter-item">
+      <label>کلاس:</label>
+      <select id="filterClass">
+        <option value="">همه</option>
+        <option>هفتم</option>
+        <option>هشتم</option>
+        <option>نهم</option>
+        <option>دهم ریاضی</option>
+        <option>یازدهم تجربی</option>
+      </select>
+    </div>
+
+    <div class="filter-item">
+      <label>وضعیت:</label>
+      <select id="filterStatus">
+        <option value="">همه</option>
+        <option value="حاضر">حاضر</option>
+        <option value="دیر اومده">دیر اومده</option>
+        <option value="غایب">غایب</option>
+      </select>
+    </div>
+
+    <div class="filter-item search">
+      <input type="text" id="searchName" placeholder="جستجو بر اساس نام...">
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="class-table students-table align-fix">
+      <thead>
+        <tr>
+          <th>#</th><th>عکس</th><th>نام کامل</th><th>کلاس</th><th>وضعیت</th><th>عملیات</th>
+        </tr>
+      </thead>
+      <tbody id="attendanceBody">${rows}</tbody>
+    </table>
+  </div>
+`;
+
+}
+
+
 
   else if (page === 'students') {
     const studentsData = [
@@ -307,21 +470,32 @@ function renderPage(page) {
       </tr>
     `).join('');
 
-    content.innerHTML = `
-      <h2 style="margin:0;">دانش‌آموزان</h2>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <p style="color:var(--text-muted); font-size:13px;">مدیریت اطلاعات دانش‌آموزان</p>
-        <button id="addStudentBtn" class="add-btn">➕ افزودن دانش‌آموز</button>
-      </div>
-      <div class="table-wrap">
-        <table class="class-table students-table align-fix">
-          <thead>
-            <tr><th>#</th><th>عکس</th><th>کلاس</th><th>نام</th><th>نام خانوادگی</th><th>عملیات</th></tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    `;
+content.innerHTML = `
+  <h2 style="margin:0;">دانش‌آموزان</h2>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <p style="color:var(--text-muted); font-size:13px;">مدیریت اطلاعات دانش‌آموزان</p>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <select id="classFilter" style="padding:6px 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-soft); color:var(--text); font-family:inherit;">
+        <option value="all">همه کلاس‌ها</option>
+        <option>هفتم</option>
+        <option>هشتم</option>
+        <option>نهم</option>
+        <option>دهم ریاضی</option>
+        <option>یازدهم تجربی</option>
+      </select>
+      <button id="addStudentBtn" class="add-btn">➕ افزودن دانش‌آموز</button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="class-table students-table align-fix">
+      <thead>
+        <tr><th>#</th><th>عکس</th><th>کلاس</th><th>نام</th><th>نام خانوادگی</th><th>عملیات</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+`;
+
   }
 
   else if (page === 'classes') {
@@ -569,6 +743,213 @@ document.getElementById('addStudentForm').addEventListener('submit', (e) => {
   document.body.style.overflow = '';
 });
 
+
+// ======================
+// ➕ افزودن کلاس جدید
+// ======================
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'addClassBtn') {
+    document.getElementById('addClassPopup').classList.add('active');
+  }
+});
+ 
+document.getElementById('cancelAddClass').addEventListener('click', () => {
+  document.getElementById('addClassPopup').classList.remove('active');
+});
+
+document.getElementById('confirmAddClass').addEventListener('click', () => {
+  const input = document.getElementById('addClassInput');
+  const className = input.value.trim();
+  if (!className) return;
+
+  const tableBody = document.querySelector('.class-table tbody');
+  const newRow = document.createElement('tr');
+  const rowCount = tableBody.children.length + 1;
+
+  newRow.innerHTML = `
+    <td>${rowCount}</td>
+    <td>${className}</td>
+    <td class="actions">
+      <button class="edit-btn"><img src="icons/edit.svg" alt="edit"></button>
+      <button class="delete-btn"><img src="icons/delete.svg" alt="delete"></button>
+    </td>
+  `;
+
+  tableBody.appendChild(newRow);
+  input.value = '';
+  document.getElementById('addClassPopup').classList.remove('active');
+});
+
+// 🎯 فیلتر کلاس‌ها در صفحه دانش‌آموزان
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'classFilter') {
+    const selected = e.target.value;
+    const rows = document.querySelectorAll('.students-table tbody tr');
+    rows.forEach(row => {
+      const className = row.children[2].innerText.trim();
+      if (selected === 'all' || className === selected) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+});
+
+
+
+// 🎨 تغییر وضعیت با کلیک روی دایره‌ها
+// 🎯 کنترل تغییر وضعیت حضور با کلیک روی دایره‌ها
+document.addEventListener('click', (e) => {
+  const dot = e.target.closest('.dot');
+  if (!dot) return;
+
+  // ردیف فعلی جدول
+  const row = dot.closest('tr');
+  const dots = row.querySelectorAll('.dot');
+  const text = row.querySelector('.status-text');
+
+  // حذف active از تمام دایره‌ها
+  dots.forEach(d => d.classList.remove('active'));
+
+  // فعال کردن دایره فعلی
+  dot.classList.add('active');
+
+  // تعیین وضعیت جدید
+  const newStatus = dot.dataset.status;
+
+  // تعیین رنگ متن بر اساس دایره انتخاب‌شده
+  let color = '';
+  if (dot.classList.contains('green')) color = '#2ecc71';       // حاضر
+  else if (dot.classList.contains('orange')) color = '#f39c12'; // دیر اومده
+  else if (dot.classList.contains('red')) color = '#e74c3c';    // غایب
+
+  // بروزرسانی متن و رنگ
+  text.textContent = newStatus;
+  text.style.color = color;
+});
+
+
+// 🎯 باز کردن پاپ‌آپ جزئیات با کلیک روی ردیف جدول
+document.addEventListener('click', (e) => {
+  const row = e.target.closest('tr');
+  const page = document.querySelector('.menu .item.active').dataset.page;
+  if (!row || page !== 'attendance') return;
+
+  // استخراج داده‌ها از جدول
+  const name = row.children[2].innerText;
+  const className = row.children[3].innerText;
+  const status = row.querySelector('.status-text').innerText;
+
+  // برای سادگی، داده فرضی ساعت و تاریخ
+  const detailData = {
+    userFullName: name,
+    className: className,
+    checkIn: "00:16",
+    status: status,
+    date: "1404/08/19"
+  };
+
+  // تنظیم رنگ وضعیت
+  const statusSpan = document.getElementById('detailStatus');
+  statusSpan.textContent = detailData.status;
+  if (status.includes("حاضر") || status.includes("زود اومده"))
+    statusSpan.style.color = "#2ecc71";
+  else if (status.includes("دیر"))
+    statusSpan.style.color = "#f39c12";
+  else
+    statusSpan.style.color = "#e74c3c";
+
+  // درج در پاپ‌آپ
+  document.getElementById('detailName').textContent = detailData.userFullName;
+  document.getElementById('detailClass').textContent = detailData.className;
+  document.getElementById('detailCheckIn').textContent = detailData.checkIn;
+  document.getElementById('detailDate').textContent = detailData.date;
+
+  // نمایش پاپ‌آپ
+  document.getElementById('attendanceDetailPopup').classList.add('active');
+});
+
+// 🎯 بستن پاپ‌آپ
+document.getElementById('closeAttendanceDetail').addEventListener('click', () => {
+  document.getElementById('attendanceDetailPopup').classList.remove('active');
+});
+
+
+// 🎯 فیلتر و جستجو در جدول حضور
+function filterAttendance() {
+  const cls = document.getElementById('filterClass').value;
+  const status = document.getElementById('filterStatus').value;
+  const search = document.getElementById('searchName').value.trim();
+
+  const tbody = document.getElementById('attendanceBody');
+  const rows = tbody.querySelectorAll('tr');
+
+  rows.forEach(row => {
+    const name = row.children[2].innerText;
+    const className = row.children[3].innerText;
+    const stat = row.querySelector('.status-text').innerText;
+
+    const matchClass = !cls || className.includes(cls);
+    const matchStatus = !status || stat === status;
+    const matchSearch = !search || name.includes(search);
+
+    row.style.display = (matchClass && matchStatus && matchSearch) ? '' : 'none';
+  });
+}
+
+// اعمال فیلتر هنگام تغییر
+document.addEventListener('input', (e) => {
+  if (['filterClass', 'filterStatus', 'searchName'].includes(e.target.id)) {
+    filterAttendance();
+  }
+});
+
+// ⚙ کنترل پاپ‌آپ تنظیمات
+const settingsPopup = document.getElementById('settingsPopup');
+const settingsBtn = document.getElementById('settingsBtn');
+const cancelSettings = document.getElementById('cancelSettings');
+const saveSettings = document.getElementById('saveSettings');
+const endTimeInput = document.getElementById('attendanceEndTime');
+const dayButtons = document.querySelectorAll('.day');
+
+// باز کردن پاپ‌آپ
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("#settingsBtn");
+  if (!btn) return;
+
+  console.log("دکمه تنظیمات کلیک شد ✅");
+  document.getElementById("settingsPopup").classList.add("active");
+});
+
+
+// بستن با انصراف
+cancelSettings?.addEventListener('click', () => {
+  settingsPopup.classList.remove('active');
+});
+
+// ذخیره و بستن
+saveSettings?.addEventListener('click', () => {
+  settingsPopup.classList.remove('active');
+});
+
+// انتخاب روزهای تعطیل
+dayButtons.forEach(day => {
+  day.addEventListener('click', () => day.classList.toggle('active'));
+});
+
+// بررسی فرمت ساعت ۲۴ ساعته
+endTimeInput?.addEventListener('input', (e) => {
+  const val = e.target.value.trim();
+  const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+  if (val && !regex.test(val)) {
+    e.target.style.borderColor = '#e53935';
+    e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.2)';
+  } else {
+    e.target.style.borderColor = 'var(--border)';
+    e.target.style.boxShadow = 'none';
+  }
+});
 
   </script>
 </body>
