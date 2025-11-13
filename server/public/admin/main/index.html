@@ -4,953 +4,247 @@
   <meta charset="UTF-8" />
   <title>پنل آستین</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <script src="app.js" defer></script>
 </head>
-  <!-- پنجره تأیید حذف -->
-  <div class="popup-overlay" id="popup">
+<body>
+  <!-- Delete confirmation popup -->
+  <div class="popup-overlay" id="deletePopup">
     <div class="popup-box">
-      <h3>حذف کلاس</h3>
-      <p>
-        آیا مطمئن هستید که می‌خواهید این کلاس را حذف کنید؟<br>
-        با انجام این کار، تمام داده‌های مرتبط با این کلاس — از جمله فهرست دانش‌آموزان و سوابق حضور و غیاب آن‌ها — برای همیشه پاک خواهند شد.
+      <h3 id="deleteTitle">حذف کلاس</h3>
+      <p id="deleteMessage">
+        آیا مطمئن هستید که می‌خواهید این کلاس را حذف کنید؟ با انجام این کار تمام اطلاعات مربوطه پاک می‌شود.
       </p>
       <div class="popup-buttons">
-        <button id="cancelDelete">انصراف</button>
-        <button id="confirmDelete">بله، حذف شود</button>
+        <button type="button" class="btn ghost" data-popup-close="deletePopup">انصراف</button>
+        <button type="button" class="btn danger" id="confirmDelete">بله، حذف شود</button>
       </div>
     </div>
   </div>
 
-
-  <!-- ➕ پاپ‌آپ افزودن کلاس -->
-<div class="popup-overlay" id="addClassPopup">
-  <div class="popup-box">
-    <h3>افزودن کلاس جدید</h3>
-    <p style="font-size:13px; color:var(--text-muted);">نام کلاس را وارد کنید:</p>
-    <input type="text" id="addClassInput" placeholder="مثلاً دوازدهم تجربی">
-    <div class="popup-buttons" style="margin-top:30px;">
-      <button type="button" id="cancelAddClass">انصراف</button>
-      <button type="submit" id="confirmAddClass">افزودن</button>
+  <!-- Add class popup -->
+  <div class="popup-overlay" id="addClassPopup">
+    <div class="popup-box">
+      <h3>افزودن کلاس جدید</h3>
+      <p class="popup-description">نام کلاس را وارد کنید:</p>
+      <form id="addClassForm" class="popup-form">
+        <input type="text" id="addClassInput" placeholder="مثلاً دوازدهم تجربی" required />
+        <div class="popup-buttons">
+          <button type="button" class="btn ghost" data-popup-close="addClassPopup">انصراف</button>
+          <button type="submit" class="btn primary">افزودن</button>
+        </div>
+      </form>
     </div>
   </div>
-</div>
 
+  <!-- Edit class popup -->
+  <div class="popup-overlay" id="editClassPopup">
+    <div class="popup-box">
+      <h3>ویرایش کلاس</h3>
+      <p class="popup-description">نام جدید کلاس را وارد کنید:</p>
+      <form id="editClassForm" class="popup-form">
+        <input type="text" id="editClassInput" required />
+        <div class="popup-buttons">
+          <button type="button" class="btn ghost" data-popup-close="editClassPopup">انصراف</button>
+          <button type="submit" class="btn primary">ذخیره</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-  <!-- 🧑‍🎓 پاپ‌آپ ویرایش دانش‌آموز -->
+  <!-- Edit student popup -->
   <div class="popup-overlay full" id="editStudentPopup">
     <div class="popup-box full-box">
       <header class="student-header centered">
         <div class="profile-container">
-          <img id="studentPhotoPreview" src="https://i.pravatar.cc/150?u=default" class="profile-big">
-          <button class="edit-photo-btn"><img src="icons/edit.svg" alt="edit"></button>
-          <input type="file" id="studentPhoto" accept="image/*" style="display:none;">
+          <img id="studentPhotoPreview" src="https://i.pravatar.cc/150?u=default" alt="student" class="profile-big" />
+          <button type="button" class="edit-photo-btn" data-action="select-photo" data-target="studentPhoto" data-preview="studentPhotoPreview">
+            <img src="icons/edit.svg" alt="edit" />
+          </button>
+          <input type="file" id="studentPhoto" accept="image/*" hidden />
         </div>
         <div class="student-header-text">
           <h2>ویرایش دانش‌آموز</h2>
           <p>اطلاعات این دانش‌آموز را ویرایش کنید</p>
         </div>
       </header>
-
-      <form id="editStudentForm" class="student-form-scroll">
+      <form id="editStudentForm" class="student-form">
         <div class="form-grid">
-          <div class="form-row"><label>نام</label><input type="text" id="studentFirstName"></div>
-          <div class="form-row"><label>نام خانوادگی</label><input type="text" id="studentLastName"></div>
-          <div class="form-row"><label>تاریخ تولد (شمسی)</label><input type="text" id="studentBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10"></div>
-          <div class="form-row"><label>کد ملی</label><input type="text" id="studentNid"></div>
-          <div class="form-row"><label>شماره دانش‌آموز</label><input type="text" id="studentNumber"></div>
-          <div class="form-row"><label>شماره ولی</label><input type="text" id="studentParent"></div>
-          <div class="form-row"><label>شماره منزل</label><input type="text" id="studentHome"></div>
-          <div class="form-row"><label>کلاس</label>
-            <select id="studentClass">
-              <option value="">انتخاب کنید…</option>
-              <option>هفتم</option>
-              <option>هشتم</option>
-              <option>نهم</option>
-              <option>دهم ریاضی</option>
-              <option>یازدهم تجربی</option>
-            </select>
-          </div>
+          <label class="form-field">
+            <span>نام</span>
+            <input type="text" id="studentFirstName" required />
+          </label>
+          <label class="form-field">
+            <span>نام خانوادگی</span>
+            <input type="text" id="studentLastName" required />
+          </label>
+          <label class="form-field">
+            <span>تاریخ تولد (شمسی)</span>
+            <input type="text" id="studentBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10" />
+          </label>
+          <label class="form-field">
+            <span>کد ملی</span>
+            <input type="text" id="studentNationalId" />
+          </label>
+          <label class="form-field">
+            <span>شماره دانش‌آموز</span>
+            <input type="text" id="studentNumber" />
+          </label>
+          <label class="form-field">
+            <span>شماره ولی</span>
+            <input type="text" id="studentParentPhone" />
+          </label>
+          <label class="form-field">
+            <span>شماره منزل</span>
+            <input type="text" id="studentHomePhone" />
+          </label>
+          <label class="form-field">
+            <span>کلاس</span>
+            <select id="studentClass" required></select>
+          </label>
         </div>
-        <div class="popup-buttons" style="margin-top:30px;">
-          <button type="button" id="cancelStudentEdit">انصراف</button>
-          <button type="submit" id="confirmStudentEdit">ذخیره تغییرات</button>
+        <div class="popup-buttons">
+          <button type="button" class="btn ghost" data-popup-close="editStudentPopup">انصراف</button>
+          <button type="submit" class="btn primary">ذخیره تغییرات</button>
         </div>
       </form>
     </div>
   </div>
 
-
-  <!-- 🧾 پاپ‌آپ جزئیات حضور -->
-<div class="popup-overlay" id="attendanceDetailPopup">
-  <div class="popup-box">
-    <h3>جزئیات حضور</h3>
-    <div class="attendance-details">
-      <p><strong>نام:</strong> <span id="detailName">—</span></p>
-      <p><strong>کلاس:</strong> <span id="detailClass">—</span></p>
-      <p><strong>تاریخ:</strong> <span id="detailDate">—</span></p>
-      <p><strong>ساعت ورود:</strong> <span id="detailCheckIn">—</span></p>
-      <p><strong>وضعیت:</strong> <span id="detailStatus" class="status-text">—</span></p>
-    </div>
-    <div class="popup-buttons">
-      <button id="closeAttendanceDetail">بستن</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ⚙ پاپ‌آپ تنظیمات حضور و غیاب -->
-<!-- ⚙ پاپ‌آپ تنظیمات حضور و غیاب -->
-<div id="settingsPopup" class="popup-overlay">
-  <div class="popup-box settings-popup">
-    <h3>تنظیمات حضور و غیاب</h3>
-    <p class="desc">مدیریت ساعت پایان و روزهای تعطیل</p>
-
-    <!-- زمان پایان -->
-    <div class="form-row">
-      <label for="attendanceEndTime">⏰ زمان پایان حضور و غیاب</label>
-      <input type="text" id="attendanceEndTime" placeholder="مثلاً 14:45" maxlength="5">
-      <small>فرمت ۲۴ ساعته (HH:MM)</small>
-    </div>
-
-    <!-- روزهای تعطیل -->
-    <div class="form-row">
-      <label>📅 روزهای تعطیل</label>
-      <div class="days-picker">
-        <div class="day">ش</div>
-        <div class="day">ی</div>
-        <div class="day">د</div>
-        <div class="day">س</div>
-        <div class="day">چ</div>
-        <div class="day">پ</div>
-        <div class="day">ج</div>
-      </div>
-    </div>
-
-    <!-- دکمه‌ها -->
-    <div class="popup-buttons">
-      <button id="cancelSettings">انصراف</button>
-      <button id="saveSettings" class="confirm">ذخیره</button>
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  <!-- ➕ پاپ‌آپ افزودن دانش‌آموز -->
+  <!-- Add student popup -->
   <div class="popup-overlay full" id="addStudentPopup">
     <div class="popup-box full-box">
       <header class="student-header centered">
         <div class="profile-container">
-          <img id="addStudentPhotoPreview" src="https://i.pravatar.cc/150?u=new" class="profile-big">
-          <button class="edit-photo-btn" id="addPhotoBtn"><img src="icons/edit.svg"></button>
-          <input type="file" id="addStudentPhoto" accept="image/*" style="display:none;">
+          <img id="addStudentPhotoPreview" src="https://i.pravatar.cc/150?u=new" alt="student" class="profile-big" />
+          <button type="button" class="edit-photo-btn" data-action="select-photo" data-target="addStudentPhoto" data-preview="addStudentPhotoPreview">
+            <img src="icons/edit.svg" alt="edit" />
+          </button>
+          <input type="file" id="addStudentPhoto" accept="image/*" hidden />
         </div>
         <div class="student-header-text">
           <h2>افزودن دانش‌آموز جدید</h2>
           <p>اطلاعات دانش‌آموز را وارد کنید</p>
         </div>
       </header>
-
-      <form id="addStudentForm" class="student-form-scroll">
+      <form id="addStudentForm" class="student-form">
         <div class="form-grid">
-          <div class="form-row"><label>نام</label><input type="text" id="addFirstName"></div>
-          <div class="form-row"><label>نام خانوادگی</label><input type="text" id="addLastName"></div>
-          <div class="form-row"><label>تاریخ تولد</label><input type="text" id="addBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10"></div>
-          <div class="form-row"><label>کد ملی</label><input type="text" id="addNid"></div>
-          <div class="form-row"><label>شماره دانش‌آموز</label><input type="text" id="addNumber"></div>
-          <div class="form-row"><label>شماره ولی</label><input type="text" id="addParent"></div>
-          <div class="form-row"><label>شماره منزل</label><input type="text" id="addHome"></div>
-          <div class="form-row"><label>کلاس</label>
-            <select id="addClass">
-              <option value="">انتخاب کنید…</option>
-              <option>هفتم</option><option>هشتم</option><option>نهم</option><option>دهم ریاضی</option><option>یازدهم تجربی</option>
-            </select>
-          </div>
+          <label class="form-field">
+            <span>نام</span>
+            <input type="text" id="addFirstName" placeholder="مثلاً امیرحسین" required />
+          </label>
+          <label class="form-field">
+            <span>نام خانوادگی</span>
+            <input type="text" id="addLastName" placeholder="مثلاً اخضری" required />
+          </label>
+          <label class="form-field">
+            <span>تاریخ تولد (شمسی)</span>
+            <input type="text" id="addBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10" />
+          </label>
+          <label class="form-field">
+            <span>کد ملی</span>
+            <input type="text" id="addNationalId" placeholder="۰۰۵۶۷۳۲۹۴۱" />
+          </label>
+          <label class="form-field">
+            <span>شماره دانش‌آموز</span>
+            <input type="text" id="addStudentNumber" placeholder="۱۲۳۴۵۶" />
+          </label>
+          <label class="form-field">
+            <span>شماره ولی</span>
+            <input type="text" id="addParentPhone" placeholder="۰۹۱۲۳۴۵۶۷۸۹" />
+          </label>
+          <label class="form-field">
+            <span>شماره منزل</span>
+            <input type="text" id="addHomePhone" placeholder="۰۷۱۵۲۳۴۵۶۷۸" />
+          </label>
+          <label class="form-field">
+            <span>کلاس</span>
+            <select id="addStudentClass" required></select>
+          </label>
         </div>
-        <div class="popup-buttons" style="margin-top:30px;">
-          <button type="button" id="cancelAddStudent">انصراف</button>
-          <button type="submit" id="confirmAddStudent">افزودن</button>
+        <div class="popup-buttons">
+          <button type="button" class="btn ghost" data-popup-close="addStudentPopup">انصراف</button>
+          <button type="submit" class="btn primary">افزودن</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ✏️ پاپ‌آپ ویرایش کلاس -->
-  <div class="popup-overlay" id="editPopup">
-    <div class="popup-box">
-      <h3>ویرایش کلاس</h3>
-      <p style="font-size:13px; color:var(--text-muted);">نام جدید کلاس را وارد کنید:</p>
-      <input type="text" id="editInput" placeholder="نام جدید کلاس...">
-      <div class="popup-buttons" style="margin-top:30px;">
-        <button type="button" id="cancelEdit">انصراف</button>
-        <button type="submit" id="confirmEdit">ذخیره</button>
+  <!-- Attendance detail popup -->
+  <div class="popup-overlay" id="attendanceDetailPopup">
+    <div class="popup-box detail-box">
+      <h3>جزئیات حضور</h3>
+      <div class="attendance-details">
+        <p><strong>نام:</strong> <span id="detailName">—</span></p>
+        <p><strong>کلاس:</strong> <span id="detailClass">—</span></p>
+        <p><strong>تاریخ:</strong> <span id="detailDate">—</span></p>
+        <p><strong>ساعت ورود:</strong> <span id="detailCheckIn">—</span></p>
+        <p><strong>وضعیت:</strong> <span id="detailStatus" class="status-text">—</span></p>
+      </div>
+      <div class="popup-buttons">
+        <button type="button" class="btn ghost" data-popup-close="attendanceDetailPopup" id="closeAttendanceDetail">بستن</button>
       </div>
     </div>
   </div>
 
-
-
-
-<!-- ➕ پاپ‌آپ افزودن دانش‌آموز -->
-<div class="popup-overlay full" id="addStudentPopup">
-  <div class="popup-box full-box">
-    
-    <header class="student-header centered">
-      <div class="profile-container">
-        <img id="addStudentPhotoPreview" src="https://i.pravatar.cc/150?u=new" alt="profile" class="profile-big">
-        <button class="edit-photo-btn" id="addPhotoBtn">
-          <img src="icons/edit.svg" alt="edit">
-        </button>
-        <input type="file" id="addStudentPhoto" accept="image/*" style="display:none;">
+  <!-- Attendance settings popup -->
+  <div class="popup-overlay" id="settingsPopup">
+    <div class="popup-box settings-box">
+      <h3>تنظیمات حضور و غیاب</h3>
+      <p class="popup-description">مدیریت ساعت پایان و روزهای تعطیل</p>
+      <div class="form-field">
+        <span>⏰ زمان پایان حضور و غیاب</span>
+        <input type="text" id="attendanceEndTime" placeholder="مثلاً 14:45" maxlength="5" />
+        <small>فرمت ۲۴ ساعته (HH:MM)</small>
       </div>
-
-      <div class="student-header-text">
-        <h2>افزودن دانش‌آموز جدید</h2>
-        <p>اطلاعات دانش‌آموز را وارد کنید</p>
-      </div>
-    </header>
-
-    <form id="addStudentForm" class="student-form-scroll">
-      <div class="form-grid">
-        <div class="form-row"><label>نام</label><input type="text" id="addFirstName" placeholder="مثلاً امیرحسین"></div>
-        <div class="form-row"><label>نام خانوادگی</label><input type="text" id="addLastName" placeholder="مثلاً اخضری"></div>
-        <div class="form-row"><label>تاریخ تولد (شمسی)</label><input type="text" id="addBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10"></div>
-        <div class="form-row"><label>کد ملی</label><input type="text" id="addNid" placeholder="۰۰۵۶۷۳۲۹۴۱"></div>
-        <div class="form-row"><label>شماره دانش‌آموز</label><input type="text" id="addNumber" placeholder="۱۲۳۴۵۶"></div>
-        <div class="form-row"><label>شماره ولی</label><input type="text" id="addParent" placeholder="۰۹۱۲۳۴۵۶۷۸۹"></div>
-        <div class="form-row"><label>شماره منزل</label><input type="text" id="addHome" placeholder="۰۷۱۵۲۳۴۵۶۷۸"></div>
-        <div class="form-row"><label>کلاس</label>
-          <select id="addClass">
-            <option value="">انتخاب کنید…</option>
-            <option>هفتم</option>
-            <option>هشتم</option>
-            <option>نهم</option>
-            <option>دهم ریاضی</option>
-            <option>یازدهم تجربی</option>
-          </select>
+      <div class="form-field">
+        <span>📅 روزهای تعطیل</span>
+        <div class="days-picker" id="dayPicker">
+          <button type="button" class="day" data-day="sat">ش</button>
+          <button type="button" class="day" data-day="sun">ی</button>
+          <button type="button" class="day" data-day="mon">د</button>
+          <button type="button" class="day" data-day="tue">س</button>
+          <button type="button" class="day" data-day="wed">چ</button>
+          <button type="button" class="day" data-day="thu">پ</button>
+          <button type="button" class="day" data-day="fri">ج</button>
         </div>
       </div>
-
-      <div class="popup-buttons" style="margin-top:30px;">
-        <button type="button" id="cancelAddStudent">انصراف</button>
-        <button type="submit" id="confirmAddStudent">افزودن</button>
+      <div class="popup-buttons">
+        <button type="button" class="btn ghost" data-popup-close="settingsPopup" id="cancelSettings">انصراف</button>
+        <button type="button" class="btn primary" id="saveSettings">ذخیره</button>
       </div>
-    </form>
+    </div>
   </div>
-</div>
 
-
-<!-- پنجره ویرایش کلاس -->
-<div class="popup-overlay" id="editPopup">
-  <div class="popup-box">
-    <h3>ویرایش کلاس</h3>
-    <p style="font-size:13px; color:var(--text-muted);">
-      نام جدید کلاس را وارد کنید:
-    </p>
-    <input type="text" id="editInput" placeholder="نام جدید کلاس..." />
-<div class="popup-buttons" style="margin-top:30px;">
-  <button type="button" id="cancelAddStudent">انصراف</button>
-  <button type="submit" id="confirmAddStudent">افزودن</button>
-</div>
-
-  </div>
-</div>
-
-<body>
-  <!-- سایدبار -->
+  <!-- Sidebar navigation -->
   <aside class="sidebar">
     <div class="logo-box">
-      <div class="logo"><img src="logo.png" alt=""></div>
+      <div class="logo"><img src="logo.png" alt="Asteen" /></div>
       <div class="title-wrap">
         <span class="name">آستین</span>
         <span class="sub">پنل مدیریت</span>
       </div>
     </div>
-    <div class="menu">
-      <div class="item active" data-page="dashboard">داشبورد</div>
-      <div class="item" data-page="attendance">حضور و غیاب</div>
-      <div class="item" data-page="students">دانش‌آموزها</div>
-      <div class="item" data-page="classes">کلاس‌ها</div>
-    </div>
+    <nav class="menu">
+      <button type="button" class="menu-item active" data-page="dashboard">داشبورد</button>
+      <button type="button" class="menu-item" data-page="attendance">حضور و غیاب</button>
+      <button type="button" class="menu-item" data-page="students">دانش‌آموزها</button>
+      <button type="button" class="menu-item" data-page="classes">کلاس‌ها</button>
+    </nav>
   </aside>
 
-  <!-- بخش اصلی -->
+  <!-- Main content area -->
   <div class="main">
-    <!-- بالا -->
     <header class="topbar">
       <div class="top-left">
         <span>سلام، امیرحسین 👋</span>
       </div>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <div class="profile">
-          <div class="avatar"></div>
-          <div class="name">Admin</div>
-        </div>
+      <div class="profile">
+        <div class="avatar"></div>
+        <div class="name">Admin</div>
       </div>
     </header>
-
-    <!-- محتوا -->
-    <main class="content" id="content">
-      <h2 style="margin:0 0 4px;">داشبورد</h2>
-      <p style="margin:0 0 12px; color:var(--text-muted); font-size:13px;">نمای کلی سامانه حضور و غیاب آستین</p>
-
-      <div class="cards">
-        <div class="card">
-          <div class="card-title">حضور امروز</div>
-          <div class="card-value">—</div>
-        </div>
-        <div class="card">
-          <div class="card-title">غیبت‌ها</div>
-          <div class="card-value">—</div>
-        </div>
-      </div>
-
-
-    </main>
+    <main class="content" id="content"></main>
   </div>
-
-  <script>
-// ======================
-// 🔁 سوییچ بین صفحات
-// ======================
-const menuItems = document.querySelectorAll('.menu .item');
-const content = document.getElementById('content');
-
-menuItems.forEach(item => {
-  item.addEventListener('click', () => {
-    menuItems.forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    renderPage(item.dataset.page);
-  });
-});
-
-function renderPage(page) {
-  if (page === 'dashboard') {
-    content.innerHTML = `
-      <h2 style="margin:0 0 4px;">داشبورد</h2>
-      <p style="margin:0 0 12px; color:var(--text-muted); font-size:13px;">نمای کلی سامانه حضور و غیاب آستین</p>
-      <div class="cards">
-        <div class="card"><div class="card-title">حضور امروز</div><div class="card-value">—</div></div>
-        <div class="card"><div class="card-title">غیبت‌ها</div><div class="card-value">—</div></div>
-      </div>
-    `;
-  }
-  
-  else if (page === 'classes') {
-  const classesData = [
-    { name: "هفتم" }, { name: "هشتم" }, { name: "نهم" }, { name: "دهم ریاضی" }, { name: "یازدهم تجربی" }
-  ];
-
-  const rows = classesData.map((cls, i) => `
-    <tr>
-      <td>${i + 1}</td>
-      <td>${cls.name}</td>
-      <td class="actions">
-        <button class="edit-btn"><img src="icons/edit.svg" alt="edit"></button>
-        <button class="delete-btn"><img src="icons/delete.svg" alt="delete"></button>
-      </td>
-    </tr>
-  `).join('');
-
-  content.innerHTML = `
-    <h2>کلاس‌ها</h2>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <p style="color:var(--text-muted); font-size:13px;">مدیریت کلاس‌ها</p>
-      <button id="addClassBtn" class="add-btn">➕ افزودن کلاس</button>
-    </div>
-    <div class="table-wrap">
-      <table class="class-table">
-        <thead><tr><th>#</th><th>نام کلاس</th><th>عملیات</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
-}
-
-
-else if (page === 'attendance') {
-  const attendanceData = [
-    { userId: '1', userFullName: 'امیرحسین اخضری', className: 'هشتم الف', status: 'حاضر', profileLink: 'https://i.pravatar.cc/150?u=1' },
-    { userId: '2', userFullName: 'علی رضایی', className: 'نهم', status: 'دیر اومده', profileLink: 'https://i.pravatar.cc/150?u=2' },
-    { userId: '3', userFullName: 'محمد حسینی', className: 'هشتم', status: 'غایب', profileLink: 'https://i.pravatar.cc/150?u=3' }
-  ];
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'حاضر': return '#2ecc71';
-      case 'دیر اومده': return '#f39c12';
-      case 'غایب': return '#e74c3c';
-      default: return 'var(--text)';
-    }
-  };
-
-  const rows = attendanceData.map((item, i) => `
-    <tr data-id="${item.userId}">
-      <td>${i + 1}</td>
-      <td><img src="${item.profileLink}" class="profile-pic"></td>
-      <td>${item.userFullName}</td>
-      <td>${item.className}</td>
-      <td><span class="status-text" style="color:${getStatusColor(item.status)}">${item.status}</span></td>
-      <td class="actions">
-        <div class="status-switch">
-          <div class="dot green ${item.status === 'حاضر' ? 'active' : ''}" data-status="حاضر"></div>
-          <div class="dot orange ${item.status === 'دیر اومده' ? 'active' : ''}" data-status="دیر اومده"></div>
-          <div class="dot red ${item.status === 'غایب' ? 'active' : ''}" data-status="غایب"></div>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-content.innerHTML = `
-  <h2>حضور و غیاب</h2>
-  <div class="filter-bar">
-  <button id="settingsBtn" class="settings-btn">تنظیمات</button>
-    <div class="filter-item">
-      <label>کلاس:</label>
-      <select id="filterClass">
-        <option value="">همه</option>
-        <option>هفتم</option>
-        <option>هشتم</option>
-        <option>نهم</option>
-        <option>دهم ریاضی</option>
-        <option>یازدهم تجربی</option>
-      </select>
-    </div>
-
-    <div class="filter-item">
-      <label>وضعیت:</label>
-      <select id="filterStatus">
-        <option value="">همه</option>
-        <option value="حاضر">حاضر</option>
-        <option value="دیر اومده">دیر اومده</option>
-        <option value="غایب">غایب</option>
-      </select>
-    </div>
-
-    <div class="filter-item search">
-      <input type="text" id="searchName" placeholder="جستجو بر اساس نام...">
-    </div>
-  </div>
-
-  <div class="table-wrap">
-    <table class="class-table students-table align-fix">
-      <thead>
-        <tr>
-          <th>#</th><th>عکس</th><th>نام کامل</th><th>کلاس</th><th>وضعیت</th><th>عملیات</th>
-        </tr>
-      </thead>
-      <tbody id="attendanceBody">${rows}</tbody>
-    </table>
-  </div>
-`;
-
-}
-
-
-
-  else if (page === 'students') {
-    const studentsData = [
-      { firstName: "امیرحسین", lastName: "اخضری", className: "هشتم", profileLink: "https://i.pravatar.cc/150?u=1", id: "stu1" },
-      { firstName: "علی", lastName: "رضایی", className: "هشتم", profileLink: "https://i.pravatar.cc/150?u=2", id: "stu2" },
-      { firstName: "محمد", lastName: "حسینی", className: "نهم", profileLink: "https://i.pravatar.cc/150?u=3", id: "stu3" }
-    ];
-
-    let rows = studentsData.map((stu, i) => `
-      <tr>
-        <td>${i + 1}</td>
-        <td><img src="${stu.profileLink}" class="profile-pic"></td>
-        <td>${stu.className}</td>
-        <td>${stu.firstName}</td>
-        <td>${stu.lastName}</td>
-        <td class="actions">
-          <button class="edit-btn" data-id="${stu.id}"><img src="icons/edit.svg" alt="edit"></button>
-          <button class="delete-btn"><img src="icons/delete.svg" alt="delete"></button>
-        </td>
-      </tr>
-    `).join('');
-
-content.innerHTML = `
-  <h2 style="margin:0;">دانش‌آموزان</h2>
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-    <p style="color:var(--text-muted); font-size:13px;">مدیریت اطلاعات دانش‌آموزان</p>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <select id="classFilter" style="padding:6px 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-soft); color:var(--text); font-family:inherit;">
-        <option value="all">همه کلاس‌ها</option>
-        <option>هفتم</option>
-        <option>هشتم</option>
-        <option>نهم</option>
-        <option>دهم ریاضی</option>
-        <option>یازدهم تجربی</option>
-      </select>
-      <button id="addStudentBtn" class="add-btn">➕ افزودن دانش‌آموز</button>
-    </div>
-  </div>
-  <div class="table-wrap">
-    <table class="class-table students-table align-fix">
-      <thead>
-        <tr><th>#</th><th>عکس</th><th>کلاس</th><th>نام</th><th>نام خانوادگی</th><th>عملیات</th></tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>
-`;
-
-  }
-
-  else if (page === 'classes') {
-    const classesData = [
-      { name: "هفتم" }, { name: "هشتم" }, { name: "نهم" }, { name: "دهم ریاضی" }, { name: "یازدهم تجربی" }
-    ];
-
-    const rows = classesData.map((cls, i) => `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${cls.name}</td>
-        <td class="actions">
-          <button class="edit-btn"><img src="icons/edit.svg" alt="edit"></button>
-          <button class="delete-btn"><img src="icons/delete.svg" alt="delete"></button>
-        </td>
-      </tr>
-    `).join('');
-
-    content.innerHTML = `
-      <h2>کلاس‌ها</h2>
-      <p style="color:var(--text-muted); font-size:13px;">مدیریت کلاس‌ها</p>
-      <div class="table-wrap">
-        <table class="class-table">
-          <thead><tr><th>#</th><th>نام کلاس</th><th>عملیات</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    `;
-  }
-
-  else if (page === 'settings') {
-    content.innerHTML = `
-      <h2>تنظیمات</h2>
-      <p style="color:var(--text-muted); font-size:13px;">تنظیمات پایه پنل آستین</p>
-      <div class="placeholder">API key / آدرس سرور / تم</div>
-    `;
-  }
-}
-
-
-// ======================
-// 🗑 پنجره حذف عمومی
-// ======================
-let currentRow = null;
-
-document.addEventListener('click', (e) => {
-  const del = e.target.closest('.delete-btn');
-  if (!del) return;
-
-  currentRow = del.closest('tr');
-  const page = document.querySelector('.menu .item.active').dataset.page;
-  const popup = document.getElementById('popup');
-  const title = popup.querySelector('h3');
-  const text = popup.querySelector('p');
-
-  if (page === 'students') {
-    title.textContent = 'حذف دانش‌آموز';
-    text.innerHTML = 'با حذف این دانش‌آموز، تمام داده‌های او (حضور و غیاب، شماره کارت و ...) برای همیشه پاک می‌شود.';
-  } else if (page === 'classes') {
-    title.textContent = 'حذف کلاس';
-    text.innerHTML = 'با حذف این کلاس، تمام دانش‌آموزان و سوابق مرتبط آن برای همیشه پاک می‌شوند.';
-  }
-
-  popup.classList.add('active');
-});
-
-document.getElementById('cancelDelete').addEventListener('click', () => {
-  document.getElementById('popup').classList.remove('active');
-  currentRow = null;
-});
-
-document.getElementById('confirmDelete').addEventListener('click', () => {
-  if (currentRow) currentRow.remove();
-  document.getElementById('popup').classList.remove('active');
-});
-
-
-// ======================
-// ✏️ ویرایش کلاس / دانش‌آموز
-// ======================
-let currentEditRow = null;
-let currentStudentRow = null;
-
-document.addEventListener('click', (e) => {
-  const editBtn = e.target.closest('.edit-btn');
-  if (!editBtn) return;
-
-  const activePage = document.querySelector('.menu .item.active').dataset.page;
-
-  if (activePage === 'classes') {
-    currentEditRow = editBtn.closest('tr');
-    const currentName = currentEditRow.children[1].innerText;
-    document.getElementById('editInput').value = currentName;
-    document.getElementById('editPopup').classList.add('active');
-  } else if (activePage === 'students') {
-    currentStudentRow = editBtn.closest('tr');
-    document.getElementById('editStudentPopup').classList.add('active');
-
-    document.getElementById('studentPhotoPreview').src = currentStudentRow.children[1].querySelector('img').src;
-    document.getElementById('studentFirstName').value = currentStudentRow.children[3].innerText;
-    document.getElementById('studentLastName').value = currentStudentRow.children[4].innerText;
-    document.getElementById('studentClass').value = currentStudentRow.children[2].innerText;
-  }
-});
-
-// بستن popup کلاس
-document.getElementById('cancelEdit').addEventListener('click', () => {
-  document.getElementById('editPopup').classList.remove('active');
-  currentEditRow = null;
-});
-
-// ذخیره popup کلاس
-document.getElementById('confirmEdit').addEventListener('click', () => {
-  const newName = document.getElementById('editInput').value.trim();
-  if (newName && currentEditRow) currentEditRow.children[1].innerText = newName;
-  document.getElementById('editPopup').classList.remove('active');
-});
-
-// بستن popup دانش‌آموز
-document.getElementById('cancelStudentEdit').addEventListener('click', () => {
-  document.getElementById('editStudentPopup').classList.remove('active');
-  currentStudentRow = null;
-});
-
-// انتخاب عکس جدید در ویرایش
-document.querySelector('.edit-photo-btn').addEventListener('click', () => {
-  document.getElementById('studentPhoto').click();
-});
-document.getElementById('studentPhoto').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = ev => document.getElementById('studentPhotoPreview').src = ev.target.result;
-    reader.readAsDataURL(file);
-  }
-});
-
-// کنترل فرمت تاریخ در ویرایش
-document.getElementById('studentBirth').addEventListener('input', (e) => {
-  const val = e.target.value.trim();
-  const regex = /^[0-9۰-۹]{4}\/[0-9۰-۹]{2}\/[0-9۰-۹]{2}ش$/;
-  e.target.style.borderColor = val && !regex.test(val) ? '#e53935' : '';
-});
-
-// ذخیره تغییرات ویرایش دانش‌آموز
-document.getElementById('editStudentForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  if (!currentStudentRow) return;
-
-  // گرفتن داده‌های جدید از فرم
-  const newPhoto = document.getElementById('studentPhotoPreview').src;
-  const newFirst = document.getElementById('studentFirstName').value.trim();
-  const newLast  = document.getElementById('studentLastName').value.trim();
-  const newClass = document.getElementById('studentClass').value.trim();
-
-  // اعمال روی جدول
-  currentStudentRow.children[1].querySelector('img').src = newPhoto;
-  currentStudentRow.children[2].innerText = newClass || '—';
-  currentStudentRow.children[3].innerText = newFirst || '—';
-  currentStudentRow.children[4].innerText = newLast || '—';
-
-  // بستن popup
-  document.getElementById('editStudentPopup').classList.remove('active');
-  currentStudentRow = null;
-});
-
-
-
-// ======================
-// ➕ افزودن دانش‌آموز
-// ======================
-document.addEventListener('click', (e) => {
-  if (e.target.id === 'addStudentBtn') {
-    document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول پس‌زمینه
-    document.getElementById('addStudentPopup').classList.add('active');
-  }
-});
-
-document.getElementById('cancelAddStudent').addEventListener('click', () => {
-  document.getElementById('addStudentPopup').classList.remove('active');
-  document.body.style.overflow = ''; // بازگرداندن اسکرول
-});
-
-// انتخاب عکس جدید برای افزودن
-document.getElementById('addPhotoBtn').addEventListener('click', () => {
-  document.getElementById('addStudentPhoto').click();
-});
-
-document.getElementById('addStudentPhoto').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      document.getElementById('addStudentPhotoPreview').src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// کنترل فرمت تاریخ در ویرایش دانش‌آموز
-document.getElementById('studentBirth').addEventListener('input', (e) => {
-  const val = e.target.value.trim();
-  const regex = /^[0-9۰-۹]{4}\/[0-9۰-۹]{2}\/[0-9۰-۹]{2}$/;
-  e.target.style.borderColor = val && !regex.test(val) ? '#e53935' : '';
-});
-
-// کنترل فرمت تاریخ در افزودن دانش‌آموز
-document.getElementById('addBirth').addEventListener('input', (e) => {
-  const val = e.target.value.trim();
-  const regex = /^[0-9۰-۹]{4}\/[0-9۰-۹]{2}\/[0-9۰-۹]{2}$/;
-  e.target.style.borderColor = val && !regex.test(val) ? '#e53935' : '';
-});
-
-
-// ثبت فرم افزودن دانش‌آموز
-document.getElementById('addStudentForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  const f = document.getElementById('addFirstName').value.trim();
-  const l = document.getElementById('addLastName').value.trim();
-  const c = document.getElementById('addClass').value;
-  const p = document.getElementById('addStudentPhotoPreview').src;
-
-  if (!f || !l) return;
-
-  const tableBody = document.querySelector('.students-table tbody');
-  const newRow = document.createElement('tr');
-  const rowCount = tableBody.children.length + 1;
-
-  newRow.innerHTML = `
-    <td>${rowCount}</td>
-    <td><img src="${p}" class="profile-pic"></td>
-    <td>${c}</td>
-    <td>${f}</td>
-    <td>${l}</td>
-    <td class="actions">
-      <button class="edit-btn"><img src="icons/edit.svg" alt="edit"></button>
-      <button class="delete-btn"><img src="icons/delete.svg" alt="delete"></button>
-    </td>
-  `;
-
-  tableBody.appendChild(newRow);
-  document.getElementById('addStudentPopup').classList.remove('active');
-  document.body.style.overflow = '';
-});
-
-
-// ======================
-// ➕ افزودن کلاس جدید
-// ======================
-document.addEventListener('click', (e) => {
-  if (e.target.id === 'addClassBtn') {
-    document.getElementById('addClassPopup').classList.add('active');
-  }
-});
- 
-document.getElementById('cancelAddClass').addEventListener('click', () => {
-  document.getElementById('addClassPopup').classList.remove('active');
-});
-
-document.getElementById('confirmAddClass').addEventListener('click', () => {
-  const input = document.getElementById('addClassInput');
-  const className = input.value.trim();
-  if (!className) return;
-
-  const tableBody = document.querySelector('.class-table tbody');
-  const newRow = document.createElement('tr');
-  const rowCount = tableBody.children.length + 1;
-
-  newRow.innerHTML = `
-    <td>${rowCount}</td>
-    <td>${className}</td>
-    <td class="actions">
-      <button class="edit-btn"><img src="icons/edit.svg" alt="edit"></button>
-      <button class="delete-btn"><img src="icons/delete.svg" alt="delete"></button>
-    </td>
-  `;
-
-  tableBody.appendChild(newRow);
-  input.value = '';
-  document.getElementById('addClassPopup').classList.remove('active');
-});
-
-// 🎯 فیلتر کلاس‌ها در صفحه دانش‌آموزان
-document.addEventListener('change', (e) => {
-  if (e.target.id === 'classFilter') {
-    const selected = e.target.value;
-    const rows = document.querySelectorAll('.students-table tbody tr');
-    rows.forEach(row => {
-      const className = row.children[2].innerText.trim();
-      if (selected === 'all' || className === selected) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
-  }
-});
-
-
-
-// 🎨 تغییر وضعیت با کلیک روی دایره‌ها
-// 🎯 کنترل تغییر وضعیت حضور با کلیک روی دایره‌ها
-document.addEventListener('click', (e) => {
-  const dot = e.target.closest('.dot');
-  if (!dot) return;
-
-  // ردیف فعلی جدول
-  const row = dot.closest('tr');
-  const dots = row.querySelectorAll('.dot');
-  const text = row.querySelector('.status-text');
-
-  // حذف active از تمام دایره‌ها
-  dots.forEach(d => d.classList.remove('active'));
-
-  // فعال کردن دایره فعلی
-  dot.classList.add('active');
-
-  // تعیین وضعیت جدید
-  const newStatus = dot.dataset.status;
-
-  // تعیین رنگ متن بر اساس دایره انتخاب‌شده
-  let color = '';
-  if (dot.classList.contains('green')) color = '#2ecc71';       // حاضر
-  else if (dot.classList.contains('orange')) color = '#f39c12'; // دیر اومده
-  else if (dot.classList.contains('red')) color = '#e74c3c';    // غایب
-
-  // بروزرسانی متن و رنگ
-  text.textContent = newStatus;
-  text.style.color = color;
-});
-
-
-// 🎯 باز کردن پاپ‌آپ جزئیات با کلیک روی ردیف جدول
-document.addEventListener('click', (e) => {
-  const row = e.target.closest('tr');
-  const page = document.querySelector('.menu .item.active').dataset.page;
-  if (!row || page !== 'attendance') return;
-
-  // استخراج داده‌ها از جدول
-  const name = row.children[2].innerText;
-  const className = row.children[3].innerText;
-  const status = row.querySelector('.status-text').innerText;
-
-  // برای سادگی، داده فرضی ساعت و تاریخ
-  const detailData = {
-    userFullName: name,
-    className: className,
-    checkIn: "00:16",
-    status: status,
-    date: "1404/08/19"
-  };
-
-  // تنظیم رنگ وضعیت
-  const statusSpan = document.getElementById('detailStatus');
-  statusSpan.textContent = detailData.status;
-  if (status.includes("حاضر") || status.includes("زود اومده"))
-    statusSpan.style.color = "#2ecc71";
-  else if (status.includes("دیر"))
-    statusSpan.style.color = "#f39c12";
-  else
-    statusSpan.style.color = "#e74c3c";
-
-  // درج در پاپ‌آپ
-  document.getElementById('detailName').textContent = detailData.userFullName;
-  document.getElementById('detailClass').textContent = detailData.className;
-  document.getElementById('detailCheckIn').textContent = detailData.checkIn;
-  document.getElementById('detailDate').textContent = detailData.date;
-
-  // نمایش پاپ‌آپ
-  document.getElementById('attendanceDetailPopup').classList.add('active');
-});
-
-// 🎯 بستن پاپ‌آپ
-document.getElementById('closeAttendanceDetail').addEventListener('click', () => {
-  document.getElementById('attendanceDetailPopup').classList.remove('active');
-});
-
-
-// 🎯 فیلتر و جستجو در جدول حضور
-function filterAttendance() {
-  const cls = document.getElementById('filterClass').value;
-  const status = document.getElementById('filterStatus').value;
-  const search = document.getElementById('searchName').value.trim();
-
-  const tbody = document.getElementById('attendanceBody');
-  const rows = tbody.querySelectorAll('tr');
-
-  rows.forEach(row => {
-    const name = row.children[2].innerText;
-    const className = row.children[3].innerText;
-    const stat = row.querySelector('.status-text').innerText;
-
-    const matchClass = !cls || className.includes(cls);
-    const matchStatus = !status || stat === status;
-    const matchSearch = !search || name.includes(search);
-
-    row.style.display = (matchClass && matchStatus && matchSearch) ? '' : 'none';
-  });
-}
-
-// اعمال فیلتر هنگام تغییر
-document.addEventListener('input', (e) => {
-  if (['filterClass', 'filterStatus', 'searchName'].includes(e.target.id)) {
-    filterAttendance();
-  }
-});
-
-// ⚙ کنترل پاپ‌آپ تنظیمات
-const settingsPopup = document.getElementById('settingsPopup');
-const settingsBtn = document.getElementById('settingsBtn');
-const cancelSettings = document.getElementById('cancelSettings');
-const saveSettings = document.getElementById('saveSettings');
-const endTimeInput = document.getElementById('attendanceEndTime');
-const dayButtons = document.querySelectorAll('.day');
-
-// باز کردن پاپ‌آپ
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("#settingsBtn");
-  if (!btn) return;
-
-  console.log("دکمه تنظیمات کلیک شد ✅");
-  document.getElementById("settingsPopup").classList.add("active");
-});
-
-
-// بستن با انصراف
-cancelSettings?.addEventListener('click', () => {
-  settingsPopup.classList.remove('active');
-});
-
-// ذخیره و بستن
-saveSettings?.addEventListener('click', () => {
-  settingsPopup.classList.remove('active');
-});
-
-// انتخاب روزهای تعطیل
-dayButtons.forEach(day => {
-  day.addEventListener('click', () => day.classList.toggle('active'));
-});
-
-// بررسی فرمت ساعت ۲۴ ساعته
-endTimeInput?.addEventListener('input', (e) => {
-  const val = e.target.value.trim();
-  const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-  if (val && !regex.test(val)) {
-    e.target.style.borderColor = '#e53935';
-    e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.2)';
-  } else {
-    e.target.style.borderColor = 'var(--border)';
-    e.target.style.boxShadow = 'none';
-  }
-});
-
-  </script>
 </body>
 </html>

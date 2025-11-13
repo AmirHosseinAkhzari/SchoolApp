@@ -20,7 +20,7 @@ async function sms() {
     global.sms = { 
         send : { 
             otp : async (to , code) => {
-                api.sms().sendByBaseNumber(code, to, 386979)
+                // api.sms().sendByBaseNumber(code, to, 388699)
             }
         }
     }

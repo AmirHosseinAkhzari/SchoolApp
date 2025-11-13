@@ -7,7 +7,8 @@ const utils = require('../utils/utils')
 
 const jalaali = require('jalaali-js');
 
-const jwt  = require('jsonwebtoken')
+const jwt  = require('jsonwebtoken');
+const { use } = require('../router/login');
 
 // ------- User Schema -------
 const userSchema = new mongoose.Schema({
@@ -33,7 +34,8 @@ const classSchema = new mongoose.Schema({
 const otpSchema = new mongoose.Schema({
     code : String  , 
     number : String ,  
-    checkIn : String
+    checkIn : String , 
+    role : String
 })
 
 
@@ -74,7 +76,29 @@ async function ConnectTodb() {
     await mongoose.connect("mongodb://localhost:27017/school")
     console.log("✅ Connected to MongoDB")
     utils()
-
+// const userSchema = new mongoose.Schema({
+//     firstname : String , 
+//     lastname : String , 
+//     birthday : Date , 
+//     nationalid : String , 
+//     number : String , 
+//     ParentNumber : String , 
+//     LocalNumber : String , 
+//     classId : mongoose.Schema.Types.ObjectId  , 
+//     role : String
+// })
+    // {
+    //   id: "stu-1",
+    //   firstName: "امیرحسین",
+    //   lastName: "اخضری",
+    //   classId: "class-8",
+    //   birthday: "1403/05/12",
+    //   nationalId: "0056732941",
+    //   studentNumber: "123456",
+    //   parentPhone: "۰۹۱۲۳۴۵۶۷۸۹",
+    //   homePhone: "۰۷۱۵۲۳۴۵۶۷۸",
+    //   photo: "https://i.pravatar.cc/150?u=1"
+    // },
      global.db = {
         user : { 
             add : async (data) => { 
@@ -96,24 +120,31 @@ async function ConnectTodb() {
             },
             deleteAll : async () => {
                 await User.deleteMany({})
+            }, 
+            getAllStu : async () => { 
+                return await User.find().select("_id firstname lastname birthday nationalid number ParentNumber LocalNumber classId")
             }
         }, 
         class : {
             add : async (name) => {
                 const c = Class({name : name})
                 await c.save()
+                return {code : 200 , message :"کلاس با موفقیت ساخته شد"}
             } , 
-            update : async (id , name) => {
+            changeName : async (id , name) => {
                 await Class.findByIdAndUpdate(id , {name : name})
+                return {code : 200 , message :"کلاس با موفقیت ساخته شد"}
             } , 
             getall : async () => {
-                return await Class.find()
+                return await Class.find().select("name _id")
+
             } , 
             getone : async (id) => {
                 return await Class.findById(id)
             }, 
             delete : async (id) => {
                 await Class.findByIdAndDelete(id)
+                return {code : 200 , message :"کلاس با موفقیت حذف شد"}
             } , 
             deleteAll : async () => {
                 await Class.deleteMany({})
@@ -216,7 +247,7 @@ async function ConnectTodb() {
             }
         } , 
         otp : {
-            SendWithNumber : async (num) => {
+            SendWithNumber : async (num , role) => {
     
             
                 const code = global.utils.random.getOtpCode()
@@ -230,6 +261,10 @@ async function ConnectTodb() {
                 
                 if (!user){ 
                     return {message : "دسترسی غیر مجاز" , code : 500}
+                }
+
+                if(user.role != role){
+                    return {message : "ادمین معتبر نیست" , code : 500}
                 }
 
                 const otpBlock = await Otp.findOne({
@@ -267,7 +302,8 @@ async function ConnectTodb() {
                     const o= Otp({
                         checkIn  : global.utils.time.iran2() , 
                         code : code ,
-                        number : num
+                        number : num , 
+                        role : role
                     })
 
                     o.save()
@@ -348,7 +384,6 @@ async function ConnectTodb() {
 
                 }
 
-
             } , 
             check : async (number , code) => { 
                 
@@ -358,12 +393,14 @@ async function ConnectTodb() {
                     return {message : "کد اشتباه است" , code : 500}
                 }
 
+
                 await data.deleteOne()
 
                 const SECRET_KEY = "asdeashndjoasndfekswfeiw0mrfmn4rj24u9fr"
 
                 const payload  = {
                     number : number , 
+                    role : data.role
                 }
 
                 const token = jwt.sign(payload , SECRET_KEY )

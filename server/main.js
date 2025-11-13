@@ -10,6 +10,20 @@ const loginRoutes = require('./router/login')
 
 const AttendanceRoutes = require('./router/attendance')
 
+const AdminRoutes = require('./router/admin')
+
+const imagesRoutes = require('./router/image')
+
+
+const ClassRoutes = require('./router/class')
+
+const StudentRoutes = require('./router/student')
+
+
+
+const cookieParser = require("cookie-parser");
+
+const checkToken = require("./middleware/checkToken");
 
 const morgan = require('morgan')
 async function main() {
@@ -26,18 +40,8 @@ async function main() {
   
   app.use(express.json())
 
-
-// const userSchema = new mongoose.Schema({
-//     firstname : String , 
-//     lastname : String , 
-//     birthday : Date , 
-//     nationalid : String , 
-//     number : String , 
-//     ParentNumber : String , 
-//     LocalNumber : String , 
-//     classId : mongoose.Schema.Types.ObjectId  , 
-//     role : String
-// })
+  
+  app.use(cookieParser())
 
 
   // global.db.user.add({
@@ -47,13 +51,24 @@ async function main() {
   //   nationalid : "2500766111"  , 
   //   number : "09304682860" , 
   //   classId : "690000926aa70ec7aa4d4731" , 
-  //   role : "Student"
+  //   role : "Student" , 
+    
   // })
 
 
-  app.use('/login', loginRoutes)
+  app.use('/login',loginRoutes)
   app.use('/attendance', AttendanceRoutes)
-  app.use( "/attendance", express.static(path.join(__dirname, "public/attendanceDevice")))
+  app.use('/admin',AdminRoutes )
+  app.use('/class',ClassRoutes )
+  app.use('/image',imagesRoutes )
+  app.use('/student',StudentRoutes )
+
+
+  app.use( "/adminPanel/login", express.static(path.join(__dirname, "public/admin/login")))
+  app.use("/adminPanel", checkToken , express.static(path.join(__dirname, "public/admin/main")));
+
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(3000, "0.0.0.0", () => {
