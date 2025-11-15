@@ -9,7 +9,7 @@ router.post("/number", async (req , res) =>{
     console.log("done")
     
 
-    const data  = await global.db.otp.SendWithNumber(req.body.number)
+    const data  = await global.db.otp.SendWithNumber(req.body.number , "Student")
 
     console.log(data)
 
