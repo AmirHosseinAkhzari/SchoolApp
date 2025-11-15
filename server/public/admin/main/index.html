@@ -88,7 +88,7 @@
           </label>
           <label class="form-field">
             <span>شماره دانش‌آموز</span>
-            <input type="text" id="studentNumber" />
+            <input type="text" id="number" />
           </label>
           <label class="form-field">
             <span>شماره ولی</span>
@@ -113,62 +113,74 @@
 
   <!-- Add student popup -->
   <div class="popup-overlay full" id="addStudentPopup">
-    <div class="popup-box full-box">
-      <header class="student-header centered">
-        <div class="profile-container">
-          <img id="addStudentPhotoPreview" src="https://i.pravatar.cc/150?u=new" alt="student" class="profile-big" />
-          <button type="button" class="edit-photo-btn" data-action="select-photo" data-target="addStudentPhoto" data-preview="addStudentPhotoPreview">
-            <img src="icons/edit.svg" alt="edit" />
-          </button>
-          <input type="file" id="addStudentPhoto" accept="image/*" hidden />
-        </div>
-        <div class="student-header-text">
-          <h2>افزودن دانش‌آموز جدید</h2>
-          <p>اطلاعات دانش‌آموز را وارد کنید</p>
-        </div>
-      </header>
-      <form id="addStudentForm" class="student-form">
-        <div class="form-grid">
-          <label class="form-field">
-            <span>نام</span>
-            <input type="text" id="addFirstName" placeholder="مثلاً امیرحسین" required />
-          </label>
-          <label class="form-field">
-            <span>نام خانوادگی</span>
-            <input type="text" id="addLastName" placeholder="مثلاً اخضری" required />
-          </label>
-          <label class="form-field">
-            <span>تاریخ تولد (شمسی)</span>
-            <input type="text" id="addBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10" />
-          </label>
-          <label class="form-field">
-            <span>کد ملی</span>
-            <input type="text" id="addNationalId" placeholder="۰۰۵۶۷۳۲۹۴۱" />
-          </label>
-          <label class="form-field">
-            <span>شماره دانش‌آموز</span>
-            <input type="text" id="addStudentNumber" placeholder="۱۲۳۴۵۶" />
-          </label>
-          <label class="form-field">
-            <span>شماره ولی</span>
-            <input type="text" id="addParentPhone" placeholder="۰۹۱۲۳۴۵۶۷۸۹" />
-          </label>
-          <label class="form-field">
-            <span>شماره منزل</span>
-            <input type="text" id="addHomePhone" placeholder="۰۷۱۵۲۳۴۵۶۷۸" />
-          </label>
-          <label class="form-field">
-            <span>کلاس</span>
-            <select id="addStudentClass" required></select>
-          </label>
-        </div>
-        <div class="popup-buttons">
-          <button type="button" class="btn ghost" data-popup-close="addStudentPopup">انصراف</button>
-          <button type="submit" class="btn primary">افزودن</button>
-        </div>
-      </form>
-    </div>
+  <div class="popup-box full-box">
+    <header class="student-header centered">
+      <div class="profile-container">
+        <img id="addStudentPhotoPreview" src="https://i.pravatar.cc/150?u=new" alt="student" class="profile-big" />
+        <button type="button" class="edit-photo-btn" data-action="select-photo" data-target="addStudentPhoto" data-preview="addStudentPhotoPreview">
+          <img src="icons/edit.svg" alt="edit" />
+        </button>
+        <input type="file" id="addStudentPhoto" accept="image/*" hidden />
+      </div>
+      <div class="student-header-text">
+        <h2>افزودن دانش‌آموز جدید</h2>
+        <p>اطلاعات دانش‌آموز را وارد کنید</p>
+      </div>
+    </header>
+
+    <form id="addStudentForm" class="student-form" autocomplete="off">
+      <div class="form-grid">
+
+        <label class="form-field">
+          <span>نام</span>
+          <input type="text" id="addFirstName" placeholder="مثلاً امیرحسین" required autocomplete="off" />
+        </label>
+
+        <label class="form-field">
+          <span>نام خانوادگی</span>
+          <input type="text" id="addLastName" placeholder="مثلاً اخضری" required autocomplete="off" />
+        </label>
+
+        <label class="form-field">
+          <span>تاریخ تولد (شمسی)</span>
+          <input type="text" id="addBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10" autocomplete="off" />
+        </label>
+
+        <label class="form-field">
+          <span>کد ملی</span>
+          <input type="text" id="addNationalId" placeholder="۰۰۵۶۷۳۲۹۴۱" autocomplete="off" />
+        </label>
+
+        <label class="form-field">
+          <span>شماره دانش‌آموز</span>
+          <input type="text" id="addStudentNumber" placeholder="۱۲۳۴۵۶" autocomplete="off" />
+        </label>
+
+        <label class="form-field">
+          <span>شماره ولی</span>
+          <input type="text" id="addParentPhone" placeholder="۰۹۱۲۳۴۵۶۷۸۹" autocomplete="off" />
+        </label>
+
+        <label class="form-field">
+          <span>شماره منزل</span>
+          <input type="text" id="addHomePhone" placeholder="۰۷۱۵۲۳۴۵۶۷۸" autocomplete="off" />
+        </label>
+
+        <label class="form-field">
+          <span>کلاس</span>
+          <select id="addStudentClass" required></select>
+        </label>
+
+      </div>
+
+      <div class="popup-buttons">
+        <button type="button" class="btn ghost" data-popup-close="addStudentPopup">انصراف</button>
+        <button type="submit" class="btn primary">افزودن</button>
+      </div>
+    </form>
   </div>
+</div>
+
 
   <!-- Attendance detail popup -->
   <div class="popup-overlay" id="attendanceDetailPopup">
@@ -187,34 +199,33 @@
     </div>
   </div>
 
-  <!-- Attendance settings popup -->
-  <div class="popup-overlay" id="settingsPopup">
-    <div class="popup-box settings-box">
-      <h3>تنظیمات حضور و غیاب</h3>
-      <p class="popup-description">مدیریت ساعت پایان و روزهای تعطیل</p>
-      <div class="form-field">
-        <span>⏰ زمان پایان حضور و غیاب</span>
-        <input type="text" id="attendanceEndTime" placeholder="مثلاً 14:45" maxlength="5" />
-        <small>فرمت ۲۴ ساعته (HH:MM)</small>
-      </div>
-      <div class="form-field">
-        <span>📅 روزهای تعطیل</span>
-        <div class="days-picker" id="dayPicker">
-          <button type="button" class="day" data-day="sat">ش</button>
-          <button type="button" class="day" data-day="sun">ی</button>
-          <button type="button" class="day" data-day="mon">د</button>
-          <button type="button" class="day" data-day="tue">س</button>
-          <button type="button" class="day" data-day="wed">چ</button>
-          <button type="button" class="day" data-day="thu">پ</button>
-          <button type="button" class="day" data-day="fri">ج</button>
-        </div>
-      </div>
-      <div class="popup-buttons">
-        <button type="button" class="btn ghost" data-popup-close="settingsPopup" id="cancelSettings">انصراف</button>
-        <button type="button" class="btn primary" id="saveSettings">ذخیره</button>
-      </div>
+<!-- Attendance settings popup -->
+<div class="popup-overlay" id="settingsPopup">
+  <div class="popup-box settings-box">
+    <h3>تنظیمات حضور و غیاب</h3>
+    <p class="popup-description">مدیریت ساعت پایان و ارسال پیامک</p>
+
+    <!-- ساعت پایان -->
+    <div class="form-field">
+      <span>⏰ ساعت پایان حضور و غیاب</span>
+      <input type="text" id="attendanceEndTime" placeholder="مثلاً 14:45" maxlength="5" />
+      <small>فرمت ۲۴ ساعته (HH:MM)</small>
+    </div>
+
+    <!-- ارسال پیامک -->
+    <div class="form-field">
+      <span>📩 ارسال پیامک</span>
+      <button type="button" id="sendSmsBtn" class="btn secondary">ارسال پیامک</button>
+    </div>
+
+    <!-- دکمه‌ها -->
+    <div class="popup-buttons">
+      <button type="button" class="btn ghost" data-popup-close="settingsPopup" id="cancelSettings">انصراف</button>
+      <button type="button" class="btn primary" id="saveSettings">ذخیره</button>
     </div>
   </div>
+</div>
+
 
   <!-- Sidebar navigation -->
   <aside class="sidebar">

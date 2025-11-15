@@ -9,24 +9,19 @@ const router = express.Router()
 const path = require('path');
 
 const fs = require('fs')
-router.post("/profile", async (req , res) =>{
+router.get("/profile", async (req, res) => {
+    const id = req.query.id;
 
+    let imagePath = path.join(__dirname, '..', 'static', 'images', `${id}.png`);
 
-    let imagePath  = path.join(__dirname, '..', 'static', 'images', `${req.body.id}.png`);
-
-
-    if (fs.existsSync(imagePath)){
-
-       res.sendFile(imagePath)
-
-    }else {
-
-        imagePath  = path.join(__dirname, '..', 'static', 'images', `unknow.png`);
-        res.sendFile(imagePath)
-
+    if (fs.existsSync(imagePath)) {
+        res.sendFile(imagePath);
+    } else {
+        imagePath = path.join(__dirname, '..', 'static', 'images', `unknow.png`);
+        res.sendFile(imagePath);
     }
+});
 
-} )
 
 
 

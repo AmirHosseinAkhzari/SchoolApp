@@ -15,4 +15,25 @@ router.get("/read", async (req, res) => {
 })
 
 
+
+router.post("/add", async (req, res) => {
+
+    const data = await global.db.user.add(req.body)
+
+    console.log(data)
+
+    res.json(data)
+})
+
+
+router.delete("/delete", async (req, res) => {
+
+    const data = await global.db.user.delete(req.body.id)
+
+
+    res.json(data)
+})
+
+
+
 module.exports = router;

@@ -51,7 +51,7 @@ input.addEventListener('keydown', async (event) => {
       showError("خطا در اتصال به سرور");
     }
 
-    input.value = '';
+    input.value = '';a
   }
 });
 

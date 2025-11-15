@@ -17,6 +17,7 @@ function ReadClass() {
     });
 }
 
+
 function addClass(name) {
   return fetch("/class/add", {
     method: "POST",
@@ -29,7 +30,6 @@ function addClass(name) {
       return []
     });
 }
-
 
 function deleteClass(id) {
   return fetch("/class/delete", {
@@ -60,51 +60,81 @@ function changeNameClass(id , name) {
 }
 
 
+
+
+function ReadStu() {
+  return fetch("/student/read", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then(res => res.json()) 
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return []
+    });
+}
+
+
+function ReadAttendance() {
+  return fetch("/attendance/read", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then(res => res.json()) 
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return []
+    });
+}
+
+
+function changeStatus(id , status) {
+  return fetch("/attendance/changeStatus", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body : JSON.stringify({id : id  , status : status})
+  })
+    .then(res => res.json()) 
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return []
+    });
+}
+
+
+function changeStarttime(time ) {
+  return fetch("/attendance/changeStarttime", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body : JSON.stringify({time : time})
+  })
+    .then(res => res.json()) 
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return []
+    });
+}
+
+
+
+function deleteStu(id) {
+  return fetch("/student/delete", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body : JSON.stringify({id : id})
+  })
+    .then(res => res.json()) 
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return []
+    });
+}
+
+
 const state = {
   classes: [],
-  students: [
-    {
-      id: "stu-1",
-      firstName: "امیرحسین",
-      lastName: "اخضری",
-      classId: "class-8",
-      birthday: "1403/05/12",
-      nationalId: "0056732941",
-      studentNumber: "123456",
-      parentPhone: "۰۹۱۲۳۴۵۶۷۸۹",
-      homePhone: "۰۷۱۵۲۳۴۵۶۷۸",
-      photo: "https://i.pravatar.cc/150?u=1"
-    },
-    {
-      id: "stu-2",
-      firstName: "علی",
-      lastName: "رضایی",
-      classId: "class-9",
-      birthday: "1403/02/03",
-      nationalId: "0076543210",
-      studentNumber: "789123",
-      parentPhone: "۰۹۰۱۲۳۴۵۶۷۸",
-      homePhone: "۰۲۱۳۳۳۳۳۳۳",
-      photo: "https://i.pravatar.cc/150?u=2"
-    },
-    {
-      id: "stu-3",
-      firstName: "محمد",
-      lastName: "حسینی",
-      classId: "class-7",
-      birthday: "1402/11/22",
-      nationalId: "0012345678",
-      studentNumber: "456987",
-      parentPhone: "۰۹۳۵۴۳۲۱۰۹۸",
-      homePhone: "۰۲۶۴۲۱۰۰۰۰",
-      photo: "https://i.pravatar.cc/150?u=3"
-    }
-  ],
-  attendance: [
-    { id: "att-1", studentId: "stu-1", status: "حاضر", checkIn: "07:55", date: "1404/08/19" },
-    { id: "att-2", studentId: "stu-2", status: "دیر اومده", checkIn: "08:20", date: "1404/08/19" },
-    { id: "att-3", studentId: "stu-3", status: "غایب", checkIn: "—", date: "1404/08/19" }
-  ]
+  students: [],
+  attendance: []
 };
 
 const uiState = {
@@ -139,6 +169,27 @@ const menuItems = Array.from(document.querySelectorAll(".menu-item"));
 function init() {
   setupMenu();
   bindGlobalEvents();
+
+
+
+
+      ReadStu().then(res => {
+    state.students = res || [];
+    })
+
+
+    ReadClass().then(res => {
+    state.classes = res || [];
+    })
+
+    ReadAttendance().then(res => {
+    state.attendance = res.data || [];
+    console.log(res.data)
+    })
+
+
+
+
   renderPage(uiState.activePage);
 }
 
@@ -172,13 +223,13 @@ function bindGlobalEvents() {
   addPhotoInput.addEventListener("change", () => updatePhotoPreview(addPhotoInput, "addStudentPhotoPreview"));
   editPhotoInput.addEventListener("change", () => updatePhotoPreview(editPhotoInput, "studentPhotoPreview"));
 
-  const dayPicker = document.getElementById("dayPicker");
-  dayPicker.addEventListener("click", (event) => {
-    const dayButton = event.target.closest(".day");
-    if (dayButton) {
-      dayButton.classList.toggle("active");
-    }
-  });
+//   const dayPicker = document.getElementById("dayPicker");
+//   dayPicker.addEventListener("click", (event) => {
+//     const dayButton = event.target.closest(".day");
+//     if (dayButton) {
+//       dayButton.classList.toggle("active");
+//     }
+//   });
 
   const endTimeInput = document.getElementById("attendanceEndTime");
   endTimeInput.addEventListener("input", (event) => {
@@ -309,61 +360,69 @@ function renderClasses() {
 
 
 function renderStudents() {
-  const rows = getFilteredStudents()
-    .map(
-      (student, index) => `
-        <tr data-student-id="${student.id}">
-          <td>${index + 1}</td>
-          <td><img src="${student.photo}" alt="student" class="profile-pic" /></td>
-          <td>${getClassName(student.classId)}</td>
-          <td>${student.firstName}</td>
-          <td>${student.lastName}</td>
-          <td class="actions">
-            <button type="button" class="icon-btn edit-btn" data-action="edit-student" data-id="${student.id}">
-              <img src="icons/edit.svg" alt="edit" />
-            </button>
-            <button type="button" class="icon-btn delete-btn" data-action="delete-item" data-entity="student" data-id="${student.id}">
-              <img src="icons/delete.svg" alt="delete" />
-            </button>
-          </td>
-        </tr>
-      `
-    )
-    .join("");
+  ReadStu().then(rows => {
 
-  const classOptions = buildClassOptions(uiState.studentClassFilter, {
-    includeAll: true,
-    allLabel: "همه کلاس‌ها"
-  });
+    state.students = rows; 
+    
+    const filteredStudents = getFilteredStudents();
 
-  content.innerHTML = `
-    <section class="page-header">
-      <div>
-        <h2 class="page-title">دانش‌آموزان</h2>
-        <p class="page-subtitle">مدیریت اطلاعات دانش‌آموزان</p>
-      </div>
-      <div class="page-actions">
-        <select id="studentClassFilter" class="filter-select">${classOptions}</select>
-        <button type="button" class="btn primary add-btn" data-action="open-add-student">➕ افزودن دانش‌آموز</button>
-      </div>
-    </section>
-    <div class="table-wrap">
-      <table class="class-table students-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>عکس</th>
-            <th>کلاس</th>
-            <th>نام</th>
-            <th>نام خانوادگی</th>
-            <th>عملیات</th>
+    const htmlRows = filteredStudents
+      .map(
+        (student, index) => `
+          <tr data-student-id="${student._id}">
+            <td>${index + 1}</td>
+            <td><img src="/image/profile/?id=${student._id}" alt="student" class="profile-pic" /></td>
+            <td>${getClassName(student.classId)}</td>
+            <td>${student.firstname}</td>
+            <td>${student.lastname}</td>
+            <td class="actions">
+              <button type="button" class="icon-btn edit-btn" data-action="edit-student" data-id="${student._id}">
+                <img src="icons/edit.svg" alt="edit" />
+              </button>
+              <button type="button" class="icon-btn delete-btn" data-action="delete-item" data-entity="student" data-id="${student._id}">
+                <img src="icons/delete.svg" alt="delete" />
+              </button>
+            </td>
           </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
+        `
+      )
+      .join("");
+
+    const classOptions = buildClassOptions(uiState.studentClassFilter, {
+      includeAll: true,
+      allLabel: "همه کلاس‌ها"
+    });
+
+    content.innerHTML = `
+      <section class="page-header">
+        <div>
+          <h2 class="page-title">دانش‌آموزان</h2>
+          <p class="page-subtitle">مدیریت اطلاعات دانش‌آموزان</p>
+        </div>
+        <div class="page-actions">
+          <select id="studentClassFilter" class="filter-select">${classOptions}</select>
+          <button type="button" class="btn primary add-btn" data-action="open-add-student">➕ افزودن دانش‌آموز</button>
+        </div>
+      </section>
+      <div class="table-wrap">
+        <table class="class-table students-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>عکس</th>
+              <th>کلاس</th>
+              <th>نام</th>
+              <th>نام خانوادگی</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>${htmlRows}</tbody>
+        </table>
+      </div>
+    `;
+  });
 }
+
 
 function renderAttendance() {
   const rows = getFilteredAttendance()
@@ -374,8 +433,8 @@ function renderAttendance() {
       return `
         <tr data-attendance-id="${record.id}">
           <td>${index + 1}</td>
-          <td><img src="${student.photo}" alt="student" class="profile-pic" /></td>
-          <td>${student.firstName} ${student.lastName}</td>
+          <td><img src="/image/profile/?id=${student._id}" alt="student" class="profile-pic" /></td>
+          <td>${student.firstname} ${student.lastname}</td>
           <td>${getClassName(student.classId)}</td>
           <td><span class="status-text" style="color:${statusConfig.color}">${record.status}</span></td>
           <td class="actions">
@@ -549,7 +608,7 @@ changeNameClass(activeClassId, newName).then(() => {
 function openAddStudentPopup() {
   const form = document.getElementById("addStudentForm");
   form.reset();
-  document.getElementById("addStudentPhotoPreview").src = "https://i.pravatar.cc/150?u=new";
+  document.getElementById("addStudentPhotoPreview").src = "/image/profile/?id=asdasdad";
   populateClassSelect("addStudentClass", "", { includePlaceholder: true });
   openPopup("addStudentPopup");
 }
@@ -557,33 +616,99 @@ function openAddStudentPopup() {
 function handleAddStudent(event) {
   event.preventDefault();
 
-  const newStudent = {
-    id: generateId("stu"),
-    firstName: document.getElementById("addFirstName").value.trim(),
-    lastName: document.getElementById("addLastName").value.trim(),
-    classId: document.getElementById("addStudentClass").value,
-    birthday: document.getElementById("addBirth").value.trim(),
-    nationalId: document.getElementById("addNationalId").value.trim(),
-    studentNumber: document.getElementById("addStudentNumber").value.trim(),
-    parentPhone: document.getElementById("addParentPhone").value.trim(),
-    homePhone: document.getElementById("addHomePhone").value.trim(),
-    photo: document.getElementById("addStudentPhotoPreview").src
+  // 1) گرفتن مقادیر خام از input ها
+  const firstNameInput = document.getElementById("addFirstName").value.trim();
+  const lastNameInput  = document.getElementById("addLastName").value.trim();
+  const classIdInput   = document.getElementById("addStudentClass").value;
+  const birthdayInput  = document.getElementById("addBirth").value.trim();
+  const nationalIdInput = document.getElementById("addNationalId").value.trim();
+  const numberInput      = document.getElementById("addStudentNumber").value.trim();
+  const parentPhoneInput = document.getElementById("addParentPhone").value.trim();
+  const homePhoneInput   = document.getElementById("addHomePhone").value.trim();
+
+  // 2) چک خالی نبودن اسم و فامیل
+  if (!firstNameInput || !lastNameInput) {
+    alert("نام و نام خانوادگی نباید خالی باشد.");
+    return;
+  }
+
+  // 3) چک کردن اینکه classId حتماً یکی از کلاس‌های state باشد
+  const classObj = state.classes.find(cls => cls.name === classIdInput || cls._id === classIdInput);
+
+  console.log(state.classes)
+  console.log(classIdInput)
+  if (!classObj) {
+    alert("کلاس انتخاب‌شده نامعتبر است.");
+    return;
+  }
+
+  // 4) ولیدیشن تاریخ جلالی
+  if (!isValidJalaliDate(birthdayInput)) {
+    alert("تاریخ تولد باید به صورت جلالی و با فرمت YYYY/MM/DD باشد، مثلا 1340/10/19");
+    return;
+  }
+
+  // 5) ولیدیشن کد ملی (۱۰ رقم)
+  const nationalId = normalizeNationalId(nationalIdInput);
+  if (!nationalId) {
+    alert("کد ملی باید دقیقا ۱۰ رقم باشد.");
+    return;
+  }
+
+  // 6) ولیدیشن شماره‌ها (۱۱ رقم، شروع با ۰)
+  const number = normalizeIranPhone(numberInput);
+  if (!number) {
+    alert("شماره دانش‌آموز باید ۱۱ رقمی و با ۰ شروع شود (مثلاً 0930...).");
+    return;
+  }
+
+  const ParentNumber = normalizeIranPhone(parentPhoneInput);
+  if (!ParentNumber) {
+    alert("شماره ولی باید ۱۱ رقمی و با ۰ شروع شود.");
+    return;
+  }
+
+  const LocalNumber = normalizeIranPhone(homePhoneInput);
+  if (!LocalNumber) {
+    alert("شماره ثابت باید ۱۱ رقمی و با ۰ شروع شود (مثلاً 0715...).");
+    return;
+  }
+
+  // 7) ساخت body نهایی برای API (خیلی مهم: اسم فیلدها)
+  const body = {
+    firstname: firstNameInput,          // دقت به کوچکی/بزرگی حروف
+    lastname:  lastNameInput,
+    nationalid: nationalId,
+    number: number,
+    ParentNumber: ParentNumber,
+    LocalNumber: LocalNumber,
+    role: "Student",
+    birthday: birthdayInput,
+    classId: classObj._id || classObj.id
   };
 
-  if (!newStudent.firstName || !newStudent.lastName) return;
+  console.log("STUDENT PAYLOAD:", body);
 
-  state.students.push(newStudent);
-  state.attendance.push({
-    id: generateId("att"),
-    studentId: newStudent.id,
-    status: "حاضر",
-    checkIn: "—",
-    date: "1404/08/19"
-  });
+  // 8) ارسال به API
+  fetch("/student/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("STUDENT ADD RESPONSE:", data);
 
-  closePopup("addStudentPopup");
-  renderPage("students");
+      // اگر خواستی می‌تونی چک کنی data.code === 200 و بعد:
+      closePopup("addStudentPopup");
+      renderPage("students");
+    })
+    .catch(err => {
+      console.error("STUDENT ADD ERROR:", err);
+      alert("خطا در ذخیره دانش‌آموز. لطفاً دوباره تلاش کنید.");
+    });
 }
+
 
 function openEditStudentPopup(id) {
   const student = state.students.find((item) => item.id === id);
@@ -595,9 +720,9 @@ function openEditStudentPopup(id) {
   document.getElementById("studentLastName").value = student.lastName;
   document.getElementById("studentBirth").value = student.birthday;
   document.getElementById("studentNationalId").value = student.nationalId || "";
-  document.getElementById("studentNumber").value = student.studentNumber || "";
-  document.getElementById("studentParentPhone").value = student.parentPhone || "";
-  document.getElementById("studentHomePhone").value = student.homePhone || "";
+  document.getElementById("number").value = student.number || "";
+  document.getElementById("studentParentPhone").value = student.ParentNumber || "";
+  document.getElementById("studentHomePhone").value = student.LocalNumber || "";
 
   populateClassSelect("studentClass", student.classId, { includePlaceholder: true });
   openPopup("editStudentPopup");
@@ -615,9 +740,9 @@ function handleEditStudent(event) {
   student.lastName = document.getElementById("studentLastName").value.trim();
   student.birthday = document.getElementById("studentBirth").value.trim();
   student.nationalId = document.getElementById("studentNationalId").value.trim();
-  student.studentNumber = document.getElementById("studentNumber").value.trim();
-  student.parentPhone = document.getElementById("studentParentPhone").value.trim();
-  student.homePhone = document.getElementById("studentHomePhone").value.trim();
+  student.number = document.getElementById("number").value.trim();
+  student.ParentNumber = document.getElementById("studentParentPhone").value.trim();
+  student.LocalNumber = document.getElementById("studentHomePhone").value.trim();
   student.classId = document.getElementById("studentClass").value;
 
   activeStudentId = null;
@@ -649,38 +774,37 @@ function handleDeleteConfirm() {
     return;
   }
 
+  // حذف دانش‌آموز
   if (deleteContext.entity === "student") {
-    state.students = state.students.filter((student) => student.id !== deleteContext.id);
-    state.attendance = state.attendance.filter((record) => record.studentId !== deleteContext.id);
-  } else if (deleteContext.entity === "class") {
-    deleteClass(deleteContext.id).then(() => {
-    closePopup("deletePopup");
-    renderPage("classes");
-});
 
-    const removedStudents = new Set(
-      state.students.filter((student) => student.classId === deleteContext.id).map((student) => student.id)
-    );
-    state.students = state.students.filter((student) => student.classId !== deleteContext.id);
-    state.attendance = state.attendance.filter((record) => !removedStudents.has(record.studentId));
+    deleteStu(deleteContext.id).then(() => {
 
-    if (uiState.studentClassFilter === deleteContext.id) {
-      uiState.studentClassFilter = "all";
-    }
-    if (uiState.attendanceFilters.classId === deleteContext.id) {
-      uiState.attendanceFilters.classId = "all";
-    }
+      closePopup("deletePopup");
+
+      // رندر دوباره دانش‌آموزها
+      renderPage("students");
+    });
+
+    return;
   }
 
-  deleteContext.entity = null;
-  deleteContext.id = null;
+  // حذف کلاس
+  if (deleteContext.entity === "class") {
 
-  closePopup("deletePopup");
-  renderPage(uiState.activePage);
+    deleteClass(deleteContext.id).then(() => {
+      closePopup("deletePopup");
+      renderPage("classes");
+    });
+
+    return;
+  }
 }
+
 
 function handleStatusChange(attendanceId, status) {
   const record = state.attendance.find((item) => item.id === attendanceId);
+  
+    changeStatus(attendanceId , status)
   if (!record) return;
   record.status = status;
   renderPage("attendance");
@@ -692,7 +816,7 @@ function openAttendanceDetail(attendanceId) {
   const student = getStudentById(record.studentId);
   if (!student) return;
 
-  document.getElementById("detailName").textContent = `${student.firstName} ${student.lastName}`;
+  document.getElementById("detailName").textContent = `${student.firstname} ${student.lastname}`;
   document.getElementById("detailClass").textContent = getClassName(student.classId);
   document.getElementById("detailDate").textContent = record.date;
   document.getElementById("detailCheckIn").textContent = record.checkIn;
@@ -723,7 +847,7 @@ function buildClassOptions(selectedId, options = {}) {
   }
 
   html += state.classes
-    .map((cls) => `<option value="${cls.id}"${cls.id === selectedId ? " selected" : ""}>${cls.name}</option>`)
+    .map((cls) => `<option value="${cls._id}"${cls._id === selectedId ? " selected" : ""}>${cls.name}</option>`)
     .join("");
 
   return html;
@@ -736,9 +860,12 @@ function populateClassSelect(selectId, selectedId = "", options = {}) {
 }
 
 function getFilteredStudents() {
+    console.log(uiState.studentClassFilter )
   if (uiState.studentClassFilter === "all") {
     return state.students;
   }
+
+  console.log(state.students)
   return state.students.filter((student) => student.classId === uiState.studentClassFilter);
 }
 
@@ -832,11 +959,14 @@ function closePopup(id) {
 }
 
 function getStudentById(id) {
-  return state.students.find((student) => student.id === id);
+
+  return state.students.find((student) => student._id === id)
 }
 
 function getClassName(classId) {
-  return state.classes.find((cls) => cls.id === classId)?.name || "—";
+   console.log(classId , )
+   console.log(state.classes)
+  return state.classes.find((cls) => cls._id === classId)?.name || "—";
 }
 
 function countAttendanceByStatus(status) {
@@ -848,5 +978,69 @@ function generateId(prefix) {
 }
 
 
+
+// چک کردن تاریخ جلالی به فرمت YYYY/MM/DD
+function isValidJalaliDate(str) {
+  const m = str.match(/^(\d{4})\/(\d{2})\/(\d{2})$/);
+  if (!m) return false;
+
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > 31) return false;
+
+  // ماه‌های ۷ تا ۱۱ حداکثر ۳۰ روز
+  if (month > 6 && day > 30) return false;
+  // اسفند (۱۲) حداکثر ۲۹ (خیلی دقیق نیست ولی برای ولیدیشن فرمی خوبه)
+  if (month === 12 && day > 29) return false;
+
+  return true;
+}
+
+// کد ملی: دقیقا ۱۰ رقم
+function normalizeNationalId(value) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length === 10 ? digits : null;
+}
+
+// شماره تلفن ایران (موبایل یا ثابت): ۱۱ رقم و شروع با ۰
+function normalizeIranPhone(value) {
+  const digits = value.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0")) {
+    return digits;
+  }
+  return null;
+}
+
+
+document.getElementById("sendSmsBtn").addEventListener("click", async () => {
+  const res = await fetch("/attendance/sendsms", { method: "GET" });
+  const data = await res.json();
+  alert("پیامک‌ها ارسال شدند ✅");
+});
+
+
+document.getElementById("saveSettings").addEventListener("click", async () => {
+  console.log("✅ دکمه ذخیره تنظیمات زده شد");
+
+  // گرفتن مقدار از input
+  const endTime = document.getElementById("attendanceEndTime").value.trim();
+
+  // ولیدیشن ساده
+  if (!endTime) {
+    alert("لطفاً ساعت پایان را وارد کنید!");
+    return;
+  }
+  if (!/^([01]?\d|2[0-3]):[0-5]\d$/.test(endTime)) {
+    alert("فرمت ساعت باید به صورت HH:MM باشد، مثلاً 14:45");
+    return;
+  }
+
+  changeStarttime(endTime)
+
+
+})
 
 init();

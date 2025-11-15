@@ -63,6 +63,7 @@ async function main() {
   app.use('/image',imagesRoutes )
   app.use('/student',StudentRoutes )
 
+  app.use( "/dev", express.static(path.join(__dirname, "public/attendanceDevice")))
 
   app.use( "/adminPanel/login", express.static(path.join(__dirname, "public/admin/login")))
   app.use("/adminPanel", checkToken , express.static(path.join(__dirname, "public/admin/main")));
