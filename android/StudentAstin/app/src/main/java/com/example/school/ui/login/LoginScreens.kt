@@ -68,12 +68,27 @@ import com.example.school.R
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
 
 /**
  * Entry screen that lets user choose login method.
  */
 @Composable
 fun LoginType(navController: NavController) {
+
+    val analytics = Firebase.analytics
+
+    LaunchedEffect(Unit) {
+        analytics.logEvent("page_view") {
+            param("page_name", "LoginType")
+        }
+        Log.d("ana" , "LoginType")
+    }
+
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -96,6 +111,12 @@ fun LoginType(navController: NavController) {
                 title = "ورود با آستین",
                 iconRes = R.drawable.astin
             ) {
+                analytics.logEvent("service_click") {
+                    param("service", "login_sleeve")
+                }
+
+                Log.d("ana" , "login_sleeve")
+
                 navController.navigate("LoginWithSleeve")
             }
 
@@ -105,6 +126,13 @@ fun LoginType(navController: NavController) {
                 title = "ورود با شماره",
                 iconRes = R.drawable.otp
             ) {
+                analytics.logEvent("service_click") {
+                    param("service", "login_phone")
+                }
+                Log.d("ana" , "login_phone")
+
+
+
                 navController.navigate("LoginWithNumber")
             }
         }
@@ -366,6 +394,7 @@ fun LoginWithNumber(navController: NavController) {
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
 @Composable
 fun LoginOtpCode(navController: NavController , MainNavController : NavController) {
+    val analytics = Firebase.analytics
     var lodeing by remember { mutableStateOf(false) }
     val LoginViewmModel = hiltViewModel<LoginOtpViewModel>()
     val uiState = LoginViewmModel.uiState.collectAsState()
@@ -466,7 +495,8 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
                 }
                 context.registerReceiver(
                     smsReceiver,
-                    IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+                    IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION) ,
+                    Context.RECEIVER_EXPORTED
                 )
                 onDispose {
                     context.unregisterReceiver(smsReceiver)
@@ -546,8 +576,7 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
                         .width(180.dp)
                         .height(100.dp)
                         .clickable {
-                            LoginViewmModel.CheckOtp(code = otpText, number = "09304682860" , context = context )
-
+                            LoginViewmModel.CheckOtp(code = otpText, number = "09177826532" , context = context )
                         }
                 ) {
                     Icon(

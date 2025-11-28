@@ -1,6 +1,7 @@
 package com.example.school.ui.main
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,18 +32,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.school.R
+import com.example.school.data.remote.ReqAddNotificationToken
 import com.example.school.ui.theme.attendanceColor
 import com.example.school.ui.theme.cafeteriaColor
 import com.example.school.ui.theme.importantColor
 import com.example.school.ui.theme.libraryColor
 import com.example.school.ui.theme.pollColor
 import com.example.school.ui.theme.scoreColor
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseCommonKtxRegistrar
+import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.messaging.messaging
 
 
 @Composable
@@ -76,7 +84,31 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
     val view = LocalView.current
     val colors = appColors()
 
+
+    val viewModel = hiltViewModel<MainPageViewModel>()
     val topAppBarColor = MaterialTheme.colorScheme.onBackground.toArgb()
+    val context = LocalContext.current
+    val mainToken = viewModel.GetMainToken(context)
+
+    Firebase.messaging.token.addOnCompleteListener { task ->
+
+
+        if (!task.isSuccessful ){
+            Log.w("FCM", "Token failed", task.exception)
+            return@addOnCompleteListener
+        }
+
+        val token = task.result
+
+        if (mainToken != null){
+            Log.d("FCM" , mainToken)
+
+            viewModel.SendNotificationToken(ReqAddNotificationToken(token , mainToken))
+        }
+
+    }
+
+
     SideEffect {
         val window = (view.context as Activity).window
         window.statusBarColor =topAppBarColor

@@ -1,8 +1,8 @@
 
-const express = require('express')
+    const express = require('express')
 
 
-const router = express.Router()
+    const router = express.Router()
 
 router.post("/number", async (req , res) =>{
 
@@ -42,9 +42,13 @@ router.post("/uid", async (req , res) =>{
 router.post("/check", async (req , res) =>{
 
 
+    console.log(req.body.number , req.body.code)
+
     const data  = await global.db.otp.check(req.body.number , req.body.code)
 
     console.log(data.code)
+
+
 
     if(data.code != 200){
         res.status(500).json(data)

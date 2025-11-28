@@ -31,6 +31,16 @@ data class ReqCheckOtp(
     val code : String
 )
 
+data class ReqAddNotificationToken(
+    val notificationToken  : String ,
+    val MainToken : String
+)
+
+data class ResAddNotificationToken(
+    val message  : String ,
+    val code : Int
+)
+
 interface AstinApi {
 
     @POST("login/number")
@@ -42,5 +52,9 @@ interface AstinApi {
 
     @POST("login/check")
     suspend fun logincheck(@Body request: ReqCheckOtp) : Response<ResCheckOtp>
+
+    @POST("notification/addToken")
+    suspend fun addNotificationToken(@Body request: ReqAddNotificationToken) : Response<ResAddNotificationToken>
+
 
 }

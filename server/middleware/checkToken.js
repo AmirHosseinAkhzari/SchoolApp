@@ -1,8 +1,12 @@
 const jwt = require("jsonwebtoken");
+const utils = require('../utils/utils')
+
 
 module.exports = (req, res, next) => {
+
     const token = req.cookies?.token
 
+    utils()
     console.log()
     
     if (!token) {
@@ -10,7 +14,7 @@ module.exports = (req, res, next) => {
     }
 
     try {
-        const payload  = jwt.verify(token, "asdeashndjoasndfekswfeiw0mrfmn4rj24u9fr")
+        const payload  = global.utils.token.verify(token)
         if(payload.role == "admin"){
             next()
         }else{

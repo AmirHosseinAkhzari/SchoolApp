@@ -5,6 +5,11 @@ const fsSync = require("fs")
 
 
 const path = require('path')
+const jwt  = require('jsonwebtoken');
+
+const SECRET_KEY = "asdeashndjoasndfekswfeiw0mrfmn4rj24u9fr"
+
+
 function utils() {
 
     global.utils  = {
@@ -75,6 +80,40 @@ function utils() {
         random : {
             getOtpCode : function (){
                 return String(Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
+            }
+        } , 
+        hex : {
+            hexToDec : function (hex){
+                  hex = hex.replace(/[^A-Fa-f0-9]/g, "");
+
+                
+                let reversed = hex.match(/.{1,2}/g).reverse().join("");
+
+               
+                let dec = parseInt(reversed, 16);
+
+                
+                return dec.toString().padStart(10, "0");
+            }
+        } , 
+        token : {
+            newToken : function (userId , role) {
+
+                
+                const payload  = {
+                    userId : userId , 
+                    role : role
+                }
+                
+                const token = jwt.sign(payload , SECRET_KEY )
+
+                return token 
+            } , 
+            verify : function (token) {
+
+                const payload = jwt.verify(token , SECRET_KEY)
+
+                return payload
             }
         }
     }

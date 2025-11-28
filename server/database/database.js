@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
     LocalNumber : String , 
     classId : mongoose.Schema.Types.ObjectId  , 
     role : String , 
-    status : String
+    status : String , 
+    notificationToken : String
 })
 
 
@@ -61,6 +62,8 @@ const attendanceSchema = new mongoose.Schema({
     date : String , 
 
 })
+
+
 
 const Class = mongoose.model('Class' , classSchema)
 
@@ -584,12 +587,17 @@ async function ConnectTodb() {
             
                 const code = global.utils.random.getOtpCode()
                 
-                const card = await Card.findOne({uid : uid})
+                let card = await Card.findOne({uid : uid})
 
                 if(!card){
-                    return {message : "این کارت وجود ندارد" , code : 500}
-
+                    const DexUid = global.utils.hex.hexToDec(uid)
+                    card = await Card.findOne({uid : DexUid})
+                    if(!card){
+                        return {message : "این کارت وجود ندارد" , code : 500}
+                    }
                 }
+
+
 
                 const user = await User.findById(card.ownerId)
 
@@ -656,20 +664,16 @@ async function ConnectTodb() {
                     return {message : "کد اشتباه است" , code : 500}
                 }
 
-
                 await data.deleteOne()
 
-                const SECRET_KEY = "asdeashndjoasndfekswfeiw0mrfmn4rj24u9fr"
+                const user = await User.findOne({number : number})
 
-                const payload  = {
-                    number : number , 
-                    role : data.role
-                }
+                const userId = user._id
 
-                const token = jwt.sign(payload , SECRET_KEY )
+                const token = global.utils.token.newToken(userId , data.role)
 
                 return {message : "کد وارد شده درست است !!!" , code : 200 , token : token}
-
+                
             }
         } , 
         card : { 
@@ -694,8 +698,6 @@ async function ConnectTodb() {
                 }
 
 
-
-
                 const c = Card({
                     uid : uid , 
                     ownerId : ownerId , 
@@ -705,6 +707,41 @@ async function ConnectTodb() {
                 c.save()
 
                 return {message : "کارت با موفقیت اضافه شد !!" , code : 200}
+            }
+        } , 
+        notification : {
+            addToken : async (notificationToken , MainToken) => {
+                 
+                let payload
+                let user 
+
+                try{
+                    payload = global.utils.token.verify(MainToken)
+                }catch{
+                    return {message : "توکن واقعی نیست " , code : 500}
+                }
+
+                console.log(payload.userId)
+
+                try{
+                    user = await User.findById(payload.userId)
+                }catch{
+                    return {message : "یوزر وجود ندارد" , code : 500}
+                }
+
+                await user.updateOne({notificationToken : notificationToken})
+
+                return {message : "عملیات با موفقیت انجام شد!"  , code : 200}
+
+
+
+
+                
+
+                return {message : "توکن واقعی نیست " , code : 500}
+
+
+
             }
         }
     }

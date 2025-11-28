@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "271680539458",
+    "project_id": "astin-5394e",
+    "storage_bucket": "astin-5394e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271680539458:android:1ddfe7e4ea192ff31896db",
+        "android_client_info": {
+          "package_name": "com.example.school"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAexyCuLzqM1N-OwrtECAO8vSJRDOyVHdY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

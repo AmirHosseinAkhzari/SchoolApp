@@ -6,14 +6,17 @@ import android.util.Log
 import com.example.school.R
 import com.example.school.data.model.NfcManager
 import com.example.school.data.remote.AstinApi
+import com.example.school.data.remote.ReqAddNotificationToken
 import com.example.school.data.remote.ReqCheckOtp
 import com.example.school.data.remote.ReqOtpNum
 import com.example.school.data.remote.ReqOtpUid
+import com.example.school.data.remote.ResAddNotificationToken
 import com.example.school.data.remote.ResCheckOtp
 import com.example.school.data.remote.ResOtp
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import retrofit2.HttpException
+import kotlin.onFailure
 
 /**
  * Repository implementation that handles NFC reading and API login operations.
@@ -88,6 +91,19 @@ class AstinRepoImpl(
             Log.e("TEST_API", "Error: ${e.message}")
             handleError(e)
         }
+
+
+    override suspend fun addNotificationToken(notificationToken: String, MainToken: String):
+            Result<ResAddNotificationToken?> =
+        runCatching {
+            val response = api.addNotificationToken(ReqAddNotificationToken(notificationToken , MainToken))
+            response.body()
+        }.onFailure {e ->
+            Log.e("TEST_API", "Error: ${e.message}")
+            handleError(e)
+        }
+
+
 
 
 

@@ -147,6 +147,7 @@ class LoginOtpViewModel @Inject constructor(
 
     fun CheckOtp(number : String , code : String  , context: Context){
 
+        Log.d("code" , code)
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(network = NetworkMode.Loading)
 
@@ -160,8 +161,6 @@ class LoginOtpViewModel @Inject constructor(
                         editor.putString("token" , body?.token)
                         editor.apply()
                     }
-
-
                     _uiState.value = _uiState.value.copy(
                         network = NetworkMode.Success,
                         token = body?.token ?: ""

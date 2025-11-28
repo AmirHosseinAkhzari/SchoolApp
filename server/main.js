@@ -19,6 +19,9 @@ const ClassRoutes = require('./router/class')
 
 const StudentRoutes = require('./router/student')
 
+const NotificationRoutes = require('./router/notification')
+
+
 
 
 const cookieParser = require("cookie-parser");
@@ -62,6 +65,8 @@ async function main() {
   app.use('/class',ClassRoutes )
   app.use('/image',imagesRoutes )
   app.use('/student',StudentRoutes )
+  app.use('/notification', NotificationRoutes )
+
 
   app.use( "/dev", express.static(path.join(__dirname, "public/attendanceDevice")))
 
@@ -75,7 +80,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(3000, "0.0.0.0", () => {
   console.log("✅ Server running on http://192.168.1.10:3000");
 });
-
 
 
 }

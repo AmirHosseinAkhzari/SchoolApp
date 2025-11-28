@@ -23,10 +23,10 @@ async function sms() {
                 api.sms().sendByBaseNumber(code, to, 393028)
             } , 
             absent : async(to , name) => { 
-                api.sms().sendByBaseNumber(name, to, 388699)
+                api.sms().sendByBaseNumber(name, to, 393383)
             } , 
             manager : async(to , name) => { 
-                api.sms().sendByBaseNumber(name, to, 388699)
+                api.sms().sendByBaseNumber(name, to, 393387)
             }
             
         }
