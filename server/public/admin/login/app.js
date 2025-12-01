@@ -3,7 +3,7 @@
 // تابع ارسال شماره برای دریافت OTP
 async function Login(number) {
   try {
-    const res = await fetch("http://192.168.1.73:3000/admin/login", {
+    const res = await fetch("http://192.168.1.9:3000/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ number })
@@ -26,7 +26,7 @@ async function Login(number) {
 
 async function Otp(code, number) {
   try {
-    const res = await fetch("http://192.168.1.73:3000/admin/check", {
+    const res = await fetch("http://192.168.1.9:3000/admin/check", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, number })

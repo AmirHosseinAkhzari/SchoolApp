@@ -8,7 +8,7 @@ const utils = require('../utils/utils')
 const jalaali = require('jalaali-js');
 
 const jwt  = require('jsonwebtoken');
-const { use } = require('../router/login');
+const { use } = require('../router/android/login');
 
 // ------- User Schema -------
 const userSchema = new mongoose.Schema({
@@ -168,7 +168,7 @@ async function ConnectTodb() {
                 await Class.deleteMany({})
             }
         } , 
-        attendance : { 
+        attendance : {
             check : async (uid ) => {
 
 
@@ -510,6 +510,27 @@ async function ConnectTodb() {
             } , 
             changeStarttime : async (time) =>{
                 await global.utils.config.edit(time)
+            }, 
+            getUserInfo : async (token) => { 
+
+                try{
+                    payload = global.utils.token.verify(token)
+                }catch{
+                    return {message : "توکن واقعی نیست " , code : 500}
+                }
+
+                const userId = payload.userId
+
+                const Info = await Attendance.find({userId : userId} , {"checkIn" : 1 , "status" :1  , "date" : 1  , "_id" :0 })
+
+                const presentCount = Info.filter(i => i.status === "حاضر").length
+                 
+                const latenessCount = Info.filter(i => i.status === "دیر اومده").length
+                
+                const absentCount = Info.filter(i => i.status === "غایب").length
+
+
+                return {"Info" : Info , "total" : {"present" : presentCount , "lateness" :latenessCount ,  "absent" : absentCount}}
             }
         } , 
         otp : {

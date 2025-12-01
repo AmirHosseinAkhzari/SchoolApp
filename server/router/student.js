@@ -4,7 +4,6 @@ const express = require('express')
 
 const router = express.Router()
 
-
 router.get("/read", async (req, res) => {
 
     const data = await global.db.user.getAllStu()
@@ -13,7 +12,6 @@ router.get("/read", async (req, res) => {
 
     res.json(data)
 })
-
 
 
 router.post("/add", async (req, res) => {

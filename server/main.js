@@ -6,7 +6,7 @@ const express = require('express')
 
 const path  = require('path')
 
-const loginRoutes = require('./router/login')
+const loginRoutes = require('./router/android/login')
 
 const AttendanceRoutes = require('./router/attendance')
 
@@ -19,7 +19,10 @@ const ClassRoutes = require('./router/class')
 
 const StudentRoutes = require('./router/student')
 
-const NotificationRoutes = require('./router/notification')
+const NotificationRoutes = require('./router/android/notification')
+
+const AttendanceAndroidRoutes = require('./router/android/attendance')
+
 
 
 
@@ -59,14 +62,17 @@ async function main() {
   // })
 
 
-  app.use('/login',loginRoutes)
+  app.use('/android/login',loginRoutes)
+  app.use('/android/notification', NotificationRoutes )
+  app.use('/android/attendance', AttendanceAndroidRoutes )
+
+
   app.use('/attendance', AttendanceRoutes)
   app.use('/admin',AdminRoutes )
   app.use('/class',ClassRoutes )
   app.use('/image',imagesRoutes )
   app.use('/student',StudentRoutes )
-  app.use('/notification', NotificationRoutes )
-
+  console.log(global.utils.token.newToken("6917990640fb4d7352b0be24" , "v"))    
 
   app.use( "/dev", express.static(path.join(__dirname, "public/attendanceDevice")))
 

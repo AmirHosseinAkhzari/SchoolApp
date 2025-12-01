@@ -7,7 +7,7 @@ const router = express.Router()
 router.post("/addToken" , async (req , res) => {
 
 
-    const data = await global.db.notification.addToken(req.body.notificationToken , req.body.MainToken)
+    const data = await global.db.notification.addToken(req.body.notificationToken , req.headers['authorization'])
 
     console.log(data)
 

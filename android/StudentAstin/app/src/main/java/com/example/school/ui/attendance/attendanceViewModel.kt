@@ -1,32 +1,31 @@
-package com.example.school.ui.main
+package com.example.school.ui.attendance
 
 import android.content.Context
-import androidx.compose.ui.graphics.shadow.ShadowContext
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.school.data.remote.ReqAddNotificationToken
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.school.data.remote.ResReadAttendance
 import com.example.school.domain.repository.AstinRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class MainPageViewModel @Inject constructor(
+class AttendanceViewModel @Inject constructor(
     private val repo: AstinRepo
 ) : ViewModel() {
-
-
-
-    fun SendNotificationToken(notificationToken  :String ,  MainToken  : String){
-        viewModelScope.launch {
-            repo.addNotificationToken(notificationToken, MainToken)
-        }
-    }
 
     fun GetMainToken(context: Context): String? {
         val sharedPref = context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
         val token = sharedPref.getString("token", null)
 
         return token
+    }
+
+    suspend fun readAttendance(token : String): Result<ResReadAttendance?> {
+
+        return repo.readAttendance(token)
+
     }
 }

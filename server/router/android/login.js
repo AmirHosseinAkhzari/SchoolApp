@@ -2,7 +2,7 @@
     const express = require('express')
 
 
-    const router = express.Router()
+const router = express.Router()
 
 router.post("/number", async (req , res) =>{
 
@@ -20,7 +20,6 @@ router.post("/number", async (req , res) =>{
     res.status(200).json(data)
 
 } )
-
 
 router.post("/uid", async (req , res) =>{
 

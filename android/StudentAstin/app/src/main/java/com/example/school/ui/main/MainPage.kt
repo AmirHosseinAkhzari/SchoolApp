@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -103,7 +104,7 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
         if (mainToken != null){
             Log.d("FCM" , mainToken)
 
-            viewModel.SendNotificationToken(ReqAddNotificationToken(token , mainToken))
+            viewModel.SendNotificationToken(token  , mainToken)
         }
 
     }
@@ -159,11 +160,17 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
                         .fillMaxWidth()
                         .padding(start = 30.dp , end = 30.dp , top = 30.dp)
                 ){
-                    AppIcon(colors["attendance"]!! , "حضور و غیاب" , painterResource(R.drawable.attendance) , mode = true)
+                    AppIcon(
+                        color = colors["attendance"]!!,
+                        name = "حضور و غیاب",
+                        painter = painterResource(R.drawable.attendance),
+                        mode = true,
+                        navigation = { navController.navigate("attendance") }
+                    )
 
-                    AppIcon(colors["library"]!! , "به زودی" , painterResource(R.drawable.library) , mode = false)
+                    AppIcon(colors["library"]!! , "به زودی" , painterResource(R.drawable.library) , mode = false , {})
 
-                    AppIcon(colors["cafeteria"]!! , "به زودی" , painterResource(R.drawable.cafeteria) , mode = false)
+                    AppIcon(colors["cafeteria"]!! , "به زودی" , painterResource(R.drawable.cafeteria) , mode = false , {})
                 }
 
                 Row(
@@ -173,9 +180,9 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
 
                 ){
 
-                    AppIcon(colors["poll"]!! , "به زودی" , painterResource(R.drawable.poll) , mode = false)
-                    AppIcon(colors["important"]!!  , "به زودی" , painterResource(R.drawable.important) , mode = false)
-                    AppIcon(colors["score"]!!  , "به زودی", painterResource(R.drawable.score) , mode = false)
+                    AppIcon(colors["poll"]!! , "به زودی" , painterResource(R.drawable.poll) , mode = false , {})
+                    AppIcon(colors["important"]!!  , "به زودی" , painterResource(R.drawable.important) , mode = false , {})
+                    AppIcon(colors["score"]!!  , "به زودی", painterResource(R.drawable.score) , mode = false , {})
 
 
 
@@ -195,7 +202,7 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
 
 
 @Composable
-fun AppIcon(color  :Color , name : String  , painter: Painter , mode : Boolean){
+fun AppIcon(color  :Color , name : String  , painter: Painter , mode : Boolean , navigation : () -> Unit  ){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally ,
         modifier = Modifier.padding(5.dp)
@@ -210,6 +217,10 @@ fun AppIcon(color  :Color , name : String  , painter: Painter , mode : Boolean){
                 .size(80.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .background(color)
+                .clickable{
+                    navigation()
+                }
+
 
         ) {
             if (!mode){

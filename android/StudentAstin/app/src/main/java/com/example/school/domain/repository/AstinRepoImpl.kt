@@ -13,6 +13,7 @@ import com.example.school.data.remote.ReqOtpUid
 import com.example.school.data.remote.ResAddNotificationToken
 import com.example.school.data.remote.ResCheckOtp
 import com.example.school.data.remote.ResOtp
+import com.example.school.data.remote.ResReadAttendance
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import retrofit2.HttpException
@@ -96,7 +97,7 @@ class AstinRepoImpl(
     override suspend fun addNotificationToken(notificationToken: String, MainToken: String):
             Result<ResAddNotificationToken?> =
         runCatching {
-            val response = api.addNotificationToken(ReqAddNotificationToken(notificationToken , MainToken))
+            val response = api.addNotificationToken(ReqAddNotificationToken(notificationToken) , MainToken)
             response.body()
         }.onFailure {e ->
             Log.e("TEST_API", "Error: ${e.message}")
@@ -104,7 +105,15 @@ class AstinRepoImpl(
         }
 
 
+    override suspend fun readAttendance(MainToken: String): Result<ResReadAttendance?> =
 
+        runCatching {
+            val response = api.readAttendance(MainToken)
+            response.body()
+        }.onFailure {e ->
+            Log.e("TEST_API", "Error: ${e.message}")
+            handleError(e)
+        }
 
 
 

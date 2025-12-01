@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.school.ui.attendance.AttendancePage
 import com.example.school.ui.login.LoginPage
 import com.example.school.ui.login.LoginWithSleeve
 import com.example.school.ui.navHost.MainNavHost
@@ -24,7 +25,9 @@ fun SchoolApp(modifier : Modifier = Modifier){
 
     }else{
         MainNavHost(modifier , "main")
+
     }
+
 
 
 

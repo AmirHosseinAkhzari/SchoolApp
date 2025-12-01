@@ -6,6 +6,7 @@ import android.content.Context
 import com.example.school.data.remote.ResAddNotificationToken
 import com.example.school.data.remote.ResCheckOtp
 import com.example.school.data.remote.ResOtp
+import com.example.school.data.remote.ResReadAttendance
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Response
@@ -21,5 +22,6 @@ interface  AstinRepo  {
     suspend fun LoginWithUid(uid: String) : Result<ResOtp?>
     suspend fun LoginCheckOtp(number: String , code : String) : Result<ResCheckOtp?>
     suspend fun addNotificationToken(notificationToken  : String ,MainToken : String) : Result<ResAddNotificationToken?>
+    suspend fun readAttendance(MainToken : String) : Result<ResReadAttendance?>
 
 }
