@@ -521,7 +521,7 @@ async function ConnectTodb() {
 
                 const userId = payload.userId
 
-                const Info = await Attendance.find({userId : userId} , {"checkIn" : 1 , "status" :1  , "date" : 1  , "_id" :0 })
+                const Info = (await Attendance.find({userId : userId} , {"checkIn" : 1 , "status" :1  , "date" : 1  , "_id" :0 })).reverse()
 
                 const presentCount = Info.filter(i => i.status === "حاضر").length
                  

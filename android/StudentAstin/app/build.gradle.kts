@@ -71,4 +71,6 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
+
+
 }

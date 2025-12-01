@@ -20,14 +20,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,26 +50,12 @@ import com.example.school.R
 import com.example.school.data.remote.Info
 import com.example.school.data.remote.ResReadAttendance
 import com.example.school.data.remote.total
+import kotlinx.coroutines.launch
 import kotlin.toString
 
 
-@Composable
-fun appColors(): Map<String, Color> {
-    val isDark = isSystemInDarkTheme()
-    return if (isDark) {
-        mapOf(
-            "present" to Color(0xFF3FAF46),
-            "absent" to Color(0xFF8F202D),
-            "lateness" to Color(0xFFE1B12C),
-        )
-    } else {
-        mapOf(
-            "present" to Color(0xFF89EC8D),
-            "absent" to Color(0xFFF53046),
-            "lateness" to Color(0xFFF8C01F),
-        )
-    }
-}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun AttendancePage(modifier: Modifier = Modifier) {
@@ -76,21 +66,38 @@ fun AttendancePage(modifier: Modifier = Modifier) {
 
     val token = viewModel.GetMainToken(context)
 
+
     Log.d("res" , token.toString())
 
     var data by remember { mutableStateOf<ResReadAttendance?>(null)}
-
     var blur by remember { mutableStateOf(10) }
 
-    LaunchedEffect(Unit) {
-        data = viewModel.readAttendance(token!!).getOrNull()
-        if(data == null){
-            blur = 100
-        }else{
-            Log.d("res" ,data.toString() )
-            blur = 0
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullToRefreshState()
+    val scope = rememberCoroutineScope()
+    fun fetchData(isPullRefresh: Boolean = false) {
+        scope.launch {
+            if (isPullRefresh) isRefreshing = true
 
+            // Fetch data
+            val result = viewModel.readAttendance(token!!).getOrNull()
+
+            data = result
+
+            // Update UI states
+            if (data == null) {
+                blur = 100
+            } else {
+                Log.d("res", data.toString())
+                blur = 0
+            }
+
+            if (isPullRefresh) isRefreshing = false
         }
+    }
+
+    LaunchedEffect(Unit) {
+        fetchData(isPullRefresh = false)
     }
 
 
@@ -111,16 +118,37 @@ fun AttendancePage(modifier: Modifier = Modifier) {
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-
-            MainAttendanceUi(data)
-
-
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                state = pullRefreshState,
+                onRefresh = { fetchData(isPullRefresh = true) },
+                modifier = Modifier.fillMaxSize()
+            ) {
+                
+                MainAttendanceUi(data)
+            }
         }
     }
 
 }
 
-
+@Composable
+fun appColors(): Map<String, Color> {
+    val isDark = isSystemInDarkTheme()
+    return if (isDark) {
+        mapOf(
+            "present" to Color(0xFF3FAF46),
+            "absent" to Color(0xFF8F202D),
+            "lateness" to Color(0xFFE1B12C),
+        )
+    } else {
+        mapOf(
+            "present" to Color(0xFF89EC8D),
+            "absent" to Color(0xFFF53046),
+            "lateness" to Color(0xFFF8C01F),
+        )
+    }
+}
 @Composable
 fun number(number : String , name : String){
     Column(
