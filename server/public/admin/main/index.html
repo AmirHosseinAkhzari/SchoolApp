@@ -199,6 +199,32 @@
     </div>
   </div>
 
+<!-- Add card popup -->
+<div class="popup-overlay" id="addCardPopup">
+  <div class="popup-box">
+    <h3>افزودن کارت جدید</h3>
+    <p class="popup-description">اطلاعات کارت را وارد کنید:</p>
+    <form id="addCardForm" class="popup-form">
+      <label class="form-field">
+        <span>UID کارت</span>
+        <input type="text" id="addCardUid" placeholder="مثلاً A1B2C3D4" required />
+      </label>
+      <label class="form-field">
+        <span>دانش‌آموز</span>
+        <div class="searchable-select-wrapper">
+          <input type="text" id="addCardStudentSearch" class="searchable-select-input" placeholder="جستجو و انتخاب دانش‌آموز..." autocomplete="off" />
+          <div class="searchable-select-dropdown" id="addCardStudentDropdown"></div>
+          <input type="hidden" id="addCardStudent" required />
+        </div>
+      </label>
+      <div class="popup-buttons">
+        <button type="button" class="btn ghost" data-popup-close="addCardPopup">انصراف</button>
+        <button type="submit" class="btn primary">افزودن</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Attendance settings popup -->
 <div class="popup-overlay" id="settingsPopup">
   <div class="popup-box settings-box">
@@ -241,6 +267,7 @@
       <button type="button" class="menu-item" data-page="attendance">حضور و غیاب</button>
       <button type="button" class="menu-item" data-page="students">دانش‌آموزها</button>
       <button type="button" class="menu-item" data-page="classes">کلاس‌ها</button>
+      <button type="button" class="menu-item" data-page="cards">کارت‌ها</button>
     </nav>
   </aside>
 
@@ -248,7 +275,6 @@
   <div class="main">
     <header class="topbar">
       <div class="top-left">
-        <span>سلام، امیرحسین 👋</span>
       </div>
       <div class="profile">
         <div class="avatar"></div>

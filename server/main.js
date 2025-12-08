@@ -19,6 +19,8 @@ const ClassRoutes = require('./router/class')
 
 const StudentRoutes = require('./router/student')
 
+const CardRoutes = require('./router/card')
+
 const NotificationRoutes = require('./router/android/notification')
 
 const AttendanceAndroidRoutes = require('./router/android/attendance')
@@ -73,6 +75,7 @@ async function main() {
   app.use('/class',ClassRoutes )
   app.use('/image',imagesRoutes )
   app.use('/student',StudentRoutes )
+  app.use('/card',CardRoutes )
   console.log(global.utils.token.newToken("6917990640fb4d7352b0be24" , "v"))    
 
   app.use( "/dev", express.static(path.join(__dirname, "public/attendanceDevice")))
@@ -84,10 +87,12 @@ async function main() {
 
 
 
-const PORT = process.env.PORT || 3000;
-app.listen(3000, "0.0.0.0", () => {
-  console.log("✅ Server running on http://192.168.1.9:3000");
+const PORT = process.env.PORT || 9000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server running on http://0.0.0.0:${PORT}`);
 });
+
 
 
 }

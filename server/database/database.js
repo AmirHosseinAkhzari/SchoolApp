@@ -77,7 +77,7 @@ const Card = mongoose.model("Card" , cardSchema)
 
 async function ConnectTodb() {
   try {
-    await mongoose.connect("mongodb://localhost:27017/school")
+    await mongoose.connect(process.env.MONGO_URL)
     console.log("✅ Connected to MongoDB")
     utils()
 // const userSchema = new mongoose.Schema({
@@ -118,7 +118,12 @@ async function ConnectTodb() {
                 
             } , 
             update : async (id , data) => { 
-                await User.findByIdAndUpdate(id , data , {new : true})
+                try {
+                    await User.findByIdAndUpdate(id , data , {new : true})
+                    return {code : 200 , message : "دانش‌آموز با موفقیت به‌روزرسانی شد"}
+                } catch {
+                    return {code : 500 , message : "مشکلی در به‌روزرسانی دانش‌آموز"}
+                }
             }  , 
             delete : async ( id) => { 
                 try { 
@@ -487,6 +492,8 @@ async function ConnectTodb() {
 
                 let data =[]
 
+                let lateness = []
+
                 for (const i of users){
 
                     console.log(i)
@@ -497,8 +504,16 @@ async function ConnectTodb() {
 
                     data.push([student.ParentNumber , student.firstname + " " +student.lastname])
                     }
+
+                    if(i.status == "دیر اومده"){
+                    student = await User.findById(i.userId)
+                    
+                    global.sms.send.lateness(student.ParentNumber , student.firstname + " " +student.lastname )
+
+                    lateness.push([student.ParentNumber , student.firstname + " " +student.lastname])
+                    }
                 }
-                    global.sms.send.manager("09173819218" , "آقا عسجدی")
+                    global.sms.send.manager("09176578429" , "آقا عسجدی")
                 
                     return { code: 200, message:  data};
                 
@@ -723,6 +738,18 @@ async function ConnectTodb() {
                 c.save()
 
                 return {message : "کارت با موفقیت اضافه شد !!" , code : 200}
+            },
+            read : async () => {
+                const cards = await Card.find({}).populate('ownerId');
+                return cards;
+            },
+            delete : async (id) => {
+                const card = await Card.findById(id);
+                if(!card){
+                    return {message : "کارت یافت نشد" , code : 500}
+                }
+                await Card.findByIdAndDelete(id);
+                return {message : "کارت با موفقیت حذف شد" , code : 200}
             }
         } , 
         notification : {

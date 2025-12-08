@@ -32,6 +32,14 @@ router.delete("/delete", async (req, res) => {
     res.json(data)
 })
 
+router.patch("/update", async (req, res) => {
+
+    const { id, ...updateData } = req.body;
+    const data = await global.db.user.update(id, updateData)
+
+    res.json({code: 200, message: "دانش‌آموز با موفقیت به‌روزرسانی شد"})
+})
+
 
 
 module.exports = router;

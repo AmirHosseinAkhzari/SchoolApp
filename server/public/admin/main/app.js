@@ -87,6 +87,44 @@ function ReadAttendance() {
     });
 }
 
+function ReadCards() {
+  return fetch("/card/read", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then(res => res.json()) 
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return []
+    });
+}
+
+function addCard(uid, ownerId) {
+  return fetch("/card/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({uid: uid, ownerId: ownerId})
+  })
+    .then(res => res.json()) 
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return {code: 500, message: "خطا در ارتباط با سرور"}
+    });
+}
+
+function deleteCard(id) {
+  return fetch("/card/delete", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({id: id})
+  })
+    .then(res => res.json()) 
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return {code: 500, message: "خطا در ارتباط با سرور"}
+    });
+}
+
 
 function changeStatus(id , status) {
   return fetch("/attendance/changeStatus", {
@@ -134,7 +172,8 @@ function deleteStu(id) {
 const state = {
   classes: [],
   students: [],
-  attendance: []
+  attendance: [],
+  cards: []
 };
 
 const uiState = {
@@ -170,27 +209,24 @@ function init() {
   setupMenu();
   bindGlobalEvents();
 
-
-
-
-      ReadStu().then(res => {
-    state.students = res || [];
-    })
-
-
+  // Load all data in parallel, then render
+  Promise.all([
+    ReadStu().then(res => {
+      state.students = res || [];
+    }),
     ReadClass().then(res => {
-    state.classes = res || [];
-    })
-
+      state.classes = res || [];
+    }),
     ReadAttendance().then(res => {
-    state.attendance = res.data || [];
-    console.log(res.data)
+      state.attendance = res.data || [];
+      console.log("Attendance loaded:", res.data);
+    }),
+    ReadCards().then(res => {
+      state.cards = res || [];
     })
-
-
-
-
-  renderPage(uiState.activePage);
+  ]).then(() => {
+    renderPage(uiState.activePage);
+  });
 }
 
 function setupMenu() {
@@ -214,6 +250,7 @@ function bindGlobalEvents() {
   document.getElementById("editClassForm").addEventListener("submit", handleEditClass);
   document.getElementById("addStudentForm").addEventListener("submit", handleAddStudent);
   document.getElementById("editStudentForm").addEventListener("submit", handleEditStudent);
+  document.getElementById("addCardForm").addEventListener("submit", handleAddCard);
 
   document.getElementById("confirmDelete").addEventListener("click", handleDeleteConfirm);
 
@@ -272,6 +309,9 @@ function renderPage(page) {
     case "classes":
       renderClasses();
       break;
+    case "cards":
+      renderCards();
+      break;
     default:
       renderDashboard();
   }
@@ -284,23 +324,7 @@ function updateMenuState(page) {
 }
 
 function renderDashboard() {
-  const cards = [
-    { title: "حضور امروز", value: countAttendanceByStatus("حاضر") },
-    { title: "دیرکردها", value: countAttendanceByStatus("دیر اومده") },
-    { title: "غیبت‌ها", value: countAttendanceByStatus("غایب") }
-  ];
-
-  const cardsMarkup = cards
-    .map(
-      (card) => `
-        <div class="card">
-          <div class="card-title">${card.title}</div>
-          <div class="card-value">${card.value}</div>
-        </div>
-      `
-    )
-    .join("");
-
+  // Show loading state
   content.innerHTML = `
     <section class="page-header">
       <div>
@@ -308,8 +332,61 @@ function renderDashboard() {
         <p class="page-subtitle">نمای کلی سامانه حضور و غیاب آستین</p>
       </div>
     </section>
-    <section class="cards">${cardsMarkup}</section>
+    <section class="cards">
+      <div class="card">
+        <div class="card-title">در حال بارگذاری...</div>
+        <div class="card-value">—</div>
+      </div>
+    </section>
   `;
+  
+  // Refresh attendance data when rendering dashboard
+  ReadAttendance().then(res => {
+    state.attendance = res.data || [];
+    
+    const cards = [
+      { title: "حضور امروز", value: countAttendanceByStatus("حاضر"), icon: "✅" },
+      { title: "دیرکردها", value: countAttendanceByStatus("دیر اومده"), icon: "⏰" },
+      { title: "غیبت‌ها", value: countAttendanceByStatus("غایب"), icon: "❌" }
+    ];
+
+    const cardsMarkup = cards
+      .map(
+        (card) => `
+          <div class="card">
+            <div class="card-title">${card.icon} ${card.title}</div>
+            <div class="card-value">${card.value}</div>
+          </div>
+        `
+      )
+      .join("");
+
+    content.innerHTML = `
+      <section class="page-header">
+        <div>
+          <h2 class="page-title">داشبورد</h2>
+          <p class="page-subtitle">نمای کلی سامانه حضور و غیاب آستین</p>
+        </div>
+      </section>
+      <section class="cards">${cardsMarkup}</section>
+    `;
+  }).catch(err => {
+    console.error("Error loading attendance:", err);
+    content.innerHTML = `
+      <section class="page-header">
+        <div>
+          <h2 class="page-title">داشبورد</h2>
+          <p class="page-subtitle">نمای کلی سامانه حضور و غیاب آستین</p>
+        </div>
+      </section>
+      <section class="cards">
+        <div class="card">
+          <div class="card-title">خطا در بارگذاری داده‌ها</div>
+          <div class="card-value">—</div>
+        </div>
+      </section>
+    `;
+  });
 }
 
 function renderClasses() {
@@ -493,6 +570,79 @@ function renderAttendance() {
   `;
 }
 
+function renderCards() {
+  ReadCards().then(cards => {
+    state.cards = cards || [];
+    
+    if (state.cards.length === 0) {
+      content.innerHTML = `
+        <section class="page-header">
+          <div>
+            <h2 class="page-title">کارت‌ها</h2>
+            <p class="page-subtitle">مدیریت کارت‌های NFC دانش‌آموزان</p>
+          </div>
+          <button type="button" class="btn primary add-btn" data-action="open-add-card">➕ افزودن کارت</button>
+        </section>
+        <div class="empty-state">
+          <p>هنوز کارتی ثبت نشده است</p>
+          <p class="empty-state-subtitle">برای شروع، کارت جدیدی اضافه کنید</p>
+        </div>
+      `;
+      return;
+    }
+    
+    const htmlRows = state.cards
+      .map((card, index) => {
+        // Handle both populated and non-populated ownerId
+        const ownerId = card.ownerId?._id || card.ownerId;
+        const student = ownerId ? state.students.find(s => s._id === ownerId || s._id?.toString() === ownerId?.toString()) : null;
+        const studentName = student ? `${student.firstname || ""} ${student.lastname || ""}`.trim() : "—";
+        const studentClass = student ? getClassName(student.classId) : "—";
+        
+        return `
+          <tr data-card-id="${card._id}">
+            <td>${index + 1}</td>
+            <td><code class="uid-code">${card.uid || "—"}</code></td>
+            <td>${studentName}</td>
+            <td>${studentClass}</td>
+            <td><span class="role-badge">${card.role || "—"}</span></td>
+            <td class="actions">
+              <button type="button" class="icon-btn delete-btn" data-action="delete-item" data-entity="card" data-id="${card._id}">
+                <img src="icons/delete.svg" alt="delete">
+              </button>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    content.innerHTML = `
+      <section class="page-header">
+        <div>
+          <h2 class="page-title">کارت‌ها</h2>
+          <p class="page-subtitle">مدیریت کارت‌های NFC دانش‌آموزان (${state.cards.length} کارت)</p>
+        </div>
+        <button type="button" class="btn primary add-btn" data-action="open-add-card">➕ افزودن کارت</button>
+      </section>
+      <div class="table-wrap">
+        <table class="class-table students-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>UID کارت</th>
+              <th>دانش‌آموز</th>
+              <th>کلاس</th>
+              <th>نقش</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>${htmlRows}</tbody>
+        </table>
+      </div>
+    `;
+  });
+}
+
 /* --------------------------------------------------
  * Event handlers for page content
  * -------------------------------------------------- */
@@ -519,6 +669,9 @@ function handleContentClick(event) {
         return;
       case "open-settings":
         openPopup("settingsPopup");
+        return;
+      case "open-add-card":
+        openAddCardPopup();
         return;
       case "set-status":
         handleStatusChange(actionButton.dataset.id, actionButton.dataset.status);
@@ -711,15 +864,15 @@ function handleAddStudent(event) {
 
 
 function openEditStudentPopup(id) {
-  const student = state.students.find((item) => item.id === id);
+  const student = state.students.find((item) => item._id === id || item.id === id);
   if (!student) return;
-  activeStudentId = id;
+  activeStudentId = student._id || student.id;
 
-  document.getElementById("studentPhotoPreview").src = student.photo;
-  document.getElementById("studentFirstName").value = student.firstName;
-  document.getElementById("studentLastName").value = student.lastName;
-  document.getElementById("studentBirth").value = student.birthday;
-  document.getElementById("studentNationalId").value = student.nationalId || "";
+  document.getElementById("studentPhotoPreview").src = `/image/profile/?id=${activeStudentId}`;
+  document.getElementById("studentFirstName").value = student.firstname || "";
+  document.getElementById("studentLastName").value = student.lastname || "";
+  document.getElementById("studentBirth").value = student.birthday || "";
+  document.getElementById("studentNationalId").value = student.nationalid || "";
   document.getElementById("number").value = student.number || "";
   document.getElementById("studentParentPhone").value = student.ParentNumber || "";
   document.getElementById("studentHomePhone").value = student.LocalNumber || "";
@@ -732,22 +885,57 @@ function handleEditStudent(event) {
   event.preventDefault();
   if (!activeStudentId) return;
 
-  const student = state.students.find((item) => item.id === activeStudentId);
+  const student = state.students.find((item) => (item._id === activeStudentId || item.id === activeStudentId));
   if (!student) return;
 
-  student.photo = document.getElementById("studentPhotoPreview").src;
-  student.firstName = document.getElementById("studentFirstName").value.trim();
-  student.lastName = document.getElementById("studentLastName").value.trim();
-  student.birthday = document.getElementById("studentBirth").value.trim();
-  student.nationalId = document.getElementById("studentNationalId").value.trim();
-  student.number = document.getElementById("number").value.trim();
-  student.ParentNumber = document.getElementById("studentParentPhone").value.trim();
-  student.LocalNumber = document.getElementById("studentHomePhone").value.trim();
-  student.classId = document.getElementById("studentClass").value;
+  const firstNameInput = document.getElementById("studentFirstName").value.trim();
+  const lastNameInput = document.getElementById("studentLastName").value.trim();
+  const birthdayInput = document.getElementById("studentBirth").value.trim();
+  const nationalIdInput = document.getElementById("studentNationalId").value.trim();
+  const numberInput = document.getElementById("number").value.trim();
+  const parentPhoneInput = document.getElementById("studentParentPhone").value.trim();
+  const homePhoneInput = document.getElementById("studentHomePhone").value.trim();
+  const classIdInput = document.getElementById("studentClass").value;
 
-  activeStudentId = null;
-  closePopup("editStudentPopup");
-  renderPage("students");
+  if (!firstNameInput || !lastNameInput) {
+    alert("نام و نام خانوادگی نباید خالی باشد.");
+    return;
+  }
+
+  const classObj = state.classes.find(cls => cls._id === classIdInput);
+  if (!classObj) {
+    alert("کلاس انتخاب‌شده نامعتبر است.");
+    return;
+  }
+
+  const body = {
+    id: activeStudentId,
+    firstname: firstNameInput,
+    lastname: lastNameInput,
+    birthday: birthdayInput,
+    nationalid: nationalIdInput,
+    number: numberInput,
+    ParentNumber: parentPhoneInput,
+    LocalNumber: homePhoneInput,
+    classId: classObj._id
+  };
+
+  fetch("/student/update", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("STUDENT UPDATE RESPONSE:", data);
+      closePopup("editStudentPopup");
+      activeStudentId = null;
+      renderPage("students");
+    })
+    .catch(err => {
+      console.error("STUDENT UPDATE ERROR:", err);
+      alert("خطا در ذخیره تغییرات. لطفاً دوباره تلاش کنید.");
+    });
 }
 
 function openDeletePopup(entity, id) {
@@ -760,6 +948,9 @@ function openDeletePopup(entity, id) {
   if (entity === "student") {
     title.textContent = "حذف دانش‌آموز";
     message.textContent = "با حذف این دانش‌آموز تمام سوابق حضور و غیاب او نیز حذف می‌شود.";
+  } else if (entity === "card") {
+    title.textContent = "حذف کارت";
+    message.textContent = "آیا مطمئن هستید که می‌خواهید این کارت را حذف کنید؟";
   } else {
     title.textContent = "حذف کلاس";
     message.textContent = "با حذف این کلاس تمام دانش‌آموزان مرتبط نیز حذف خواهند شد.";
@@ -796,6 +987,19 @@ function handleDeleteConfirm() {
       renderPage("classes");
     });
 
+    return;
+  }
+
+  // حذف کارت
+  if (deleteContext.entity === "card") {
+    deleteCard(deleteContext.id).then((result) => {
+      if (result.code === 200) {
+        closePopup("deletePopup");
+        renderPage("cards");
+      } else {
+        alert(result.message || "خطا در حذف کارت");
+      }
+    });
     return;
   }
 }
@@ -877,7 +1081,7 @@ function getFilteredAttendance() {
 
     const matchesClass = classId === "all" || student.classId === classId;
     const matchesStatus = status === "all" || record.status === status;
-    const fullName = `${student.firstName} ${student.lastName}`;
+    const fullName = `${student.firstname || ""} ${student.lastname || ""}`;
     const matchesSearch = !search || fullName.includes(search);
 
     return matchesClass && matchesStatus && matchesSearch;
@@ -1042,5 +1246,120 @@ document.getElementById("saveSettings").addEventListener("click", async () => {
 
 
 })
+
+let cardStudentSearchFilter = "";
+let cardSearchableSelectOpen = false;
+
+function openAddCardPopup() {
+  const form = document.getElementById("addCardForm");
+  form.reset();
+  cardStudentSearchFilter = "";
+  cardSearchableSelectOpen = false;
+  
+  const searchInput = document.getElementById("addCardStudentSearch");
+  const hiddenInput = document.getElementById("addCardStudent");
+  const dropdown = document.getElementById("addCardStudentDropdown");
+  
+  if (searchInput) {
+    searchInput.value = "";
+    searchInput.addEventListener("focus", handleCardSelectFocus);
+    searchInput.addEventListener("input", handleCardSelectSearch);
+    searchInput.addEventListener("blur", () => {
+      // Delay to allow click on dropdown item
+      setTimeout(() => {
+        cardSearchableSelectOpen = false;
+        if (dropdown) dropdown.style.display = "none";
+      }, 200);
+    });
+  }
+  
+  if (hiddenInput) {
+    hiddenInput.value = "";
+  }
+  
+  updateCardStudentDropdown();
+  openPopup("addCardPopup");
+}
+
+function handleCardSelectFocus() {
+  cardSearchableSelectOpen = true;
+  const dropdown = document.getElementById("addCardStudentDropdown");
+  if (dropdown) {
+    dropdown.style.display = "block";
+  }
+}
+
+function handleCardSelectSearch(e) {
+  cardStudentSearchFilter = e.target.value.trim().toLowerCase();
+  updateCardStudentDropdown();
+}
+
+function updateCardStudentDropdown() {
+  const filteredStudents = state.students.filter(student => {
+    if (!cardStudentSearchFilter) return true;
+    const fullName = `${student.firstname || ""} ${student.lastname || ""}`.toLowerCase();
+    const className = getClassName(student.classId).toLowerCase();
+    return fullName.includes(cardStudentSearchFilter) || className.includes(cardStudentSearchFilter);
+  });
+  
+  const dropdown = document.getElementById("addCardStudentDropdown");
+  if (!dropdown) return;
+  
+  if (filteredStudents.length === 0) {
+    dropdown.innerHTML = '<div class="searchable-select-item disabled">هیچ دانش‌آموزی یافت نشد</div>';
+    return;
+  }
+  
+  const itemsHtml = filteredStudents
+    .map(student => {
+      const displayText = `${student.firstname} ${student.lastname} - ${getClassName(student.classId)}`;
+      return `<div class="searchable-select-item" data-value="${student._id}" data-text="${displayText}">${displayText}</div>`;
+    })
+    .join("");
+  
+  dropdown.innerHTML = itemsHtml;
+  
+  // Add click handlers
+  dropdown.querySelectorAll(".searchable-select-item:not(.disabled)").forEach(item => {
+    item.addEventListener("click", (e) => {
+      const value = item.dataset.value;
+      const text = item.dataset.text;
+      const searchInput = document.getElementById("addCardStudentSearch");
+      const hiddenInput = document.getElementById("addCardStudent");
+      
+      if (searchInput) searchInput.value = text;
+      if (hiddenInput) hiddenInput.value = value;
+      
+      cardSearchableSelectOpen = false;
+      dropdown.style.display = "none";
+    });
+  });
+}
+
+function handleAddCard(event) {
+  event.preventDefault();
+  
+  const uid = document.getElementById("addCardUid").value.trim();
+  const ownerId = document.getElementById("addCardStudent").value;
+  
+  if (!uid) {
+    alert("لطفاً UID کارت را وارد کنید.");
+    return;
+  }
+  
+  if (!ownerId) {
+    alert("لطفاً دانش‌آموز را انتخاب کنید.");
+    return;
+  }
+  
+  addCard(uid, ownerId).then((result) => {
+    if (result.code === 200) {
+      closePopup("addCardPopup");
+      renderPage("cards");
+    } else {
+      alert(result.message || "خطا در افزودن کارت");
+    }
+  });
+}
 
 init();

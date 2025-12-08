@@ -25,6 +25,9 @@ async function sms() {
             absent : async(to , name) => { 
                 api.sms().sendByBaseNumber(name, to, 393383)
             } , 
+            lateness : async(to , name) => { 
+                api.sms().sendByBaseNumber(name, to, 393384)
+            } , 
             manager : async(to , name) => { 
                 api.sms().sendByBaseNumber(name, to, 393387)
             }
