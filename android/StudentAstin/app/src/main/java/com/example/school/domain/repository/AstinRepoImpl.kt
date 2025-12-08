@@ -17,6 +17,7 @@ import com.example.school.data.remote.ResCheckOtp
 import com.example.school.data.remote.ResOtp
 import com.example.school.data.remote.ResOtpUid
 import com.example.school.data.remote.ResReadAttendance
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import retrofit2.HttpException
@@ -68,15 +69,43 @@ class AstinRepoImpl(
      * Sends a login request using a phone number.
      */
     override suspend fun LoginWithNumber(number: String): Result<ResOtp?> =
-        runCatching { api.loginWithNumber(ReqOtpNum(number)).body() }
-            .onFailure { e -> handleError(e) }
+        runCatching {
+            val res = api.loginWithNumber(ReqOtpNum(number))
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResOtp::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
 
     /**
      * Sends a login request using an NFC UID.
      */
     override suspend fun LoginWithUid(uid: String): Result<ResOtpUid?> =
-        runCatching { api.loginWithUid(ReqOtpUid(uid)).body() }
-            .onFailure { e -> handleError(e) }
+        runCatching {
+            val res = api.loginWithUid(ReqOtpUid(uid))
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResOtpUid::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
 
     /**
      * Handles network and HTTP exceptions in API calls.
@@ -92,15 +121,24 @@ class AstinRepoImpl(
      * Check the Otp Code with Server
      */
 
-
     override suspend fun LoginCheckOtp(number: String, code: String): Result<ResCheckOtp?> =
         runCatching {
-            val response = api.logincheck(ReqCheckOtp(number, code))
-            response.body()
-        }.onFailure { e ->
-            Log.e("TEST_API", "Error: ${e.message}")
-            handleError(e)
+            val res = api.logincheck(ReqCheckOtp(number, code))
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResCheckOtp::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
         }
+
 
 
     override suspend fun addNotificationToken(notificationToken: String, MainToken: String):

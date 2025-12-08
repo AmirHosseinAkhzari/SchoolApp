@@ -9,8 +9,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 })
 
-const token = "cKSy12JmSXK4a7Rshcd309:APA91bHL78YjMyuNsVpfujkpi4bgTMLFPNQjrx0tGiTQubht66EE4n68RTt4_QARXKg52mLXDimkotA6FhCf4LBozP1brLpzT2uP4zzmNk7PYUCG1PAzcW0"
-
+const token = "fPZ3JdTpSEWe6iTdL7zC_D:APA91bEXnMt7RjEP74NtsCVTVsu1RAmyJStmXvrIL71R2MUTCDI5JoPvkzbgEkQSLT2x2PTFo6NVzdZZFSxttdKmbPC0ndFFlw5y0hSGZ153nuw-u5aFNrg"
 async function send() {
   try {
     const response = await admin.messaging().send({

@@ -546,7 +546,7 @@ async function ConnectTodb() {
                 console.log(user)
                 
                 if (!user){ 
-                    return {message : "دسترسی غیر مجاز" , code : 500}
+                    return {message : "شماره اشتباه است" , code : 500}
                 }
 
                 if(user.role != role){
@@ -556,7 +556,6 @@ async function ConnectTodb() {
                 const otpBlock = await Otp.findOne({
                     number  : num
                 })
-
 
                 console.log(otpBlock )
                 if (otpBlock){

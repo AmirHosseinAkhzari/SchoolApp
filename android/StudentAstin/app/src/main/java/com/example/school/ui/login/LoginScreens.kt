@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.nfc.NfcAdapter
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -193,7 +195,7 @@ fun LoginWithSleeve(navController: NavController) {
     val loginViewModel = hiltViewModel<LoginWithSleeveViewModel>()
     val uiState = loginViewModel.uiState.collectAsState()
     var lodeing by remember { mutableStateOf(false) }
-
+    var error  by remember { mutableStateOf(false) }
     val NfcAdapter = loginViewModel.checkNfc(context)
 
     // Start NFC once when screen is launched
@@ -215,8 +217,11 @@ fun LoginWithSleeve(navController: NavController) {
             navController.navigate("LoginOtpCode")
         } else if (data == NetworkMode.Loading) {
             lodeing = true
-        }else{
+        } else{
             lodeing = false
+            if(data == NetworkMode.Failure){
+                error = true
+            }
         }
     }
 
@@ -234,9 +239,11 @@ fun LoginWithSleeve(navController: NavController) {
 
     // Ensure NFC is stopped when leaving this screen
     DisposableEffect(Unit) {
+
         onDispose {
             loginViewModel.stopNfc(activity, context)
         }
+
     }
 
     var mainModifier: Modifier = Modifier
@@ -255,16 +262,28 @@ fun LoginWithSleeve(navController: NavController) {
             )
         }
         if(NfcAdapter == "Nfc is On"){
-            NFCIsOnUi(
-                mainModifier ,
-                navController ,
-                uiState.value.guidText
-            )
+            if(error == false){
+                NFCIsOnUi(
+                    mainModifier ,
+                    navController ,
+                    uiState.value.guidText ,
+                    error
+                )
+            }else{
+                NFCIsOnUi(
+                    mainModifier ,
+                    navController ,
+                    uiState.value.e ,
+                    error
+                )
+            }
+
         }else if (NfcAdapter == "Nfc is off"){
             NfcIsOffUi(mainModifier , navController)
         }else{
             NFCIsNotSupported(mainModifier , navController)
         }
+
 
     }
 }
@@ -277,6 +296,8 @@ fun LoginWithNumber(navController: NavController) {
     val loginViewModel = hiltViewModel<LoginWithNumberViewModel>()
     val uiState = loginViewModel.uiState.collectAsState()
     var lodeing by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf("") }
+
     val context = LocalContext.current
     // Navigate to OTP on successful login
     LaunchedEffect(uiState.value.network) {
@@ -291,6 +312,7 @@ fun LoginWithNumber(navController: NavController) {
         } else if (data == NetworkMode.Loading) {
             lodeing = true
         }else{
+            error = uiState.value.e
             lodeing = false
 
         }
@@ -363,8 +385,14 @@ fun LoginWithNumber(navController: NavController) {
                     },
                     shape = RoundedCornerShape(16.dp)
                 )
-
-                Spacer(Modifier.size(48.dp))
+                Text(
+                    text =  error,
+                    color =  Color.Red ,
+                    style = MaterialTheme.typography.bodySmall ,
+                    modifier = Modifier
+                        .width(270.dp)
+                )
+                Spacer(Modifier.size(20.dp))
 
                 Box(
                     contentAlignment = Alignment.Center,
@@ -400,6 +428,8 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
     val analytics = Firebase.analytics
     var lodeing by remember { mutableStateOf(false) }
     val LoginViewmModel = hiltViewModel<LoginOtpViewModel>()
+    val context = LocalContext.current
+    var error by remember { mutableStateOf("") }
     val uiState = LoginViewmModel.uiState.collectAsState()
     LaunchedEffect(uiState.value.network) {
 
@@ -409,6 +439,9 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
         } else if (data == NetworkMode.Loading) {
             lodeing = true
         }else{
+            if(uiState.value.e != ""){
+                error = uiState.value.e
+            }
             lodeing = false
         }
 
@@ -565,10 +598,18 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
                                         keyboardController?.show()
                                     }
                             )
+
                         }
                     }
                 }
-
+                Text(
+                    text =  error,
+                    color =  Color.Red ,
+                    style = MaterialTheme.typography.bodySmall ,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .width(280.dp)
+                )
                 Spacer(Modifier.size(40.dp))
 
                 Box(
@@ -614,14 +655,14 @@ private fun BoxScope.BackButton(onClick: () -> Unit) {
 
 
 @Composable
-fun NFCIsOnUi(mainModifier : Modifier , navController : NavController , guidText : String){
+fun NFCIsOnUi(mainModifier : Modifier , navController : NavController , guidText : String , error : Boolean){
     Box(
         modifier = mainModifier.fillMaxSize()
     ) {
         BackButton {
             navController.navigate("LoginType")
         }
-
+        var color = MaterialTheme.colorScheme.background
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -637,6 +678,10 @@ fun NFCIsOnUi(mainModifier : Modifier , navController : NavController , guidText
 
             Spacer(Modifier.size(12.dp))
 
+
+            if(error){
+                color = Color.Red
+            }
             Text(
                 text = "گوشی رو به آستینت نزدیک کن",
                 style = MaterialTheme.typography.bodyLarge,
@@ -646,10 +691,11 @@ fun NFCIsOnUi(mainModifier : Modifier , navController : NavController , guidText
             Spacer(Modifier.size(8.dp))
 
             // Animated guiding text from ViewModel
+
             Text(
                 text = guidText,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.background
+                color = color
             )
         }
     }

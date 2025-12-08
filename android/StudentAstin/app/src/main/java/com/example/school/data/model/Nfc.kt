@@ -23,7 +23,6 @@ class NfcManager(private val context: Context){
             }
         }
 
-
         adapter.enableReaderMode(
             activity ,
             callBack ,

@@ -27,6 +27,7 @@ const AttendanceAndroidRoutes = require('./router/android/attendance')
 
 
 
+
 const cookieParser = require("cookie-parser");
 
 const checkToken = require("./middleware/checkToken");
@@ -78,13 +79,14 @@ async function main() {
 
   app.use( "/adminPanel/login", express.static(path.join(__dirname, "public/admin/login")))
   app.use("/adminPanel", checkToken , express.static(path.join(__dirname, "public/admin/main")));
+  app.use("/" , express.static(path.join(__dirname, "public/main")));
 
 
 
 
 const PORT = process.env.PORT || 3000;
 app.listen(3000, "0.0.0.0", () => {
-  console.log("✅ Server running on http://192.168.1.10:3000");
+  console.log("✅ Server running on http://192.168.1.9:3000");
 });
 
 

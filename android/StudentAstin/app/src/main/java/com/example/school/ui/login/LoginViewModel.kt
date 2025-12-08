@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.school.data.remote.ResOtpUid
 import com.example.school.domain.repository.AstinRepo
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,8 @@ data class LoginUiData(
     val network: NetworkMode = NetworkMode.None,
     val otpText: String = "" ,
     val token : String = "" ,
-    val number: String = ""
+    val number: String = "" ,
+    val e : String = ""
 )
 
 /**
@@ -82,24 +84,27 @@ class LoginWithSleeveViewModel @Inject constructor(
     private fun observeNfcData() {
         viewModelScope.launch {
             repo.nfcData.collect { uid ->
-                _uiState.value = _uiState.value.copy(uid = uid, network = NetworkMode.Loading)
+                if(_uiState.value.network != NetworkMode.Loading ){
+                    _uiState.value = _uiState.value.copy(uid = uid, network = NetworkMode.Loading)
 
-                val res = repo.LoginWithUid(uid)
+                    val res = repo.LoginWithUid(uid)
 
 
-                if (res.isSuccess) {
-                    if(res.getOrNull()?.code == 200) {
-                        val body = res.getOrNull()
+                    if (res.isSuccess) {
+                        if(res.getOrNull()?.code == 200) {
+                            val body = res.getOrNull()
 
-                        _uiState.value = _uiState.value.copy(
-                            network = NetworkMode.Success,
-                            number = body?.number!!
-                        )
-                    }else{
+                            _uiState.value = _uiState.value.copy(
+                                network = NetworkMode.Success,
+                                number = body?.number!!
+                            )
+                        }else{
+                            Log.d("res" , res.getOrNull()!!.toString())
+                            _uiState.value = _uiState.value.copy(network = NetworkMode.Failure ,e = res.getOrNull()!!.message )
+                        }
+                    } else {
                         _uiState.value = _uiState.value.copy(network = NetworkMode.Failure)
                     }
-                } else {
-                    _uiState.value = _uiState.value.copy(network = NetworkMode.Failure)
                 }
             }
         }
@@ -135,7 +140,8 @@ class LoginWithNumberViewModel @Inject constructor(
                         number = num
                     )
                 }else{
-                    _uiState.value = _uiState.value.copy(network = NetworkMode.Failure)
+                    Log.d("api", res.toString())
+                    _uiState.value = _uiState.value.copy(network = NetworkMode.Failure , e = res.getOrNull()!!.message)
                 }
             } else {
                 _uiState.value = _uiState.value.copy(network = NetworkMode.Failure)
@@ -181,7 +187,7 @@ class LoginOtpViewModel @Inject constructor(
                         token = body?.token ?: ""
                     )
                 }else{
-                    _uiState.value = _uiState.value.copy(network = NetworkMode.Failure)
+                    _uiState.value = _uiState.value.copy(network = NetworkMode.Failure , e = res.getOrNull()!!.message)
                 }
             } else {
                 _uiState.value = _uiState.value.copy(network = NetworkMode.Failure)
