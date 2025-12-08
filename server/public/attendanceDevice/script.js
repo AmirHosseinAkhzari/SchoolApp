@@ -1,3 +1,35 @@
+// گرفتن لوگو
+const logo = document.querySelector('.logo');
+
+// وقتی روی لوگو کلیک شد، fullscreen بشه
+logo.addEventListener('click', () => {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { // Safari
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { // IE11
+    elem.msRequestFullscreen();
+  }
+});
+
+// جلوگیری از خروج از fullscreen
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) elem.requestFullscreen();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === "Escape") {
+    e.preventDefault();
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) elem.requestFullscreen();
+  }
+});
+
+// ==== کد موجود شما برای input و کارت خوان ====
 const input = document.getElementById('hidden-input');
 const nameBox = document.getElementById('nameBox');
 const tit = document.getElementById('tit');
@@ -27,7 +59,6 @@ input.addEventListener('keydown', async (event) => {
       console.log('پاسخ سرور:', data);
 
       if (res.ok && data.code === 200) {
-        // ✅ حالت موفق
         flash.classList.remove('shrink');
         flash.classList.add('expand');
 
@@ -43,7 +74,6 @@ input.addEventListener('keydown', async (event) => {
           nameBox.textContent = "منتظر آستینم...";
         }, 2000);
       } else {
-        // ❌ خطا از سرور
         showError(data.message || "کارت شناسایی نشد");
       }
     } catch (err) {
@@ -51,15 +81,13 @@ input.addEventListener('keydown', async (event) => {
       showError("خطا در اتصال به سرور");
     }
 
-    input.value = '';a
+    input.value = '';
   }
 });
 
 function showError(message) {
-  tit.textContent =  message;
+  tit.textContent = message;
   nameBox.textContent = "";
-
- 
   document.body.classList.add("error-mode");
 
   setTimeout(() => {

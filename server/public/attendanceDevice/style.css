@@ -1,7 +1,14 @@
+
+@font-face {
+  font-family: 'Vazir';
+  src: url('./fonts/Vazir-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 body {
   background: #000;
   color: white;
-  font-family: "Vazir", sans-serif;
+  font-family: 'Vazir', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,7 +37,7 @@ body.error-mode {
 
 .logo {
   position: absolute;
-  top: 20px;
+  top: 30px;
   right: 20px;
   width: 80px;
   height: 80px;
