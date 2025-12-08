@@ -30,7 +30,7 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
         }
 
         composable("attendance"){
-            AttendancePage(modifier)
+            AttendancePage(modifier , navController)
         }
     }
 

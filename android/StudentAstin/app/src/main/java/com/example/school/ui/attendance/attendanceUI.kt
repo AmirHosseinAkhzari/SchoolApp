@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,9 +20,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -46,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.school.R
 import com.example.school.data.remote.Info
 import com.example.school.data.remote.ResReadAttendance
@@ -58,7 +64,7 @@ import kotlin.toString
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun AttendancePage(modifier: Modifier = Modifier) {
+fun AttendancePage(modifier: Modifier = Modifier , navController : NavController) {
 
     val viewModel = hiltViewModel<AttendanceViewModel>()
 
@@ -124,8 +130,8 @@ fun AttendancePage(modifier: Modifier = Modifier) {
                 onRefresh = { fetchData(isPullRefresh = true) },
                 modifier = Modifier.fillMaxSize()
             ) {
-                
-                MainAttendanceUi(data)
+
+                MainAttendanceUi(data , navController )
             }
         }
     }
@@ -215,7 +221,7 @@ fun StatusItem(time : String , dete : String , status : String){
 
 
 @Composable
-fun MainAttendanceUi(res: ResReadAttendance?) {
+fun MainAttendanceUi(res: ResReadAttendance? , navController : NavController) {
 
     Log.d("res" ,res.toString() )
     val data = res ?: ResReadAttendance(
@@ -231,9 +237,11 @@ fun MainAttendanceUi(res: ResReadAttendance?) {
         modifier = Modifier,
         contentAlignment = Alignment.TopCenter
     ) {
+
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
+
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -242,13 +250,27 @@ fun MainAttendanceUi(res: ResReadAttendance?) {
                     .background(MaterialTheme.colorScheme.onBackground)
                     .fillMaxWidth()
             ) {
-                Spacer(Modifier.size(10.dp))
-                Text(
-                    text = "آستین",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.background,
-                )
-                Spacer(Modifier.size(10.dp))
+                Box(
+                    Modifier.fillMaxWidth()
+                ){
+                    BackButton {
+                        navController.navigate("main")
+                    }
+                    Column(
+                        Modifier.fillMaxWidth() ,
+                        verticalArrangement = Arrangement.Center ,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Spacer(Modifier.size(10.dp))
+                        Text(
+                            text = "آستین",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.background,
+                        )
+                        Spacer(Modifier.size(10.dp))
+                    }
+                }
+
             }
 
             Spacer(Modifier.size(30.dp))
@@ -316,4 +338,19 @@ fun translateStatus(name : String) : String{
         "دیر اومده" -> "lateness"
         else -> ""
     }
+}
+
+@Composable
+private fun BoxScope.BackButton(onClick: () -> Unit) {
+    Log.d("hi" , "hi I'm a Btn ")
+    Icon(
+        modifier = Modifier
+            .size(60.dp)
+            .padding(10.dp)
+            .align(Alignment.BottomStart)
+            .clickable { onClick() },
+        imageVector = Icons.Default.ArrowBack,
+        contentDescription = "back",
+        tint = MaterialTheme.colorScheme.background,
+    )
 }

@@ -2,6 +2,8 @@ package com.example.school.domain.repository
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
+import android.nfc.NfcAdapter
 import android.util.Log
 import com.example.school.R
 import com.example.school.data.model.NfcManager
@@ -13,6 +15,7 @@ import com.example.school.data.remote.ReqOtpUid
 import com.example.school.data.remote.ResAddNotificationToken
 import com.example.school.data.remote.ResCheckOtp
 import com.example.school.data.remote.ResOtp
+import com.example.school.data.remote.ResOtpUid
 import com.example.school.data.remote.ResReadAttendance
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -38,21 +41,27 @@ class AstinRepoImpl(
     /**
      * Starts reading NFC tags and emits the UID when a new tag is detected.
      */
-    override fun readNfc(activity: Activity) {
-        nfcManager.onTagRead = { uid ->
-            if (uid != lastUid) {
-                lastUid = uid
-                _nfcData.tryEmit(uid)
+    override fun readNfc(activity: Activity , context : Context) {
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
+        if(nfcAdapter != null && nfcAdapter.isEnabled) {
+            nfcManager.onTagRead = { uid ->
+                if (uid != lastUid) {
+                    lastUid = uid
+                    _nfcData.tryEmit(uid)
+                }
             }
+            nfcManager.enableReader(activity)
         }
-        nfcManager.enableReader(activity)
     }
 
     /**
      * Stops NFC reading.
      */
-    override fun stopReading(activity: Activity) {
-        nfcManager.disableReader(activity)
+    override fun stopReading(activity: Activity , context : Context) {
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
+        if(nfcAdapter != null && nfcAdapter.isEnabled) {
+            nfcManager.disableReader(activity)
+        }
     }
 
     /**
@@ -65,7 +74,7 @@ class AstinRepoImpl(
     /**
      * Sends a login request using an NFC UID.
      */
-    override suspend fun LoginWithUid(uid: String): Result<ResOtp?> =
+    override suspend fun LoginWithUid(uid: String): Result<ResOtpUid?> =
         runCatching { api.loginWithUid(ReqOtpUid(uid)).body() }
             .onFailure { e -> handleError(e) }
 
@@ -115,6 +124,20 @@ class AstinRepoImpl(
             handleError(e)
         }
 
+
+    override fun CheckNfc(context: Context) : String {
+
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
+
+        if(nfcAdapter == null){
+            return "No NFC"
+        }else if(!nfcAdapter.isEnabled){
+            return "Nfc is off"
+        }else{
+            return "Nfc is On"
+        }
+
+    }
 
 
 }

@@ -36,7 +36,7 @@ const classSchema = new mongoose.Schema({
 const otpSchema = new mongoose.Schema({
     code : String  , 
     number : String ,  
-    checkIn : String , 
+    checkIn : Date , 
     role : String
 })
 
@@ -536,7 +536,6 @@ async function ConnectTodb() {
         otp : {
             SendWithNumber : async (num , role) => {
     
-            
                 const code = global.utils.random.getOtpCode()
                 
 
@@ -570,9 +569,9 @@ async function ConnectTodb() {
                         await otpBlock.deleteOne()
 
                         const o= Otp({
-                        checkIn  : global.utils.time.iran2() , 
-                        code : code ,
-                        number : num
+                            checkIn  : Date.now() ,  
+                            code : code ,
+                            number : num
                         })
 
                         o.save()
@@ -587,7 +586,7 @@ async function ConnectTodb() {
                     await global.sms.send.otp(num ,code)
 
                     const o= Otp({
-                        checkIn  : global.utils.time.iran2() , 
+                        checkIn  :  Date.now() , 
                         code : code ,
                         number : num , 
                         role : role
@@ -619,7 +618,6 @@ async function ConnectTodb() {
                 }
 
 
-
                 const user = await User.findById(card.ownerId)
 
                 console.log(user)
@@ -646,14 +644,14 @@ async function ConnectTodb() {
                         await otpBlock.deleteOne()
 
                         const o= Otp({
-                        checkIn  : global.utils.time.iran2() , 
+                        checkIn  : Date.now() , 
                         code : code ,
                         number : num
                         })
 
                         o.save()
 
-                        return {message : "کد ارسال شد !!!" , code : 200}
+                        return {message : "کد ارسال شد !!!" , code : 200 , number : num}
                     }else{
                         return {message : "لطفا دقایق دیگر تلاش کنید" , code : 500}
                     }
@@ -663,16 +661,14 @@ async function ConnectTodb() {
                     await global.sms.send.otp(num ,code)
 
                     const o= Otp({
-                        checkIn  : global.utils.time.iran2() , 
+                        checkIn  :  Date.now(), 
                         code : code ,
                         number : num
                     })
 
                     o.save()
 
-
-                    return {message : "کد ارسال شد !!!" , code : 200}
-
+                    return {message : "کد ارسال شد !!!" , code : 200 , number : num}
 
                 }
 
@@ -750,6 +746,8 @@ async function ConnectTodb() {
                     return {message : "یوزر وجود ندارد" , code : 500}
                 }
 
+
+                console.log(notificationToken)
                 await user.updateOne({notificationToken : notificationToken})
 
                 return {message : "عملیات با موفقیت انجام شد!"  , code : 200}

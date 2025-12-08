@@ -6,6 +6,7 @@ import android.content.Context
 import com.example.school.data.remote.ResAddNotificationToken
 import com.example.school.data.remote.ResCheckOtp
 import com.example.school.data.remote.ResOtp
+import com.example.school.data.remote.ResOtpUid
 import com.example.school.data.remote.ResReadAttendance
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +17,11 @@ interface  AstinRepo  {
 
     val nfcData: SharedFlow<String>
     var lastUid : String?
-    fun readNfc(activity: Activity)
-    fun stopReading(activity: Activity)
+    fun readNfc(activity: Activity , context: Context)
+    fun stopReading(activity: Activity , context: Context)
+    fun CheckNfc(context : Context) : String
     suspend fun LoginWithNumber(number: String) : Result<ResOtp?>
-    suspend fun LoginWithUid(uid: String) : Result<ResOtp?>
+    suspend fun LoginWithUid(uid: String) : Result<ResOtpUid?>
     suspend fun LoginCheckOtp(number: String , code : String) : Result<ResCheckOtp?>
     suspend fun addNotificationToken(notificationToken  : String ,MainToken : String) : Result<ResAddNotificationToken?>
     suspend fun readAttendance(MainToken : String) : Result<ResReadAttendance?>

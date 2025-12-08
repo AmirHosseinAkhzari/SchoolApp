@@ -23,7 +23,8 @@ data class LoginUiData(
     val uid: String = "a",
     val network: NetworkMode = NetworkMode.None,
     val otpText: String = "" ,
-    val token : String = ""
+    val token : String = "" ,
+    val number: String = ""
 )
 
 /**
@@ -62,14 +63,19 @@ class LoginWithSleeveViewModel @Inject constructor(
     }
 
     /** Stops NFC reading and clears last UID. */
-    fun stopNfc(activity: Activity) {
-        repo.stopReading(activity)
+    fun stopNfc(activity: Activity , context : Context) {
+        repo.stopReading(activity , context)
         repo.lastUid = null
     }
 
     /** Starts NFC tag detection. */
-    fun startNfc(activity: Activity) {
-        repo.readNfc(activity)
+    fun startNfc(activity: Activity , context: Context) {
+        repo.readNfc(activity , context)
+    }
+
+    /** Check NFC Status . */
+    fun checkNfc(context: Context) : String {
+        return repo.CheckNfc(context)
     }
 
     /** Observes incoming NFC data and triggers login automatically. */
@@ -77,12 +83,17 @@ class LoginWithSleeveViewModel @Inject constructor(
         viewModelScope.launch {
             repo.nfcData.collect { uid ->
                 _uiState.value = _uiState.value.copy(uid = uid, network = NetworkMode.Loading)
-                Log.d("nfc" , uid)
+
                 val res = repo.LoginWithUid(uid)
+
+
                 if (res.isSuccess) {
                     if(res.getOrNull()?.code == 200) {
+                        val body = res.getOrNull()
+
                         _uiState.value = _uiState.value.copy(
                             network = NetworkMode.Success,
+                            number = body?.number!!
                         )
                     }else{
                         _uiState.value = _uiState.value.copy(network = NetworkMode.Failure)
@@ -118,8 +129,10 @@ class LoginWithNumberViewModel @Inject constructor(
             val res = repo.LoginWithNumber(num)
             if (res.isSuccess) {
                 if(res.getOrNull()?.code == 200) {
+
                     _uiState.value = _uiState.value.copy(
                         network = NetworkMode.Success,
+                        number = num
                     )
                 }else{
                     _uiState.value = _uiState.value.copy(network = NetworkMode.Failure)
@@ -141,6 +154,8 @@ class LoginOtpViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(LoginUiData())
     val uiState: StateFlow<LoginUiData> = _uiState
+
+
 
 
 
@@ -173,6 +188,13 @@ class LoginOtpViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun GetNumber(context: Context): String? {
+        val sharedPref = context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+        val token = sharedPref.getString("number", null)
+
+        return token
     }
 
 }

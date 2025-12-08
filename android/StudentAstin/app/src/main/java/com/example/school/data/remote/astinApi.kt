@@ -22,6 +22,12 @@ data class ResOtp(
     val code : Int
 )
 
+data class ResOtpUid(
+    val message : String ,
+    val code : Int ,
+    val number : String
+)
+
 data class ResCheckOtp(
     val message : String ,
     val code : Int ,
@@ -67,7 +73,7 @@ interface AstinApi {
     suspend fun loginWithNumber(@Body request: ReqOtpNum  ) : Response<ResOtp>
 
     @POST("login/uid")
-    suspend fun loginWithUid(@Body request: ReqOtpUid) : Response<ResOtp>
+    suspend fun loginWithUid(@Body request: ReqOtpUid) : Response<ResOtpUid>
 
 
     @POST("login/check")

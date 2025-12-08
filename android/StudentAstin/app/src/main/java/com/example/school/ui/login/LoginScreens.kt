@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.IntentFilter
+import android.nfc.NfcAdapter
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +18,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -34,6 +37,7 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -59,12 +63,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.school.R
+import com.example.school.ui.login.BackButton
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
@@ -86,7 +97,6 @@ fun LoginType(navController: NavController) {
         }
         Log.d("ana" , "LoginType")
     }
-
 
 
     Column(
@@ -118,6 +128,7 @@ fun LoginType(navController: NavController) {
                 Log.d("ana" , "login_sleeve")
 
                 navController.navigate("LoginWithSleeve")
+
             }
 
             Spacer(Modifier.size(16.dp))
@@ -130,8 +141,6 @@ fun LoginType(navController: NavController) {
                     param("service", "login_phone")
                 }
                 Log.d("ana" , "login_phone")
-
-
 
                 navController.navigate("LoginWithNumber")
             }
@@ -185,10 +194,13 @@ fun LoginWithSleeve(navController: NavController) {
     val uiState = loginViewModel.uiState.collectAsState()
     var lodeing by remember { mutableStateOf(false) }
 
+    val NfcAdapter = loginViewModel.checkNfc(context)
+
     // Start NFC once when screen is launched
     LaunchedEffect(Unit) {
         loginViewModel.resetData()
-        loginViewModel.startNfc(activity)
+
+        loginViewModel.startNfc(activity, context)
     }
 
     // Navigate to OTP on successful login
@@ -196,6 +208,10 @@ fun LoginWithSleeve(navController: NavController) {
 
         val data = uiState.value.network
         if (data == NetworkMode.Success) {
+            val sharedPref = context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+            val editor = sharedPref.edit()
+            editor.putString("number" , uiState.value.number)
+            editor.apply()
             navController.navigate("LoginOtpCode")
         } else if (data == NetworkMode.Loading) {
             lodeing = true
@@ -204,11 +220,22 @@ fun LoginWithSleeve(navController: NavController) {
         }
     }
 
+    val nfcStatus = loginViewModel.checkNfc(context)
+
+    LaunchedEffect(nfcStatus) {
+        if (nfcStatus == "Nfc is On") {
+
+            loginViewModel.resetData()
+
+            loginViewModel.startNfc(activity, context)
+
+        }
+    }
+
     // Ensure NFC is stopped when leaving this screen
     DisposableEffect(Unit) {
-        loginViewModel.startNfc(activity)
         onDispose {
-            loginViewModel.stopNfc(activity)
+            loginViewModel.stopNfc(activity, context)
         }
     }
 
@@ -227,46 +254,18 @@ fun LoginWithSleeve(navController: NavController) {
                     .alpha(1f)
             )
         }
-        Box(
-            modifier = mainModifier.fillMaxSize()
-        ) {
-            BackButton {
-                navController.navigate("LoginType")
-            }
-
-
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 40.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.loginwithsleeve),
-                    contentDescription = "login with sleeve",
-                    tint = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.size(260.dp)
-                )
-
-                Spacer(Modifier.size(12.dp))
-
-                Text(
-                    text = "گوشی رو به آستینت نزدیک کن",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.background
-                )
-
-                Spacer(Modifier.size(8.dp))
-
-                // Animated guiding text from ViewModel
-                Text(
-                    text = uiState.value.guidText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.background
-                )
-            }
+        if(NfcAdapter == "Nfc is On"){
+            NFCIsOnUi(
+                mainModifier ,
+                navController ,
+                uiState.value.guidText
+            )
+        }else if (NfcAdapter == "Nfc is off"){
+            NfcIsOffUi(mainModifier , navController)
+        }else{
+            NFCIsNotSupported(mainModifier , navController)
         }
+
     }
 }
 
@@ -278,12 +277,16 @@ fun LoginWithNumber(navController: NavController) {
     val loginViewModel = hiltViewModel<LoginWithNumberViewModel>()
     val uiState = loginViewModel.uiState.collectAsState()
     var lodeing by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
     // Navigate to OTP on successful login
     LaunchedEffect(uiState.value.network) {
 
         val data = uiState.value.network
         if (data == NetworkMode.Success) {
+            val sharedPref = context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+            val editor = sharedPref.edit()
+            editor.putString("number" , uiState.value.number)
+            editor.apply()
             navController.navigate("LoginOtpCode")
         } else if (data == NetworkMode.Loading) {
             lodeing = true
@@ -576,7 +579,8 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
                         .width(180.dp)
                         .height(100.dp)
                         .clickable {
-                            LoginViewmModel.CheckOtp(code = otpText, number = "09177826532" , context = context )
+                            val number = LoginViewmModel.GetNumber(context)
+                            LoginViewmModel.CheckOtp(code = otpText, number = number!! , context = context )
                         }
                 ) {
                     Icon(
@@ -606,4 +610,142 @@ private fun BoxScope.BackButton(onClick: () -> Unit) {
         contentDescription = "back",
         tint = MaterialTheme.colorScheme.background,
     )
+}
+
+
+@Composable
+fun NFCIsOnUi(mainModifier : Modifier , navController : NavController , guidText : String){
+    Box(
+        modifier = mainModifier.fillMaxSize()
+    ) {
+        BackButton {
+            navController.navigate("LoginType")
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 40.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.loginwithsleeve),
+                contentDescription = "login with sleeve",
+                tint = MaterialTheme.colorScheme.background,
+                modifier = Modifier.size(260.dp)
+            )
+
+            Spacer(Modifier.size(12.dp))
+
+            Text(
+                text = "گوشی رو به آستینت نزدیک کن",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.background
+            )
+
+            Spacer(Modifier.size(8.dp))
+
+            // Animated guiding text from ViewModel
+            Text(
+                text = guidText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.background
+            )
+        }
+    }
+}
+
+@Composable
+fun NfcIsOffUi(mainModifier  : Modifier , navController : NavController){
+
+    val context = LocalContext.current
+
+    val intent = Intent(Settings.ACTION_NFC_SETTINGS)
+
+    Box(
+        modifier = mainModifier.fillMaxSize()
+    ){
+        BackButton {
+            navController.navigate("LoginType")
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp))
+
+                .background(MaterialTheme.colorScheme.background)
+                .padding(10.dp)
+                .border(4.dp , MaterialTheme.colorScheme.onBackground , RoundedCornerShape(10.dp))
+                .padding(20.dp)
+                .align(Alignment.Center)
+                .clickable{
+                    context.startActivity(intent)
+                }
+
+        ){
+
+            Icon(
+                imageVector = Icons.Rounded.Settings ,
+                contentDescription = "Settings" ,
+                tint = MaterialTheme.colorScheme.onBackground ,
+                modifier = Modifier
+                    .size(150.dp)
+            )
+            Text(
+                text = "رو روشن کن NFC",
+                style = MaterialTheme.typography.bodyLarge ,
+                fontFamily = FontFamily(Font(R.font.vazir)),
+                fontWeight = FontWeight.ExtraBold ,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+    }
+}
+
+@Composable
+fun NFCIsNotSupported(mainModifier  : Modifier , navController : NavController){
+
+
+    val RedColor = Color(0xFF7E0516)
+
+
+
+
+    Box(
+        modifier = mainModifier.fillMaxSize()
+    ) {
+        BackButton {
+            navController.navigate("LoginType")
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp))
+
+                .background(RedColor)
+                .padding(10.dp)
+                .border(4.dp , Color.White , RoundedCornerShape(10.dp))
+                .padding(20.dp)
+                .align(Alignment.Center)
+
+        ){
+
+            Icon(
+                painter = painterResource(R.drawable.block),
+                contentDescription = "Settings" ,
+                tint = Color.White ,
+                modifier = Modifier
+                    .size(150.dp)
+            )
+            Text(
+                text = "NFC\n" + "پشتیبانی نمی شود",
+                style = MaterialTheme.typography.bodyLarge ,
+                fontFamily = FontFamily(Font(R.font.vazir)),
+                fontWeight = FontWeight.ExtraBold ,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
 }

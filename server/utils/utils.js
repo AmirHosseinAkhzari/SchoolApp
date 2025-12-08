@@ -45,18 +45,9 @@ function utils() {
         } , 
 
         CheckOtp : function isMoreThan2MinutesAgo(timeStr) {
-
-    
-            const now = new Date();
-
-            const [hours, minutes, seconds] = timeStr.split(':').map(Number);
-
-            const inputTime = new Date();
-            inputTime.setHours(hours, minutes, seconds, 0);
-
-            const diffMs = now - inputTime;
-
-            return diffMs > 2 * 60 * 1000;
+            const now = Date.now();
+            const diff = now - timeStr
+            return diff >= 0.5 * 60 * 1000;
         }
         } , 
         config : {

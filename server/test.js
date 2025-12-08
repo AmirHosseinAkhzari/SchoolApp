@@ -9,7 +9,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 })
 
-const token = "cl9sSnJPTYSyE2yIXXrdjN:APA91bEUEhCIzF9KOxzG85VK7Pv7tEPCAogdrZhooMccENbcOaVz266-7HqvvgTzgJLsFnB6vJd0t2kbUXyMIEKE_dmi-9fkczuR_EQrJPwTboZL-0a2OPQ"
+const token = "cKSy12JmSXK4a7Rshcd309:APA91bHL78YjMyuNsVpfujkpi4bgTMLFPNQjrx0tGiTQubht66EE4n68RTt4_QARXKg52mLXDimkotA6FhCf4LBozP1brLpzT2uP4zzmNk7PYUCG1PAzcW0"
 
 async function send() {
   try {

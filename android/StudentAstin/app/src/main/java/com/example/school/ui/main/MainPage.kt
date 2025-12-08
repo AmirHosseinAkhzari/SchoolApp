@@ -1,6 +1,7 @@
 package com.example.school.ui.main
 
 import android.app.Activity
+import android.os.Build
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -91,6 +93,18 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
     val context = LocalContext.current
     val mainToken = viewModel.GetMainToken(context)
 
+    val activity = context as? Activity
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        activity?.let {
+            ActivityCompat.requestPermissions(
+                it,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                100
+            )
+        }
+    }
+
     Firebase.messaging.token.addOnCompleteListener { task ->
 
 
@@ -108,6 +122,9 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
         }
 
     }
+
+
+
 
 
     SideEffect {
