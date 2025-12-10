@@ -77,7 +77,7 @@ const Card = mongoose.model("Card" , cardSchema)
 
 async function ConnectTodb() {
   try {
-    await mongoose.connect("mongodb://localhost:27017/school")
+    await mongoose.connect(process.env.MONGO_URL)
     console.log("✅ Connected to MongoDB")
     utils()
 // const userSchema = new mongoose.Schema({
@@ -397,133 +397,72 @@ async function ConnectTodb() {
                 }
             } , 
             sendsms : async () => {
- try {
+                
                 const jDate = jalaali.toJalaali(new Date());
-                const today = `${jDate.jy}/${jDate.jm}/${jDate.jd}`;
+                const today = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
 
-                const students = await User.find({ role: "Student" });
-                const todayRecords = await Attendance.find({ date: today });
+                let todayRecords  = await Attendance.find({date : today})
 
-                const result = [];
+                const student = await User.find({role : "Student"})
 
-                for (const stu of students) {
-                const record = todayRecords.find(
-                    a => a.userId.toString() === stu._id.toString()
-                );
+                for(const  stu of student){
 
-                if (record) {
                     
-                    result.push({
-                    id: record._id,          
-                    studentId: stu._id,     
-                    status: record.status,
-                    checkIn: record.checkIn,
-                    date: record.date
-                    });
-                } else{
-                
-                const user = await User.findById(stu._id)
-                
-                const fullname = user.firstname + " " + user.lastname
+                    const mode = todayRecords.find(r => r.userId.toString() === stu._id.toString())
 
-                if(!user){
-                    return {
-                        message : "این دانش آموز وجود ندارد",
-                        code : 400 ,
+
+                    
+                    if(mode == null ){
+
+                        const c = Class.findById(stu.classId)
+                        const n = Attendance({
+                            className : stu.classId , 
+                            userId : stu._id , 
+                            userFullName : stu.firstname + " " + stu.lastname , 
+                            className : c.name , 
+                            checkIn : "00:00" , 
+                            status : "غایب" , 
+                            date : today
+                        })
+                        n.save()
                     }
+
+
+
+                    
                 }
 
-                const _class = await Class.findById(user.classId)
+                todayRecords  = await Attendance.find({date : today})
 
-                console.log(_class)
-
-                if(!_class){
-                    return {
-                        message : "این کلاس وجود ندارد" ,
-                        code : 400 ,
-                    }
-                }
-
-                
-                const time = global.utils.time.iran() 
-
-                console.log(time)
-
-                const config = await global.utils.config.read()
-
-                console.log(config)
-
-                const jDate = jalaali.toJalaali(new Date())
-
-                const date  = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
-
-                console.log(date)
-
-                const existing = await Attendance.findOne({
-                    userId: user._id,
-                    date: date
-                });
-
-                console.log(existing)
-
-                if(existing){
-                    return {
-                        message :"حضور شما ثبت شده" ,
-                        code : 500 ,
-                    }
-                }
-
-
-                const data = Attendance({
-                    className: _class.name , 
-                    userId: user._id ,
-                    classId : _class._id,
-                    checkIn : "--"  ,
-                    status : "غایب" ,
-                    userFullName :fullname, 
-                    date :date
-                    })
-
-                data.save()
-                }
-                }
-
-                const users = await Attendance.find()
-                
-                let student = ""
-
-                let data =[]
+                let absent = [] 
 
                 let lateness = []
+                for(const record of todayRecords){
 
-                for (const i of users){
+                    if(record.status == "غایب"){
 
-                    console.log(i)
-                    if(i.status == "غایب"){
-                    student = await User.findById(i.userId)
-                    
-                    global.sms.send.absent(student.ParentNumber , student.firstname + " " +student.lastname )
+                        const user = await User.findById(record.userId)
 
-                    data.push([student.ParentNumber , student.firstname + " " +student.lastname])
+                        absent.push([
+                            record.userFullName , 
+                            user.ParentNumber
+                        ])
+                        global.sms.send.absent(user.ParentNumber , record.userFullName )
+
+                    }else if (record.status == "دیر اومده"){
+
+                        const user = await User.findById(record.userId)
+                        lateness.push([
+                            record.userFullName , 
+                            user.ParentNumber
+                        ])
+                        global.sms.send.lateness(user.ParentNumber , record.userFullName )
                     }
 
-                    if(i.status == "دیر اومده"){
-                    student = await User.findById(i.userId)
+                    global.sms.send.manager( "09304682860" , "عیسی عسجدی"  )
                     
-                    global.sms.send.lateness(student.ParentNumber , student.firstname + " " +student.lastname )
-
-                    lateness.push([student.ParentNumber , student.firstname + " " +student.lastname])
-                    }
                 }
-                    global.sms.send.manager("09176578429" , "آقا عسجدی")
-                
-                    return { code: 200, message:  data};
-                
 
-            } catch (err) {
-                console.error("❌ ERROR getall:", err);
-                return { code: 500, message: "خطا در دریافت حضور و غیاب" };
-            }
             } , 
             changeStarttime : async (time) =>{
                 await global.utils.config.edit(time)
