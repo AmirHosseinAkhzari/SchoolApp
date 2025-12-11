@@ -78,7 +78,7 @@ const Card = mongoose.model("Card" , cardSchema)
 
 async function ConnectTodb() {
   try {
-    await mongoose.connect("mongodb://localhost:27017/school")
+    await mongoose.connect(process.env.MONGO_URL)
     console.log("✅ Connected to MongoDB")
     utils()
 // const userSchema = new mongoose.Schema({
