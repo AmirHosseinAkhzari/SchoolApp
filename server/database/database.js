@@ -78,7 +78,7 @@ const Card = mongoose.model("Card" , cardSchema)
 
 async function ConnectTodb() {
   try {
-    await mongoose.connect(process.env.MONGO_URL)
+    await mongoose.connect("mongodb://localhost:27017/school")
     console.log("✅ Connected to MongoDB")
     utils()
     if(await User.findOne({"role" : "admin"}) == null ){
@@ -436,15 +436,16 @@ async function ConnectTodb() {
                 let lateness = []
                 for(const record of todayRecords){
 
-                    const testRecord = User.findById(record.userId)
 
-                    if(testRecord == null ){
-                        continue
-                    }
 
                     if(record.status == "غایب"){
 
                         const user = await User.findById(record.userId)
+
+                        if(user == null ){
+                            console.log("bugg")
+                            continue
+                        }
 
                         absent.push([
                             record.userFullName , 
@@ -455,6 +456,12 @@ async function ConnectTodb() {
                     }else if (record.status == "دیر اومده"){
 
                         const user = await User.findById(record.userId)
+
+                        if(user == null ){
+                            console.log("bugg")
+                            continue
+                        }
+
                         lateness.push([
                             record.userFullName , 
                             user.ParentNumber
