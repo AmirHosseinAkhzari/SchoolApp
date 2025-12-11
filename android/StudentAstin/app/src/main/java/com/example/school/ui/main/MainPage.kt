@@ -164,8 +164,9 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
 
 
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-
                     .size(400.dp, 400.dp)
                     .padding(30.dp)
                     .border(2.dp, color = MaterialTheme.colorScheme.onBackground, RoundedCornerShape(40.dp))

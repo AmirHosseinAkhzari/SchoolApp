@@ -192,6 +192,7 @@ fun StatusItem(time : String , dete : String , status : String){
             .height(120.dp)
     ){
 
+
         Text(
             text = time ,
             style = MaterialTheme.typography.bodyMedium ,
@@ -211,10 +212,9 @@ fun StatusItem(time : String , dete : String , status : String){
                 .padding(20.dp)
                 .align(Alignment.BottomStart)
         )
-
+        Spacer(Modifier.size(8.dp))
 
     }
-    Spacer(Modifier.size(8.dp))
 
 }
 
@@ -284,8 +284,10 @@ fun MainAttendanceUi(res: ResReadAttendance? , navController : NavController) {
                 contentAlignment = Alignment.Center
             ) {
 
-                Row {
-                    Spacer(Modifier.size(40.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center ,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
                     number(data.total.absent.toString(), "غیبت ها ")
 
@@ -296,6 +298,7 @@ fun MainAttendanceUi(res: ResReadAttendance? , navController : NavController) {
                     Spacer(Modifier.size(40.dp))
 
                     number(data.total.lateness.toString(), "دیرکرد ها")
+
                 }
 
             }
@@ -310,7 +313,7 @@ fun MainAttendanceUi(res: ResReadAttendance? , navController : NavController) {
                     )
                     .fillMaxSize()
             ) {
-
+                Spacer(Modifier.size(8.dp))
                 LazyColumn(
                     Modifier
                         .padding(start = 20.dp, end = 20.dp)
