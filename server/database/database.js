@@ -9,6 +9,7 @@ const jalaali = require('jalaali-js');
 
 const jwt  = require('jsonwebtoken');
 const { use } = require('../router/android/login');
+const { token } = require('morgan');
 
 // ------- User Schema -------
 const userSchema = new mongoose.Schema({
@@ -77,7 +78,7 @@ const Card = mongoose.model("Card" , cardSchema)
 
 async function ConnectTodb() {
   try {
-    await mongoose.connect(process.env.MONGO_URL)
+    await mongoose.connect("mongodb://localhost:27017/school")
     console.log("✅ Connected to MongoDB")
     utils()
 // const userSchema = new mongoose.Schema({
@@ -628,7 +629,7 @@ async function ConnectTodb() {
                 }
 
             } , 
-            check : async (number , code) => { 
+            check : async (number , code , role = null) => { 
                 
                 const data  = await Otp.findOne({number : number , code : code })
 
@@ -642,7 +643,16 @@ async function ConnectTodb() {
 
                 const userId = user._id
 
-                const token = global.utils.token.newToken(userId , data.role)
+                let token = ""
+                if (role == null){
+                     token = global.utils.token.newToken(userId , data.role)
+                    console.log("a")
+
+                }else{
+                     token = global.utils.token.newToken(userId , role)
+                    console.log("b")
+                }
+
 
                 return {message : "کد وارد شده درست است !!!" , code : 200 , token : token}
                 

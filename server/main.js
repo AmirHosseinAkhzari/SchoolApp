@@ -34,6 +34,9 @@ const cookieParser = require("cookie-parser");
 
 const checkToken = require("./middleware/checkToken");
 
+const checkTokenAttendance = require("./middleware/checkTokenAttendAnce");
+
+
 const morgan = require('morgan')
 async function main() {
 
@@ -70,20 +73,20 @@ async function main() {
   app.use('/android/attendance', AttendanceAndroidRoutes )
 
 
-  app.use('/attendance', AttendanceRoutes)
-  app.use('/admin',AdminRoutes )
-  app.use('/class',ClassRoutes )
-  app.use('/image',imagesRoutes )
-  app.use('/student',StudentRoutes )
-  app.use('/card',CardRoutes )
-  console.log(global.utils.token.newToken("6917990640fb4d7352b0be24" , "v"))    
+  app.use('/attendance'  , AttendanceRoutes)
+  app.use('/admin' , AdminRoutes )
+  app.use('/class',checkToken , ClassRoutes )
+  app.use('/image',checkToken , imagesRoutes )
+  app.use('/student',checkToken, StudentRoutes )
+  app.use('/card',checkToken , CardRoutes )
+  
+  app.use( "/dev/login", express.static(path.join(__dirname, "public/attendanceDevice/login")))
+  app.use( "/dev", checkTokenAttendance,   express.static(path.join(__dirname, "public/attendanceDevice/main")))
 
-  app.use( "/dev", express.static(path.join(__dirname, "public/attendanceDevice")))
 
   app.use( "/adminPanel/login", express.static(path.join(__dirname, "public/admin/login")))
   app.use("/adminPanel", checkToken , express.static(path.join(__dirname, "public/admin/main")));
   app.use("/" , express.static(path.join(__dirname, "public/main")));
-
 
 
 

@@ -27,7 +27,7 @@ object AppModule {
     fun ProvideAstinApi() : AstinApi {
         return Retrofit
             .Builder()
-            .baseUrl("http://192.168.1.9:3000/android/")
+            .baseUrl("http://192.168.1.9:9000/android/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AstinApi::class.java)
