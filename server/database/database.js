@@ -222,6 +222,7 @@ async function ConnectTodb() {
                 });
 
                 console.log(existing)
+                const status = global.utils.time.checkStatus(time, config.time.start , config.time.end)
 
                 if(existing){
                     if(existing.status != "غایب"){
@@ -229,10 +230,18 @@ async function ConnectTodb() {
                         message :"حضور شما ثبت شده" ,
                         code : 500 ,
                     }
-                }
+                }else{
+                        await Attendance.updateOne(
+                            { userId: user._id, date: date },
+                            { checkIn: time, status: status, userFullName: fullname, classId: _class._id, className: _class.name }
+                        )
+                        return {
+                            message : fullname ,
+                            code : 200 ,
+                        }
+                    }
                 }
 
-                const status = global.utils.time.checkStatus(time, config.time.start , config.time.end)
 
                 console.log(status)
 
