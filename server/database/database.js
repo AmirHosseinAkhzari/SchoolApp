@@ -436,6 +436,12 @@ async function ConnectTodb() {
                 let lateness = []
                 for(const record of todayRecords){
 
+                    const testRecord = User.findById(record.userId)
+
+                    if(testRecord == null ){
+                        continue
+                    }
+
                     if(record.status == "غایب"){
 
                         const user = await User.findById(record.userId)
@@ -444,9 +450,7 @@ async function ConnectTodb() {
                             record.userFullName , 
                             user.ParentNumber
                         ])
-                        try{
-                            global.sms.send.absent(user.ParentNumber , record.userFullName )
-                        }catch{}
+                        global.sms.send.absent(user.ParentNumber , record.userFullName )
 
                     }else if (record.status == "دیر اومده"){
 
@@ -455,9 +459,7 @@ async function ConnectTodb() {
                             record.userFullName , 
                             user.ParentNumber
                         ])
-                        try{
-                            global.sms.send.lateness(user.ParentNumber , record.userFullName )
-                        }catch{}
+                        global.sms.send.lateness(user.ParentNumber , record.userFullName )
                     }
 
                     global.sms.send.manager( "09304682860" , "عیسی عسجدی"  )
