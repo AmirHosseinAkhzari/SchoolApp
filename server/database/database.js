@@ -444,7 +444,9 @@ async function ConnectTodb() {
                             record.userFullName , 
                             user.ParentNumber
                         ])
-                        global.sms.send.absent(user.ParentNumber , record.userFullName )
+                        try{
+                            global.sms.send.absent(user.ParentNumber , record.userFullName )
+                        }catch{}
 
                     }else if (record.status == "دیر اومده"){
 
@@ -453,7 +455,9 @@ async function ConnectTodb() {
                             record.userFullName , 
                             user.ParentNumber
                         ])
-                        global.sms.send.lateness(user.ParentNumber , record.userFullName )
+                        try{
+                            global.sms.send.lateness(user.ParentNumber , record.userFullName )
+                        }catch{}
                     }
 
                     global.sms.send.manager( "09304682860" , "عیسی عسجدی"  )
