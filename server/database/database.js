@@ -81,29 +81,16 @@ async function ConnectTodb() {
     await mongoose.connect(process.env.MONGO_URL)
     console.log("✅ Connected to MongoDB")
     utils()
-// const userSchema = new mongoose.Schema({
-//     firstname : String , 
-//     lastname : String , 
-//     birthday : Date , 
-//     nationalid : String , 
-//     number : String , 
-//     ParentNumber : String , 
-//     LocalNumber : String , 
-//     classId : mongoose.Schema.Types.ObjectId  , 
-//     role : String
-// })
-    // {
-    //   id: "stu-1",
-    //   firstName: "امیرحسین",
-    //   lastName: "اخضری",
-    //   classId: "class-8",
-    //   birthday: "1403/05/12",
-    //   nationalId: "0056732941",
-    //   number: "123456",
-    //   ParentNumber: "۰۹۱۲۳۴۵۶۷۸۹",
-    //   LocalNumber: "۰۷۱۵۲۳۴۵۶۷۸",
-    //   photo: "https://i.pravatar.cc/150?u=1"
-    // },
+    if(await User.findOne({"role" : "admin"}) == null ){
+        const admin = User({
+            firstname : "عیسی" , 
+            lastname : "عسجدی" , 
+            number : "09304682860" , 
+            role : "admin"
+        })
+        admin.save()
+    }
+
      global.db = {
         user : { 
             add : async (data) => { 
