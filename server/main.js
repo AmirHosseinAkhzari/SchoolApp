@@ -1,5 +1,8 @@
 const db = require('./database/database')
 
+const analytics = require('./analytics/analytics')
+
+
 const sms = require('./SMS/sms')
 
 const express = require('express')
@@ -45,6 +48,8 @@ async function main() {
 
   // start my SMS Service
   await sms()
+
+  await analytics()
 
   const app  = express()
 
@@ -95,6 +100,8 @@ const PORT = process.env.PORT || 9000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Server running on http://0.0.0.0:${PORT}`);
 });
+
+
 
 
 

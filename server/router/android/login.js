@@ -14,9 +14,10 @@ router.post("/number", async (req , res) =>{
     console.log(data)
 
     if(data.code != 200){
+        global.analytics.Event.sendEvent("login(Number)" , data , "Main")
         res.status(500).json(data)
     }
-
+    global.analytics.Event.sendEvent("login(Number)" , data , "Main")
     res.status(200).json(data)
 
 } )
@@ -30,9 +31,10 @@ router.post("/uid", async (req , res) =>{
     console.log(data)
 
     if(data.code != 200){
+        global.analytics.Event.sendEvent("login(Sleeve)" , data , "Main")
         res.status(500).json(data)
     }
-
+    global.analytics.Event.sendEvent("login(Sleeve)" , data , "Main")
     res.status(200).json(data)
 
 } )
@@ -50,9 +52,11 @@ router.post("/check", async (req , res) =>{
 
 
     if(data.code != 200){
+        global.analytics.Event.sendEvent("OTPCheck" , data , "Main")
         res.status(500).json(data)
     }
-
+    
+    global.analytics.Event.sendEvent("OTPCheck" , data , "Main")
     res.status(200).json(data)
 
 

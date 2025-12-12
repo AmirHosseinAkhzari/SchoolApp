@@ -166,7 +166,6 @@ async function ConnectTodb() {
         attendance : {
             check : async (uid ) => {
 
-
                 const CardData = await Card.findOne({
                     uid : uid
                 })

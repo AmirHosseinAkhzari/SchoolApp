@@ -20,16 +20,23 @@ async function sms() {
     global.sms = { 
         send : { 
             otp : async (to , code) => {
-                // api.sms().sendByBaseNumber(code, to, 393028)
+                const res = await api.sms().sendByBaseNumber(code, to, 393028)
+                global.analytics.Event.sendEvent("Otp" , res , "Main")
             } , 
             absent : async(to , name) => { 
-                api.sms().sendByBaseNumber(name, to, 393383)
+                 const res =  await api.sms().sendByBaseNumber(name, to, 393383)
+                 global.analytics.Event.sendEvent("absentSMS" , res , "Main")
+
             } , 
             lateness : async(to , name) => { 
-                api.sms().sendByBaseNumber(name, to, 393384)
+                
+                const res =  await api.sms().sendByBaseNumber(name, to, 393384)
+                 global.analytics.Event.sendEvent("latenessSMS" , res , "Main")
+
             } , 
             manager : async(to , name) => { 
-                api.sms().sendByBaseNumber(name, to, 393387)
+                const res =  await api.sms().sendByBaseNumber(name, to, 393387)
+                 global.analytics.Event.sendEvent("managerSMS" , res , "Main")
             }
             
         }

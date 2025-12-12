@@ -9,19 +9,27 @@ const router = express.Router()
 router.post("/check", async (req , res) =>{
 
     console.log("done")
-    
+
 
     const data  = await global.db.attendance.check(req.body.uid)
 
     console.log(data)
 
+
+    console.log("asodjasdi")
     if(data.code != 200){
 
         res.status(data.code).json(data)
+
+        console.log("Attendance" , data , "Main")
+        global.analytics.Event.sendEvent("Attendance" , data , "Main")
+
     }
 
+    console.log("Attendance" , data , "Main")
+    global.analytics.Event.sendEvent("Attendance" , data , "Main")
     res.status(200).json(data)
-
+    
 })
 
 router.patch("/changeStatus", async (req , res) =>{
