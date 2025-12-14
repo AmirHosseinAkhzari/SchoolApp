@@ -25,6 +25,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -37,7 +41,11 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideE
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -167,7 +175,7 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .size(400.dp, 400.dp)
+                    .size(400.dp, 450.dp)
                     .padding(30.dp)
                     .border(2.dp, color = MaterialTheme.colorScheme.onBackground, RoundedCornerShape(40.dp))
             ) {
@@ -180,15 +188,18 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
                 ){
                     AppIcon(
                         color = colors["attendance"]!!,
-                        name = "حضور و غیاب",
+                        name = "حضور غیاب",
                         painter = painterResource(R.drawable.attendance),
                         mode = true,
-                        navigation = { navController.navigate("attendance") }
+                        navigation = { navController.navigate("attendance") } ,
+                        modifier = Modifier.weight(1f)
+
                     )
 
-                    AppIcon(colors["library"]!! , "به زودی" , painterResource(R.drawable.library) , mode = false , {})
+                    AppIcon(colors["library"]!! , "به زودی" , painterResource(R.drawable.library) , mode = false , {}  , Modifier.weight(1f))
 
-                    AppIcon(colors["cafeteria"]!! , "به زودی" , painterResource(R.drawable.cafeteria) , mode = false , {})
+                    AppIcon(colors["cafeteria"]!! , "به زودی" , painterResource(R.drawable.cafeteria) , mode = false , {} ,
+                        Modifier.weight(1f) )
                 }
 
                 Row(
@@ -198,9 +209,9 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
 
                 ){
 
-                    AppIcon(colors["poll"]!! , "به زودی" , painterResource(R.drawable.poll) , mode = false , {})
-                    AppIcon(colors["important"]!!  , "به زودی" , painterResource(R.drawable.important) , mode = false , {})
-                    AppIcon(colors["score"]!!  , "به زودی", painterResource(R.drawable.score) , mode = false , {})
+                    AppIcon(colors["poll"]!! , "به زودی" , painterResource(R.drawable.poll) , mode = false , {}  ,Modifier.weight(1f))
+                    AppIcon(colors["important"]!!  , "به زودی" , painterResource(R.drawable.important) , mode = false , {} , Modifier.weight(1f))
+                    AppIcon(colors["score"]!!  , "به زودی", painterResource(R.drawable.score) , mode = false , {} , Modifier.weight(1f))
 
 
 
@@ -220,10 +231,11 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
 
 
 @Composable
-fun AppIcon(color  :Color , name : String  , painter: Painter , mode : Boolean , navigation : () -> Unit  ){
+fun AppIcon(color  :Color , name : String  , painter: Painter , mode : Boolean , navigation : () -> Unit  , modifier: Modifier ){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally ,
-        modifier = Modifier.padding(5.dp)
+        modifier = modifier
+            .padding(5.dp)
     ) {
         var blurSize = 0
         if(!mode){
@@ -266,10 +278,34 @@ fun AppIcon(color  :Color , name : String  , painter: Painter , mode : Boolean ,
                 }
             }
         }
-        Text(
-            text = name ,
-            style = MaterialTheme.typography.bodyMedium ,
-            color = MaterialTheme.colorScheme.onBackground
+        AutoSizeText(
+            name
         )
     }
+}
+
+
+@Composable
+fun AutoSizeText(
+    text: String,
+    modifier: Modifier = Modifier,
+    maxFontSize: TextUnit = 16.sp,
+    minFontSize: TextUnit = 8.sp,
+    style: TextStyle = MaterialTheme.typography.bodyMedium,
+    color: Color = MaterialTheme.colorScheme.onBackground
+) {
+    var fontSize by remember { mutableStateOf(maxFontSize) }
+    Text(
+        text = text,
+        maxLines = 1,
+        softWrap = false,
+        style = style.copy(fontSize = fontSize),
+        color = color,
+        modifier = modifier,
+        onTextLayout = { result ->
+            if (result.didOverflowWidth && fontSize > minFontSize) {
+                fontSize = (fontSize.value - 1f).sp
+            }
+        }
+    )
 }

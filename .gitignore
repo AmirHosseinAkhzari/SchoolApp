@@ -1,1 +1,5 @@
 /server/node_modules/
+/android/keravat
+/android/Keravat
+android/Keravat/app/src/main/java/com/example/keravat/MainActivity.kt
+android/Keravat/app/src/main/res/values/themes.xml

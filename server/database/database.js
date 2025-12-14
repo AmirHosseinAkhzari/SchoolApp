@@ -75,9 +75,11 @@ const Attendance = mongoose.model("Attendance" ,  attendanceSchema)
 const Otp = mongoose.model("Otp" ,  otpSchema)
 
 const Card = mongoose.model("Card" , cardSchema)
-
+ 
 async function ConnectTodb() {
   try {
+    // "mongodb://localhost:27017/school" 
+    // process.env.MONGO_URL
     await mongoose.connect(process.env.MONGO_URL)
     console.log("✅ Connected to MongoDB")
     utils()
