@@ -13,7 +13,7 @@ router.post("/login", async (req , res) =>{
     console.log("done")
     
 
-    const data  = await global.db.otp.SendWithNumber(req.body.number , "admin")
+    const data  = await global.db.otp.SendWithNumber(req.body.number , "admin" , "admin")
 
     console.log(data)
 

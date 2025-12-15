@@ -508,13 +508,13 @@ async function ConnectTodb() {
                 
 
 
-                if( mode == "Student"){
+                if( mode == "Parent"){
                     const user = await User.findOne({  
-                        number : num 
+                        ParentNumber : num 
                     })
                 }else{
                     const user = await User.findOne({  
-                        ParentNumber : num 
+                        number : num 
                     })
                 }
 
