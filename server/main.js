@@ -85,7 +85,7 @@ async function main() {
   app.use('/android/astin/attendance', attendanceAstinRoutes )
 
   app.use('/android/keravat/attendance', AttendanceKeravatRoutes )
-  app.use('/android/astin/login',loginKeravatRoutes)
+  app.use('/android/keravat/login',loginKeravatRoutes)
 
 
 

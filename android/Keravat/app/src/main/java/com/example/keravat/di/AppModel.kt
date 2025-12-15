@@ -23,7 +23,7 @@ object AppModule {
     fun ProvideAstinApi() : KeravatApi {
         return Retrofit
             .Builder()
-            .baseUrl("https://astinapp.ir/android/")
+            .baseUrl("https://astinapp.ir/android/keravat/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(KeravatApi::class.java)
