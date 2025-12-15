@@ -8,7 +8,7 @@ const utils = require('../utils/utils')
 const jalaali = require('jalaali-js');
 
 const jwt  = require('jsonwebtoken');
-const { use } = require('../router/android/login');
+const { use } = require('../router/android/keravat/login');
 const { token } = require('morgan');
 
 // ------- User Schema -------
@@ -78,9 +78,10 @@ const Card = mongoose.model("Card" , cardSchema)
  
 async function ConnectTodb() {
   try {
-    // "mongodb://localhost:27017/school" 
-    // process.env.MONGO_URL
-    await mongoose.connect(process.env.MONGO_URL)
+
+    //mongodb://localhost:27017/school
+    //process.env.MONGO_URL
+    await mongoose.connect("mongodb://localhost:27017/school")
     console.log("✅ Connected to MongoDB")
     utils()
     if(await User.findOne({"role" : "admin"}) == null ){
@@ -501,14 +502,22 @@ async function ConnectTodb() {
             }
         } , 
         otp : {
-            SendWithNumber : async (num , role) => {
+            SendWithNumber : async (num , role , mode) => {
     
                 const code = global.utils.random.getOtpCode()
                 
 
-                const user = await User.findOne({  
-                    number : num 
-                })
+
+                if( mode == "Student"){
+                    const user = await User.findOne({  
+                        number : num 
+                    })
+                }else{
+                    const user = await User.findOne({  
+                        ParentNumber : num 
+                    })
+                }
+
 
                 console.log(user)
                 

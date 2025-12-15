@@ -9,7 +9,6 @@ const express = require('express')
 
 const path  = require('path')
 
-const loginRoutes = require('./router/android/login')
 
 const AttendanceRoutes = require('./router/attendance')
 
@@ -17,17 +16,25 @@ const AdminRoutes = require('./router/admin')
 
 const imagesRoutes = require('./router/image')
 
-
 const ClassRoutes = require('./router/class')
 
 const StudentRoutes = require('./router/student')
 
 const CardRoutes = require('./router/card')
 
-const NotificationRoutes = require('./router/android/notification')
 
-const AttendanceAndroidRoutes = require('./router/android/attendance')
 
+const NotificationAstinRoutes = require('./router/android/astin/notification')
+
+const loginAstinRoutes = require('./router/android/astin/attendance')
+
+const loginAstinRoutes = require('./router/android/astin/login')
+
+
+
+const AttendanceKeravatRoutes = require('./router/android/keravat/attendance')
+
+const loginKeravatRoutes = require('./router/android/keravat/login')
 
 
 
@@ -73,9 +80,14 @@ async function main() {
   // })
 
 
-  app.use('/android/login',loginRoutes)
-  app.use('/android/notification', NotificationRoutes )
-  app.use('/android/attendance', AttendanceAndroidRoutes )
+  app.use('/android/astin/login',loginAstinRoutes)
+  app.use('/android/astin/notification', NotificationAstinRoutes )
+  app.use('/android/astin/attendance', loginAstinRoutes )
+
+  app.use('/android/keravat/attendance', AttendanceKeravatRoutes )
+  app.use('/android/astin/login',loginKeravatRoutes)
+
+
 
 
   app.use('/attendance'  , AttendanceRoutes)

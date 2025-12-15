@@ -9,7 +9,7 @@ router.post("/number", async (req , res) =>{
     console.log("done")
     
 
-    const data  = await global.db.otp.SendWithNumber(req.body.number , "Student")
+    const data  = await global.db.otp.SendWithNumber(req.body.number , "Student" , "Parent")
 
     console.log(data)
 
@@ -22,22 +22,6 @@ router.post("/number", async (req , res) =>{
 
 } )
 
-router.post("/uid", async (req , res) =>{
-
-    console.log("done")
-
-    const data  = await global.db.otp.SendWithUid(req.body.uid)
-
-    console.log(data)
-
-    if(data.code != 200){
-        global.analytics.Event.sendEvent("login(Sleeve)" , data , "Main")
-        res.status(500).json(data)
-    }
-    global.analytics.Event.sendEvent("login(Sleeve)" , data , "Main")
-    res.status(200).json(data)
-
-} )
 
 
 router.post("/check", async (req , res) =>{
