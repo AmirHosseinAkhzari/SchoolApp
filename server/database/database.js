@@ -521,7 +521,8 @@ async function ConnectTodb() {
                         {date : date , userId : userId} , 
                         {description : text}
                     )
-                }catch{
+                }catch(e){
+                    console.log(e)
                     return {message : "مشکلی پیش آمده است" , code : 500}
                 }
 
