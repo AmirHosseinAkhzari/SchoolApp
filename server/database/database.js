@@ -507,13 +507,15 @@ async function ConnectTodb() {
                 const code = global.utils.random.getOtpCode()
                 
 
+                let user  = null 
+
 
                 if( mode == "Parent"){
-                    const user = await User.findOne({  
+                     user = await User.findOne({  
                         ParentNumber : num 
                     })
                 }else{
-                    const user = await User.findOne({  
+                     user = await User.findOne({  
                         number : num 
                     })
                 }
@@ -521,7 +523,7 @@ async function ConnectTodb() {
 
                 console.log(user)
                 
-                if (!user){ 
+                if (user == null){ 
                     return {message : "شماره اشتباه است" , code : 500}
                 }
 
