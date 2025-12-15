@@ -128,9 +128,6 @@ fun LoginWithNumber(navController: NavController) {
         ) {
             var textState by remember { mutableStateOf("") }
 
-            BackButton {
-                navController.navigate("LoginType")
-            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -252,9 +249,6 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
             )
         }
         Box(mainModifier.fillMaxSize()) {
-            BackButton {
-                navController.navigate("LoginType")
-            }
 
 
             val otpLength = 5
