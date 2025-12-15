@@ -517,7 +517,7 @@ async function ConnectTodb() {
 
                     const date  = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
 
-                    await Attendance.update(
+                    await Attendance.updateOne(
                         {date : date , userId : userId} , 
                         {description : text}
                     )
