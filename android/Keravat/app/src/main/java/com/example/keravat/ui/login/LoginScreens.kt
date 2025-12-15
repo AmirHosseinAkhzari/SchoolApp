@@ -250,7 +250,6 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
         }
         Box(mainModifier.fillMaxSize()) {
 
-
             val otpLength = 5
             var otpText by remember { mutableStateOf("") }
             val context = LocalContext.current

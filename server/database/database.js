@@ -505,7 +505,8 @@ async function ConnectTodb() {
                 try{
                     try{
                         payload = global.utils.token.verify(token)
-                    }catch{
+                    }catch (e){
+                        console.log(e)
                         return {message : "توکن واقعی نیست " , code : 500}
                     }
 
