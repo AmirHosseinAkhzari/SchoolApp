@@ -29,7 +29,7 @@ router.post("/check", async (req , res) =>{
 
     console.log(req.body.number , req.body.code)
 
-    const data  = await global.db.otp.check(req.body.number , req.body.code)
+    const data  = await global.db.otp.check(req.body.number , req.body.code , null , "Parent")
 
     console.log(data.code)
 

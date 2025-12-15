@@ -650,7 +650,7 @@ async function ConnectTodb() {
                 }
 
             } , 
-            check : async (number , code , role = null) => { 
+            check : async (number , code , role = null , mode  = null) => { 
                 
                 const data  = await Otp.findOne({number : number , code : code })
 
@@ -660,7 +660,15 @@ async function ConnectTodb() {
 
                 await data.deleteOne()
 
-                const user = await User.findOne({number : number})
+
+                let user = null 
+
+                if(mode == null){
+                user = await User.findOne({number : number})
+
+                }else{
+                    user = await User.findOne({number : ParentNumber})
+                }
 
                 const userId = user._id
 
