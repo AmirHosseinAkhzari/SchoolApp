@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "555986124582",
+    "project_id": "keravat-4fe11",
+    "storage_bucket": "keravat-4fe11.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555986124582:android:87b92f102b9c1a29560be7",
+        "android_client_info": {
+          "package_name": "com.example.keravat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAx3_hihSYi8dOHnAAp8qARUuxKvtznKaY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
