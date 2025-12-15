@@ -667,7 +667,7 @@ async function ConnectTodb() {
                 user = await User.findOne({number : number})
 
                 }else{
-                    user = await User.findOne({number : ParentNumber})
+                    user = await User.findOne({ParentNumber : number})
                 }
 
                 const userId = user._id
