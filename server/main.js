@@ -26,7 +26,7 @@ const CardRoutes = require('./router/card')
 
 const NotificationAstinRoutes = require('./router/android/astin/notification')
 
-const loginAstinRoutes = require('./router/android/astin/attendance')
+const attendanceAstinRoutes = require('./router/android/astin/attendance')
 
 const loginAstinRoutes = require('./router/android/astin/login')
 
@@ -82,7 +82,7 @@ async function main() {
 
   app.use('/android/astin/login',loginAstinRoutes)
   app.use('/android/astin/notification', NotificationAstinRoutes )
-  app.use('/android/astin/attendance', loginAstinRoutes )
+  app.use('/android/astin/attendance', attendanceAstinRoutes )
 
   app.use('/android/keravat/attendance', AttendanceKeravatRoutes )
   app.use('/android/astin/login',loginKeravatRoutes)
