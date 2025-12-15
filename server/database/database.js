@@ -61,6 +61,7 @@ const attendanceSchema = new mongoose.Schema({
     checkIn : String , 
     status : String , 
     date : String , 
+    description : String
 
 })
 
@@ -499,6 +500,30 @@ async function ConnectTodb() {
 
 
                 return {"Info" : Info , "total" : {"present" : presentCount , "lateness" :latenessCount ,  "absent" : absentCount}}
+            } , 
+            addDescription : async (token , text) => {
+                try{
+                    try{
+                        payload = global.utils.token.verify(token)
+                    }catch{
+                        return {message : "توکن واقعی نیست " , code : 500}
+                    }
+
+                    const userId = payload.userId
+
+                    
+                    const jDate = jalaali.toJalaali(new Date())
+
+                    const date  = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
+
+                    await Attendance.update(
+                        {date : date , userId : userId} , 
+                        {description : text}
+                    )
+                }catch{
+                    return {message : "مشکلی پیش آمده است" , code : 500}
+                }
+
             }
         } , 
         otp : {
