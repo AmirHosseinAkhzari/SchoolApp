@@ -521,6 +521,8 @@ async function ConnectTodb() {
                         {date : date , userId : userId} , 
                         {description : text}
                     )
+
+                    return {message : "عملیات با موفقت انجام شد" , code : 200}
                 }catch(e){
                     console.log(e)
                     return {message : "مشکلی پیش آمده است" , code : 500}
