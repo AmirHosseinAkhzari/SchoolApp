@@ -2,6 +2,7 @@ package com.example.keravat.ui.attendance
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -278,6 +279,14 @@ fun AttendanceHeader(navController: NavController) {
     ) {
         Box(Modifier.fillMaxWidth()) {
             BackButton {
+                scope.launch {
+                    expanded = true
+                    delay(1000)
+                    navController.navigate("main/close")
+                }
+            }
+
+            BackHandler {
                 scope.launch {
                     expanded = true
                     delay(1000)

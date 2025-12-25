@@ -308,6 +308,14 @@ fun AttendanceHeader(navController: NavController) {
                 }
             }
 
+            BackHandler {
+                scope.launch {
+                    expanded = true
+                    delay(1000)
+                    navController.navigate("main/close")
+                }
+            }
+
             Column(
                 Modifier
                     .fillMaxWidth()
