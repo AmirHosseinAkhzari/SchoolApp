@@ -4,6 +4,11 @@ import android.app.Activity
 import android.os.Build
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +20,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,11 +46,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +72,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.FirebaseCommonKtxRegistrar
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.messaging
+import kotlin.math.roundToInt
 
 
 @Composable
@@ -87,6 +98,45 @@ fun appColors(): Map<String, Color> {
         )
     }
 }
+
+
+@Composable
+fun Heder(){
+
+    val MaxScreenheight = LocalConfiguration.current.screenHeightDp.dp
+    val lastHeight = remember { mutableStateOf(MaxScreenheight) }
+    val animatedHeight = remember { Animatable(lastHeight.value.value) }
+    LaunchedEffect(Unit) {
+        animatedHeight.animateTo(
+            targetValue = 150f,
+            animationSpec = spring(
+                dampingRatio = 0.8f,
+                stiffness = 30f
+            )
+        )
+
+    }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clip(RoundedCornerShape(bottomEnd = 40.dp , bottomStart = 40.dp))
+            .background(MaterialTheme.colorScheme.onBackground)
+            .fillMaxWidth()
+            .height(animatedHeight.value.dp)
+
+
+    ) {
+        Spacer(Modifier.size(10.dp))
+        Text(
+            text = "آستین",
+            style = MaterialTheme.typography.titleLarge ,
+            color = MaterialTheme.colorScheme.background ,
+        )
+        Spacer(Modifier.size(10.dp))
+    }
+}
+
 
 
 
@@ -144,25 +194,8 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
         modifier = modifier ,
         contentAlignment = Alignment.TopCenter
     ){
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .clip(RoundedCornerShape(bottomEnd = 40.dp , bottomStart = 40.dp))
-                .background(MaterialTheme.colorScheme.onBackground)
-                .fillMaxWidth()
 
-        ) {
-            Spacer(Modifier.size(10.dp))
-            Text(
-                text = "آستین",
-                style = MaterialTheme.typography.titleLarge ,
-                color = MaterialTheme.colorScheme.background ,
 
-            )
-            Spacer(Modifier.size(10.dp))
-        }
-        
 
         Box(
             modifier = Modifier
@@ -226,6 +259,11 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
                     .align(Alignment.TopCenter)
             )
         }
+
+
+        Heder()
+
+
     }
 }
 
