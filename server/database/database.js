@@ -82,7 +82,7 @@ async function ConnectTodb() {
 
     //mongodb://localhost:27017/school
     //process.env.MONGO_URL
-    await mongoose.connect(process.env.MONGO_URL)
+    await mongoose.connect("mongodb://localhost:27017/school")
     console.log("✅ Connected to MongoDB")
     utils()
     if(await User.findOne({"role" : "admin"}) == null ){
