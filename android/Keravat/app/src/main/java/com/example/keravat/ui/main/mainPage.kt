@@ -3,6 +3,8 @@ package com.example.keravat.ui.main
 import android.app.Activity
 import android.os.Build
 import android.util.Log
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,10 +26,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -48,6 +54,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import  com.example.keravat.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 @Composable
 fun appColors(): Map<String, Color> {
     val isDark = isSystemInDarkTheme()
@@ -75,11 +84,69 @@ fun appColors(): Map<String, Color> {
 
 
 @Composable
-fun mainPage(modifier: Modifier = Modifier , navController: NavController){
+fun Heder(mode : String){
+
+    val MaxScreenheight = LocalConfiguration.current.screenHeightDp.dp
+    val lastHeight = remember { mutableStateOf(MaxScreenheight) }
+    var animatedHeight = remember { Animatable(lastHeight.value.value) }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+
+        if(mode == "firstTime"){
+            scope.launch {
+                delay(500)
+                animatedHeight.animateTo(
+                    targetValue = 150f,
+                    animationSpec = spring(
+                        dampingRatio = 0.8f,
+                        stiffness = 30f
+                    )
+                )
+            }
+        }else if (mode == "close") {
+
+            animatedHeight.animateTo(
+                targetValue = 150f,
+                animationSpec = spring(
+                    dampingRatio = 0.9f,
+                    stiffness = 10f
+                )
+            )
+        }
+        else{
+            animatedHeight.snapTo(150f)
+        }
+
+
+    }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clip(RoundedCornerShape(bottomEnd = 40.dp , bottomStart = 40.dp))
+            .background(MaterialTheme.colorScheme.onBackground)
+            .fillMaxWidth()
+            .height(animatedHeight.value.dp)
+
+
+    ) {
+        Spacer(Modifier.size(10.dp))
+        Text(
+            text = "کراوات",
+            style = MaterialTheme.typography.titleLarge ,
+            color = Color.White ,
+        )
+        Spacer(Modifier.size(10.dp))
+    }
+}
+
+
+
+
+@Composable
+fun mainPage(modifier: Modifier = Modifier , navController: NavController , mode : String){
     val view = LocalView.current
     val colors = appColors()
-
-
     val viewModel = hiltViewModel<MainPageViewModel>()
     val topAppBarColor = MaterialTheme.colorScheme.onBackground.toArgb()
     val context = LocalContext.current
@@ -97,6 +164,25 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
         }
     }
 
+
+    var Dietail by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if(mode == "firstTime"){
+            Dietail= true
+        }else{
+            delay(200)
+            Dietail= true
+        }
+
+    }
+
+
+
+
+
+
+
     SideEffect {
         val window = (view.context as Activity).window
         window.statusBarColor =topAppBarColor
@@ -106,86 +192,107 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
         modifier = modifier ,
         contentAlignment = Alignment.TopCenter
     ){
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .clip(RoundedCornerShape(bottomEnd = 40.dp , bottomStart = 40.dp))
-                .background(MaterialTheme.colorScheme.onBackground)
-                .fillMaxWidth()
-
-        ) {
-            Spacer(Modifier.size(10.dp))
-            Text(
-                text = "کراوات",
-                style = MaterialTheme.typography.titleLarge ,
-                color = MaterialTheme.colorScheme.background ,
-
-                )
-            Spacer(Modifier.size(10.dp))
-        }
 
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-        ) {
+        if(Dietail) {
 
-
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            Box(
                 modifier = Modifier
-                    .size(400.dp, 450.dp)
-                    .padding(30.dp)
-                    .border(2.dp, color = MaterialTheme.colorScheme.onBackground, RoundedCornerShape(40.dp))
+                    .align(Alignment.Center)
             ) {
 
 
-                Row(
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 30.dp , end = 30.dp , top = 30.dp)
-                ){
-                    AppIcon(
-                        color = colors["attendance"]!!,
-                        name = "حضور غیاب",
-                        painter = painterResource(R.drawable.attendance),
-                        mode = true,
-                        navigation = { navController.navigate("attendance") } ,
-                        modifier = Modifier.weight(1f)
+                        .size(400.dp, 450.dp)
+                        .padding(30.dp)
+                        .border(
+                            2.dp,
+                            color = MaterialTheme.colorScheme.secondary,
+                            RoundedCornerShape(40.dp)
+                        )
+                ) {
 
-                    )
 
-                    AppIcon(colors["library"]!! , "به زودی" , painterResource(R.drawable.library) , mode = false , {}  , Modifier.weight(1f))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 30.dp, end = 30.dp, top = 30.dp)
+                    ) {
+                        AppIcon(
+                            color = colors["attendance"]!!,
+                            name = "حضور غیاب",
+                            painter = painterResource(R.drawable.attendance),
+                            mode = true,
+                            navigation = { navController.navigate("attendance") },
+                            modifier = Modifier.weight(1f)
 
-                    AppIcon(colors["cafeteria"]!! , "به زودی" , painterResource(R.drawable.cafeteria) , mode = false , {} ,
-                        Modifier.weight(1f) )
+                        )
+
+                        AppIcon(
+                            colors["library"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.library),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+
+                        AppIcon(
+                            colors["cafeteria"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.cafeteria),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 30.dp, end = 30.dp, top = 20.dp)
+
+                    ) {
+
+                        AppIcon(
+                            colors["poll"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.poll),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+                        AppIcon(
+                            colors["important"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.important),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+                        AppIcon(
+                            colors["score"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.score),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+                    }
                 }
 
-                Row(
+                Text(
+                    text = "گزینه ها",
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 30.dp , end = 30.dp , top = 20.dp)
-
-                ){
-
-                    AppIcon(colors["poll"]!! , "به زودی" , painterResource(R.drawable.poll) , mode = false , {}  ,Modifier.weight(1f))
-                    AppIcon(colors["important"]!!  , "به زودی" , painterResource(R.drawable.important) , mode = false , {} , Modifier.weight(1f))
-                    AppIcon(colors["score"]!!  , "به زودی", painterResource(R.drawable.score) , mode = false , {} , Modifier.weight(1f))
-
-                }
+                        .background(MaterialTheme.colorScheme.background)
+                        .align(Alignment.TopCenter)
+                )
             }
-
-            Text(
-                text = "گزینه ها",
-                color = MaterialTheme.colorScheme.onBackground ,
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .align(Alignment.TopCenter)
-            )
         }
+
+
+        Heder(mode)
+
+
     }
 }
 
@@ -252,7 +359,7 @@ fun AutoSizeText(
     maxFontSize: TextUnit = 16.sp,
     minFontSize: TextUnit = 8.sp,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
-    color: Color = MaterialTheme.colorScheme.onBackground
+    color: Color = MaterialTheme.colorScheme.secondary
 ) {
     var fontSize by remember { mutableStateOf(maxFontSize) }
     Text(

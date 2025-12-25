@@ -19,7 +19,7 @@ fun KeravatApp(modifier : Modifier = Modifier){
         MainNavHost(modifier , "login")
 
     }else{
-        MainNavHost(modifier , "main")
+        MainNavHost(modifier , "main/firstTime")
 
     }
 

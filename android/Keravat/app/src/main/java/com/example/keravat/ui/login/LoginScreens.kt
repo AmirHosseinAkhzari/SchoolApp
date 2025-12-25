@@ -102,7 +102,6 @@ fun LoginWithNumber(navController: NavController) {
         }else{
             error = uiState.value.e
             lodeing = false
-
         }
     }
 
@@ -159,20 +158,21 @@ fun LoginWithNumber(navController: NavController) {
                         focusedTextColor = MaterialTheme.colorScheme.onBackground,
                         disabledTextColor = MaterialTheme.colorScheme.onBackground,
                         focusedContainerColor = MaterialTheme.colorScheme.background,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.background
+                        unfocusedContainerColor = MaterialTheme.colorScheme.background ,
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     placeholder = {
                         Text(
                             text = "شماره ...",
                             style = MaterialTheme.typography.displaySmall,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     },
                     shape = RoundedCornerShape(16.dp)
                 )
                 Text(
                     text =  error,
-                    color =  Color.Red ,
+                    color = MaterialTheme.colorScheme.background ,
                     style = MaterialTheme.typography.bodySmall ,
                     modifier = Modifier
                         .width(270.dp)
