@@ -36,6 +36,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +73,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.FirebaseCommonKtxRegistrar
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.messaging
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 
@@ -101,19 +104,39 @@ fun appColors(): Map<String, Color> {
 
 
 @Composable
-fun Heder(){
+fun Heder(mode : String){
 
     val MaxScreenheight = LocalConfiguration.current.screenHeightDp.dp
     val lastHeight = remember { mutableStateOf(MaxScreenheight) }
-    val animatedHeight = remember { Animatable(lastHeight.value.value) }
+    var animatedHeight = remember { Animatable(lastHeight.value.value) }
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        animatedHeight.animateTo(
-            targetValue = 150f,
-            animationSpec = spring(
-                dampingRatio = 0.8f,
-                stiffness = 30f
+
+        if(mode == "firstTime"){
+            scope.launch {
+                delay(500)
+                animatedHeight.animateTo(
+                    targetValue = 150f,
+                    animationSpec = spring(
+                        dampingRatio = 0.8f,
+                        stiffness = 30f
+                    )
+                )
+            }
+        }else if (mode == "close") {
+
+            animatedHeight.animateTo(
+                targetValue = 150f,
+                animationSpec = spring(
+                    dampingRatio = 0.9f,
+                    stiffness = 10f
+                )
             )
-        )
+        }
+        else{
+            animatedHeight.snapTo(150f)
+        }
+
 
     }
     Column(
@@ -141,11 +164,9 @@ fun Heder(){
 
 
 @Composable
-fun mainPage(modifier: Modifier = Modifier , navController: NavController){
+fun mainPage(modifier: Modifier = Modifier , navController: NavController , mode : String){
     val view = LocalView.current
     val colors = appColors()
-
-
     val viewModel = hiltViewModel<MainPageViewModel>()
     val topAppBarColor = MaterialTheme.colorScheme.onBackground.toArgb()
     val context = LocalContext.current
@@ -163,8 +184,20 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
         }
     }
 
-    Firebase.messaging.token.addOnCompleteListener { task ->
 
+    var Dietail by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if(mode == "firstTime"){
+            Dietail= true
+        }else{
+            delay(200)
+            Dietail= true
+        }
+
+    }
+
+    Firebase.messaging.token.addOnCompleteListener { task ->
 
         if (!task.isSuccessful ){
             Log.w("FCM", "Token failed", task.exception)
@@ -196,76 +229,108 @@ fun mainPage(modifier: Modifier = Modifier , navController: NavController){
     ){
 
 
+        if(Dietail) {
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-        ) {
-
-
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            Box(
                 modifier = Modifier
-                    .size(400.dp, 450.dp)
-                    .padding(30.dp)
-                    .border(2.dp, color = MaterialTheme.colorScheme.onBackground, RoundedCornerShape(40.dp))
+                    .align(Alignment.Center)
             ) {
 
 
-                Row(
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 30.dp , end = 30.dp , top = 30.dp)
-                ){
-                    AppIcon(
-                        color = colors["attendance"]!!,
-                        name = "حضور غیاب",
-                        painter = painterResource(R.drawable.attendance),
-                        mode = true,
-                        navigation = { navController.navigate("attendance") } ,
-                        modifier = Modifier.weight(1f)
+                        .size(400.dp, 450.dp)
+                        .padding(30.dp)
+                        .border(
+                            2.dp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            RoundedCornerShape(40.dp)
+                        )
+                ) {
 
-                    )
 
-                    AppIcon(colors["library"]!! , "به زودی" , painterResource(R.drawable.library) , mode = false , {}  , Modifier.weight(1f))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 30.dp, end = 30.dp, top = 30.dp)
+                    ) {
+                        AppIcon(
+                            color = colors["attendance"]!!,
+                            name = "حضور غیاب",
+                            painter = painterResource(R.drawable.attendance),
+                            mode = true,
+                            navigation = { navController.navigate("attendance") },
+                            modifier = Modifier.weight(1f)
 
-                    AppIcon(colors["cafeteria"]!! , "به زودی" , painterResource(R.drawable.cafeteria) , mode = false , {} ,
-                        Modifier.weight(1f) )
+                        )
+
+                        AppIcon(
+                            colors["library"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.library),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+
+                        AppIcon(
+                            colors["cafeteria"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.cafeteria),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 30.dp, end = 30.dp, top = 20.dp)
+
+                    ) {
+
+                        AppIcon(
+                            colors["poll"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.poll),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+                        AppIcon(
+                            colors["important"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.important),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+                        AppIcon(
+                            colors["score"]!!,
+                            "به زودی",
+                            painterResource(R.drawable.score),
+                            mode = false,
+                            {},
+                            Modifier.weight(1f))
+                    }
                 }
 
-                Row(
+                Text(
+                    text = "گزینه ها",
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 30.dp , end = 30.dp , top = 20.dp)
-
-                ){
-
-                    AppIcon(colors["poll"]!! , "به زودی" , painterResource(R.drawable.poll) , mode = false , {}  ,Modifier.weight(1f))
-                    AppIcon(colors["important"]!!  , "به زودی" , painterResource(R.drawable.important) , mode = false , {} , Modifier.weight(1f))
-                    AppIcon(colors["score"]!!  , "به زودی", painterResource(R.drawable.score) , mode = false , {} , Modifier.weight(1f))
-
-
-
-                }
+                        .background(MaterialTheme.colorScheme.background)
+                        .align(Alignment.TopCenter)
+                )
             }
-
-            Text(
-                text = "گزینه ها",
-                color = MaterialTheme.colorScheme.onBackground ,
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .align(Alignment.TopCenter)
-            )
         }
 
 
-        Heder()
+        Heder(mode)
 
 
     }
 }
+
 
 
 @Composable
