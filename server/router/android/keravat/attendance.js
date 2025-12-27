@@ -19,7 +19,7 @@ router.get("/read" , async (req , res ) => {
 
 router.post("/addDescription" , async (req , res ) => { 
 
-    const data = await global.db.attendance.addDescription(req.headers['authorization'] , req.body.text)
+    const data = await global.db.attendance.addDescription(req.headers['authorization'] , req.body.text , req.body.date)
 
     console.log(req.headers['authorization'])
     res.status(200).json(data)

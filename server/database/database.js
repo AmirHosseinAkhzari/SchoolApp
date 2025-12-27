@@ -501,7 +501,7 @@ async function ConnectTodb() {
 
                 return {"Info" : Info , "total" : {"present" : presentCount , "lateness" :latenessCount ,  "absent" : absentCount}}
             } , 
-            addDescription : async (token , text) => {
+            addDescription : async (token , text , date ) => {
                 try{
                     try{
                         payload = global.utils.token.verify(token)
@@ -512,10 +512,6 @@ async function ConnectTodb() {
 
                     const userId = payload.userId
 
-                    
-                    const jDate = jalaali.toJalaali(new Date())
-
-                    const date  = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
 
                     await Attendance.updateOne(
                         {date : date , userId : userId} , 

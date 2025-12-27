@@ -52,6 +52,16 @@ data class total (
     val absent  : Int
 )
 
+data class ReqAddDescription(
+    val text : String ,
+    val date : String
+)
+
+data class ResAddDescription(
+    val message : String ,
+    val code : Int
+)
+
 
 
 interface KeravatApi {
@@ -64,5 +74,8 @@ interface KeravatApi {
 
     @GET("attendance/read")
     suspend fun readAttendance(@Header("Authorization") token : String ) : Response<ResReadAttendance>
+    
+    @POST("attendance/addDescription")
+    suspend fun  addAttendanceDescription(@Header("Authorization") token : String , @Body request:ReqAddDescription ) : Response<ResAddDescription>
 
 }

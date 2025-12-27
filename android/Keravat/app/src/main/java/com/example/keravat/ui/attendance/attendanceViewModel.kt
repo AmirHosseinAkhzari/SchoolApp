@@ -2,6 +2,7 @@ package com.example.keravat.ui.attendance
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.example.keravat.data.remote.ResAddDescription
 import com.example.keravat.data.remote.ResReadAttendance
 import com.example.keravat.domain.repo.KeravatRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,9 +20,14 @@ class AttendanceViewModel @Inject constructor(
         return token
     }
 
+
+
     suspend fun readAttendance(token : String): Result<ResReadAttendance?> {
 
         return repo.readAttendance(token)
+    }
 
+    suspend fun addAttendanceDescription(token: String , text: String , date : String) : Result<ResAddDescription?>{
+        return repo.addAttendanceDescription(token , text , date)
     }
 }

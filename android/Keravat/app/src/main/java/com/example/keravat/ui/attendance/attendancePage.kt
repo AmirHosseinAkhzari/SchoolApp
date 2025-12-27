@@ -3,8 +3,10 @@ package com.example.keravat.ui.attendance
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,15 +22,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -46,10 +52,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.keravat.data.remote.ResReadAttendance
@@ -132,12 +144,15 @@ fun appColors(): Map<String, Color> {
             "present" to Color(0xFF3FAF46),
             "absent" to Color(0xFF8F202D),
             "lateness" to Color(0xFFE1B12C),
+            "done" to Color(0xFF1C5B20),
         )
     } else {
         mapOf(
             "present" to Color(0xFF89EC8D),
             "absent" to Color(0xFFF53046),
             "lateness" to Color(0xFFF8C01F),
+            "done" to Color(0xFF2A862F),
+
         )
     }
 }
@@ -159,13 +174,237 @@ fun number(number : String , name : String){
 }
 
 
+
+
+
 @Composable
-fun StatusItem(time : String , dete : String , status : String){
+fun DiscriptionAdded(onDismissRequest :() -> Unit) {
 
     val colors = appColors()
 
+
+
+
+    Dialog(onDismissRequest = onDismissRequest) {
+        Box(
+            Modifier
+                .size(300.dp, 380.dp)
+                .clip(RoundedCornerShape(20.dp))
+
+                .background(colors["done"]!!)
+                .padding(10.dp)
+                .border(
+                    8.dp,
+                    MaterialTheme.colorScheme.background,
+                    RoundedCornerShape(20.dp)
+                )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .height(150.dp)
+                        .width(150.dp)
+                        .clip(RoundedCornerShape(50.dp))
+                        .background(MaterialTheme.colorScheme.background)
+                ){
+
+                    Icon(
+                        imageVector = Icons.Rounded.Done,
+                        contentDescription = "Confirm",
+                        modifier = Modifier.size(180.dp),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+                Spacer(Modifier.size(20.dp))
+
+                Text(
+                    text = "توضیحات با موفقیت ثبت شده" ,
+                    color = MaterialTheme.colorScheme.background ,
+                    modifier = Modifier.fillMaxWidth() ,
+                    style = MaterialTheme.typography.bodyMedium ,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center
+                )
+
+            }
+        }
+    }
+}
+
+@Composable
+fun AddDiscriptionDialog(onDismissRequest :() -> Unit , time : String , date : String , status : String ){
+
+
+    val colors = appColors()
+
+     var value by remember { mutableStateOf("") }
+
+    var submit by remember { mutableStateOf(false) }
+
+    var isError by remember { mutableStateOf(false) }
+
+    var Error by remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
+
+    val viewModel = hiltViewModel<AttendanceViewModel>()
+
+    val token = viewModel.GetMainToken(LocalContext.current)
+
+
+    val backgroundColor by animateColorAsState(
+        targetValue = if (submit)  colors["done"]!! else colors[status]!!,
+        animationSpec = tween(durationMillis = 1000)
+    )
+    Dialog(
+        onDismissRequest = onDismissRequest
+    ) {
+
+        Box(
+            Modifier
+                .size(300.dp , 380.dp)
+                .clip(RoundedCornerShape(20.dp))
+
+                .background(backgroundColor)
+                .padding( 10.dp)
+                .border(
+                    8.dp ,
+                    MaterialTheme.colorScheme.background ,
+                    RoundedCornerShape(20.dp)
+                )
+        ){
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally ,
+
+                modifier = Modifier
+                    .fillMaxSize()
+            ){
+
+
+                Spacer(Modifier.size(50.dp))
+
+
+                val title =  translateStatusToPersian(status)
+                Log.d("color" , title)
+                Log.d("color" , status)
+
+                Text(
+                    text = title ,
+                    color = MaterialTheme.colorScheme.background ,
+                    modifier = Modifier.fillMaxWidth() ,
+                    style = MaterialTheme.typography.titleMedium ,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(Modifier.size(10.dp))
+
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = { value = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    label = {
+                        Text(
+                            text = "دلیل $title",
+                            color = MaterialTheme.colorScheme.secondary ,
+                            style = MaterialTheme.typography.bodySmall ,
+                            modifier = Modifier.background(Color.Transparent)
+                        )
+                    },
+                    placeholder = {
+                        Text(
+                            text = "دلیل $title را وارد کنید ",
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f) ,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    },
+                    singleLine = false,
+                    maxLines = 3,
+                    textStyle = MaterialTheme.typography.bodySmall ,
+                    shape = RoundedCornerShape(14.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                        cursorColor = MaterialTheme.colorScheme.secondary,
+                        focusedContainerColor = MaterialTheme.colorScheme.background,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground ,
+
+
+                    )
+                )
+
+                Spacer(Modifier.size(10.dp))
+                if(isError){
+                    Text(
+                        text = Error ,
+                        color = MaterialTheme.colorScheme.background ,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 30.dp)
+                        ,
+                        style = MaterialTheme.typography.bodySmall ,
+                        textAlign = TextAlign.Start
+                    )
+                }
+                Spacer(Modifier.size(10.dp))
+
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .height(70.dp)
+                        .width(150.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.background)
+                        .clickable{
+                            scope.launch {
+
+                                val res = viewModel.addAttendanceDescription(token!! , value , date)
+
+                                Log.d("res" , res.toString())
+                            }
+
+                        }
+                ){
+
+                    Icon(
+                        imageVector = Icons.Rounded.Done,
+                        contentDescription = "Confirm",
+                        modifier = Modifier.size(180.dp),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
+        }
+
+
+    }
+
+}
+
+@Composable
+fun StatusItem(time : String , date : String , status : String){
+
+    val colors = appColors()
+
+    var DialogMode by remember { mutableStateOf(false) }
+
     Box(
         Modifier
+            .clickable{
+                DialogMode = true
+            }
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
             .background(colors[status]!!)
@@ -176,6 +415,8 @@ fun StatusItem(time : String , dete : String , status : String){
                 RoundedCornerShape(20.dp)
             )
             .height(120.dp)
+
+
     ){
 
         Text(
@@ -189,7 +430,7 @@ fun StatusItem(time : String , dete : String , status : String){
         )
 
         Text(
-            text = " $dete : ورود " ,
+            text = " $date : ورود " ,
             style = MaterialTheme.typography.bodyMedium ,
             color = MaterialTheme.colorScheme.background,
             fontFamily = FontFamily(Font(R.font.tanha)) ,
@@ -199,6 +440,10 @@ fun StatusItem(time : String , dete : String , status : String){
         )
         Spacer(Modifier.size(8.dp))
 
+    }
+
+    if(DialogMode == true){
+        AddDiscriptionDialog({DialogMode = false} , time , date , status)
     }
 
 }
@@ -353,7 +598,7 @@ fun AttendanceList(data: ResReadAttendance) {
             items(data.Info) { item ->
                 StatusItem(
                     time = item.checkIn,
-                    dete = item.date,
+                    date = item.date,
                     status = translateStatus(item.status)
                 )
             }
@@ -365,6 +610,15 @@ fun translateStatus(name : String) : String{
         "حاضر" -> "present"
         "غایب" -> "absent"
         "دیر اومده" -> "lateness"
+        else -> ""
+    }
+}
+
+fun translateStatusToPersian(name : String) : String{
+    return when (name){
+        "present" -> "حاضر"
+        "absent" -> "غایب"
+        "lateness" -> "دیر اومده"
         else -> ""
     }
 }
