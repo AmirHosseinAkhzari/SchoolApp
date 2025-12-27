@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -186,8 +187,6 @@ fun number(number : String , name : String){
 fun DiscriptionAdded(onDismissRequest :() -> Unit) {
 
     val colors = appColors()
-
-
 
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -410,7 +409,7 @@ fun AddDiscriptionDialog(onDismissRequest :() -> Unit , time : String , date : S
 }
 
 @Composable
-fun StatusItem(time : String , date : String , status : String){
+fun StatusItem(time : String , date : String , status : String , descriptionMode : Boolean){
 
     val colors = appColors()
 
@@ -459,8 +458,12 @@ fun StatusItem(time : String , date : String , status : String){
     }
 
     if(DialogMode == true){
-//        AddDiscriptionDialog({DialogMode = false} , time , date , status)
-        DiscriptionAdded({DialogMode = false})
+        if(descriptionMode){
+            AddDiscriptionDialog({DialogMode = false} , time , date , status)
+        }else{
+            DiscriptionAdded({DialogMode = false})
+        }
+
     }
 
 }

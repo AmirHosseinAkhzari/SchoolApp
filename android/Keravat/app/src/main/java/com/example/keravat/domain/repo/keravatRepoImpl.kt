@@ -7,9 +7,11 @@ import android.nfc.NfcAdapter
 import android.util.Log
 import com.example.keravat.data.remote.KeravatApi
 import com.example.keravat.data.remote.ReqAddDescription
+import com.example.keravat.data.remote.ReqCheckDescription
 import com.example.keravat.data.remote.ReqCheckOtp
 import com.example.keravat.data.remote.ReqOtpNum
 import com.example.keravat.data.remote.ResAddDescription
+import com.example.keravat.data.remote.ResCheckDescription
 import com.example.keravat.data.remote.ResCheckOtp
 import com.example.keravat.data.remote.ResOtp
 import com.example.keravat.data.remote.ResReadAttendance
@@ -102,6 +104,19 @@ class KeravatRepoImpl(
         }.onFailure {e ->
             handleError(e)
         }
+
+
+    override suspend fun checkAttendanceDescription(
+        token: String,
+        date: String
+    ): Result<ResCheckDescription?>  =
+        runCatching {
+            val response = api.checkAttendanceDescription(token , ReqCheckDescription(date))
+            response.body()
+        }.onFailure {e ->
+            handleError(e)
+        }
+
 
 
 
