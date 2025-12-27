@@ -524,6 +524,38 @@ async function ConnectTodb() {
                     return {message : "مشکلی پیش آمده است" , code : 500}
                 }
 
+            } , 
+            checkDescription  : async (token , date) => {
+                try{
+                    try{
+                        payload = global.utils.token.verify(token)
+                    }catch (e){
+                        console.log(e)
+                        return {message : "توکن واقعی نیست " , code : 500}
+                    }
+
+                    const userId = payload.userId
+
+                    console.log(userId)
+
+                    const data = await Attendance.findOne(
+                        {
+                            date : date , 
+                            userId : userId
+                        }
+                    )
+                    console.log(data)
+
+                    console.log(data.description)
+                    if(data.description == "" | data.description ==  null){
+                        return {message : "توضیحات ثبت نشده است" , code : 200}
+                    }
+
+                    return {message : "توضیحات ثبت شده است" , code : 400}
+                }catch(e){
+                    console.log(e)
+                    return {message : "مشکلی پیش آمده است" , code : 500}
+                }
             }
         } , 
         otp : {

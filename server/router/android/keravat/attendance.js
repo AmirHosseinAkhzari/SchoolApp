@@ -26,6 +26,15 @@ router.post("/addDescription" , async (req , res ) => {
 
 })
 
+router.post("/checkDescription" , async (req , res ) => { 
+
+    const data = await global.db.attendance.checkDescription(req.headers['authorization'] ,  req.body.date)
+
+    console.log(req.headers['authorization'])
+    res.status(200).json(data)
+
+})
+
 
 
 

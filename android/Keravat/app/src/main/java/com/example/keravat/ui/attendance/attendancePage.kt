@@ -64,6 +64,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+
 import com.example.keravat.data.remote.ResReadAttendance
 import kotlinx.coroutines.launch
 import com.example.keravat.R
@@ -215,11 +220,12 @@ fun DiscriptionAdded(onDismissRequest :() -> Unit) {
                         .background(MaterialTheme.colorScheme.background)
                 ){
 
-                    Icon(
-                        imageVector = Icons.Rounded.Done,
-                        contentDescription = "Confirm",
-                        modifier = Modifier.size(180.dp),
-                        tint = MaterialTheme.colorScheme.secondary
+                    val composition by rememberLottieComposition(
+                        LottieCompositionSpec.RawRes(R.raw.success)
+                    )
+
+                    LottieAnimation(
+                        composition = composition
                     )
                 }
 
@@ -370,9 +376,19 @@ fun AddDiscriptionDialog(onDismissRequest :() -> Unit , time : String , date : S
                         .clickable{
                             scope.launch {
 
-                                val res = viewModel.addAttendanceDescription(token!! , value , date)
+                                if(value == ""){
+                                    isError = true
+                                }else{
+                                    val res = viewModel.addAttendanceDescription(token!! , value , date)
 
-                                Log.d("res" , res.toString())
+                                    if(res.getOrNull()!!.code == 200 ){
+                                        submit = true
+                                        delay(1000)
+                                        onDismissRequest()
+
+                                    }
+                                }
+
                             }
 
                         }
@@ -443,7 +459,8 @@ fun StatusItem(time : String , date : String , status : String){
     }
 
     if(DialogMode == true){
-        AddDiscriptionDialog({DialogMode = false} , time , date , status)
+//        AddDiscriptionDialog({DialogMode = false} , time , date , status)
+        DiscriptionAdded({DialogMode = false})
     }
 
 }

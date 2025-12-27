@@ -62,7 +62,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
     implementation("androidx.navigation:navigation-compose:2.8.3")
-    implementation("androidx.navigation:navigation-ui:2.8.3")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.google.dagger:hilt-android:2.57.1")
@@ -70,4 +69,5 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     ksp("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
 }

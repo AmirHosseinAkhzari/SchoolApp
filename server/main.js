@@ -48,6 +48,7 @@ const checkTokenAttendance = require("./middleware/checkTokenAttendAnce");
 
 
 const morgan = require('morgan')
+const utils = require('./utils/utils')
 async function main() {
 
   // strat my database
@@ -57,6 +58,8 @@ async function main() {
   await sms()
 
   await analytics()
+
+  await utils()
 
   const app  = express()
 
