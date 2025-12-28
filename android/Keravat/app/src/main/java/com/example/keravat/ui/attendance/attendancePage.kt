@@ -3,10 +3,13 @@ package com.example.keravat.ui.attendance
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -148,14 +151,14 @@ fun appColors(): Map<String, Color> {
     return if (isDark) {
         mapOf(
             "present" to Color(0xFF3FAF46),
-            "absent" to Color(0xFF8F202D),
+            "absent" to Color(0xFFFF5252),
             "lateness" to Color(0xFFE1B12C),
             "done" to Color(0xFF1C5B20),
         )
     } else {
         mapOf(
             "present" to Color(0xFF89EC8D),
-            "absent" to Color(0xFFF53046),
+            "absent" to Color(0xFF8C0000),
             "lateness" to Color(0xFFF8C01F),
             "done" to Color(0xFF2A862F),
 
@@ -184,7 +187,7 @@ fun number(number : String , name : String){
 
 
 @Composable
-fun DiscriptionAdded(onDismissRequest :() -> Unit) {
+fun DiscriptionAdded(onDismissRequest :() -> Unit , ) {
 
     val colors = appColors()
 
@@ -245,7 +248,7 @@ fun DiscriptionAdded(onDismissRequest :() -> Unit) {
 }
 
 @Composable
-fun AddDiscriptionDialog(onDismissRequest :() -> Unit , time : String , date : String , status : String ){
+fun AddDiscriptionDialog(onDismissRequest :() -> Unit , time : String , date : String , status : String , DiscriptionAdd : () -> Unit ){
 
 
     val colors = appColors()
@@ -286,119 +289,169 @@ fun AddDiscriptionDialog(onDismissRequest :() -> Unit , time : String , date : S
                     RoundedCornerShape(20.dp)
                 )
         ){
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally ,
+            AnimatedVisibility(
+                visible = !submit ,
+                exit = fadeOut(animationSpec = tween(500))
 
-                modifier = Modifier
-                    .fillMaxSize()
-            ){
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
 
-
-                Spacer(Modifier.size(50.dp))
-
-
-                val title =  translateStatusToPersian(status)
-                Log.d("color" , title)
-                Log.d("color" , status)
-
-                Text(
-                    text = title ,
-                    color = MaterialTheme.colorScheme.background ,
-                    modifier = Modifier.fillMaxWidth() ,
-                    style = MaterialTheme.typography.titleMedium ,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(Modifier.size(10.dp))
-
-                OutlinedTextField(
-                    value = value,
-                    onValueChange = { value = it },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    label = {
-                        Text(
-                            text = "دلیل $title",
-                            color = MaterialTheme.colorScheme.secondary ,
-                            style = MaterialTheme.typography.bodySmall ,
-                            modifier = Modifier.background(Color.Transparent)
-                        )
-                    },
-                    placeholder = {
-                        Text(
-                            text = "دلیل $title را وارد کنید ",
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f) ,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    },
-                    singleLine = false,
-                    maxLines = 3,
-                    textStyle = MaterialTheme.typography.bodySmall ,
-                    shape = RoundedCornerShape(14.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        cursorColor = MaterialTheme.colorScheme.secondary,
-                        focusedContainerColor = MaterialTheme.colorScheme.background,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground ,
+                        .fillMaxSize()
+                ) {
 
 
-                    )
-                )
+                    Spacer(Modifier.size(50.dp))
 
-                Spacer(Modifier.size(10.dp))
-                if(isError){
+
+                    val title = translateStatusToPersian(status)
+                    Log.d("color", title)
+                    Log.d("color", status)
+
                     Text(
-                        text = Error ,
-                        color = MaterialTheme.colorScheme.background ,
+                        text = title,
+                        color = MaterialTheme.colorScheme.background,
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(Modifier.size(10.dp))
+
+                    OutlinedTextField(
+                        value = value,
+                        onValueChange = { value = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 30.dp)
-                        ,
-                        style = MaterialTheme.typography.bodySmall ,
-                        textAlign = TextAlign.Start
+                            .padding(horizontal = 20.dp),
+                        label = {
+                            Text(
+                                text = "دلیل $title",
+                                color = MaterialTheme.colorScheme.secondary,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.background(Color.Transparent)
+                            )
+                        },
+                        placeholder = {
+                            Text(
+                                text = "دلیل $title را وارد کنید ",
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        },
+                        singleLine = false,
+                        maxLines = 3,
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        shape = RoundedCornerShape(14.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                            cursorColor = MaterialTheme.colorScheme.secondary,
+                            focusedContainerColor = MaterialTheme.colorScheme.background,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+
+
+                            )
                     )
-                }
-                Spacer(Modifier.size(10.dp))
 
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(70.dp)
-                        .width(150.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colorScheme.background)
-                        .clickable{
-                            scope.launch {
+                    Spacer(Modifier.size(10.dp))
+                    if (isError) {
+                        Text(
+                            text = Error,
+                            color = MaterialTheme.colorScheme.background,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 30.dp),
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Start
+                        )
+                    }
+                    Spacer(Modifier.size(10.dp))
 
-                                if(value == ""){
-                                    isError = true
-                                }else{
-                                    val res = viewModel.addAttendanceDescription(token!! , value , date)
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .height(70.dp)
+                            .width(150.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.background)
+                            .clickable {
+                                scope.launch {
 
-                                    if(res.getOrNull()!!.code == 200 ){
-                                        submit = true
-                                        delay(1000)
-                                        onDismissRequest()
+                                    if (value == "") {
+                                        isError = true
+                                    } else {
+                                        val res =
+                                            viewModel.addAttendanceDescription(token!!, value, date)
 
+                                        if (res.getOrNull()!!.code == 200) {
+                                            submit = true
+                                            delay(3000)
+                                            DiscriptionAdd()
+                                            onDismissRequest()
+
+                                        }
                                     }
+
                                 }
 
                             }
+                    ) {
 
-                        }
-                ){
+                        Icon(
+                            imageVector = Icons.Rounded.Done,
+                            contentDescription = "Confirm",
+                            modifier = Modifier.size(180.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
+            }
 
-                    Icon(
-                        imageVector = Icons.Rounded.Done,
-                        contentDescription = "Confirm",
-                        modifier = Modifier.size(180.dp),
-                        tint = MaterialTheme.colorScheme.onBackground
+            AnimatedVisibility(
+                visible = submit ,
+                enter = fadeIn(animationSpec = tween(500)),
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .height(150.dp)
+                            .width(150.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(MaterialTheme.colorScheme.background)
+                    ){
+
+                        val composition by rememberLottieComposition(
+                            LottieCompositionSpec.RawRes(R.raw.success)
+                        )
+
+                        LottieAnimation(
+                            composition = composition
+                        )
+                    }
+
+                    Spacer(Modifier.size(20.dp))
+
+                    Text(
+                        text = "توضیحات با موفقیت ثبت شده" ,
+                        color = MaterialTheme.colorScheme.background ,
+                        modifier = Modifier.fillMaxWidth() ,
+                        style = MaterialTheme.typography.bodyMedium ,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
                     )
+
                 }
             }
         }
@@ -414,6 +467,8 @@ fun StatusItem(time : String , date : String , status : String , descriptionMode
     val colors = appColors()
 
     var DialogMode by remember { mutableStateOf(false) }
+
+    var mode by remember { mutableStateOf(descriptionMode) }
 
     Box(
         Modifier
@@ -458,8 +513,8 @@ fun StatusItem(time : String , date : String , status : String , descriptionMode
     }
 
     if(DialogMode == true){
-        if(descriptionMode){
-            AddDiscriptionDialog({DialogMode = false} , time , date , status)
+        if(mode){
+            AddDiscriptionDialog({DialogMode = false} , time , date , status , {mode = !mode})
         }else{
             DiscriptionAdded({DialogMode = false})
         }
@@ -619,7 +674,8 @@ fun AttendanceList(data: ResReadAttendance) {
                 StatusItem(
                     time = item.checkIn,
                     date = item.date,
-                    status = translateStatus(item.status)
+                    status = translateStatus(item.status) ,
+                    descriptionMode = if (item.description != null) false else true
                 )
             }
         }

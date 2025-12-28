@@ -325,7 +325,8 @@ fun AppIcon(color  :Color , name : String  , painter: Painter , mode : Boolean ,
                     imageVector = Icons.Rounded.Lock ,
                     contentDescription = "lock" ,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(40.dp) ,
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
             Box(

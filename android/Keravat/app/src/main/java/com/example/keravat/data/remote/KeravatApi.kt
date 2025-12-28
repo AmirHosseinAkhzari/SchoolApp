@@ -43,7 +43,8 @@ data class ResReadAttendance(
 data class Info (
     val checkIn : String ,
     val status : String ,
-    val date : String
+    val date : String ,
+    val description: String? = null
 )
 
 data class total (

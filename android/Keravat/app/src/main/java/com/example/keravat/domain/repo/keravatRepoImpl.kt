@@ -85,6 +85,7 @@ class KeravatRepoImpl(
 
         runCatching {
             val response = api.readAttendance(MainToken)
+            Log.d("APIRES" , response.body().toString())
             response.body()
         }.onFailure {e ->
             Log.e("TEST_API", "Error: ${e.message}")
@@ -106,16 +107,7 @@ class KeravatRepoImpl(
         }
 
 
-    override suspend fun checkAttendanceDescription(
-        token: String,
-        date: String
-    ): Result<ResCheckDescription?>  =
-        runCatching {
-            val response = api.checkAttendanceDescription(token , ReqCheckDescription(date))
-            response.body()
-        }.onFailure {e ->
-            handleError(e)
-        }
+
 
 
 

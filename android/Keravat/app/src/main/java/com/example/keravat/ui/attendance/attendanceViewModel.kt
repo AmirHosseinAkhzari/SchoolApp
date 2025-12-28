@@ -32,7 +32,5 @@ class AttendanceViewModel @Inject constructor(
         return repo.addAttendanceDescription(token , text , date)
     }
 
-    suspend fun checkAttendanceDescription(token: String , date : String) : Result<ResCheckDescription  ?>{
-        return repo.checkAttendanceDescription(token ,date)
-    }
+
 }

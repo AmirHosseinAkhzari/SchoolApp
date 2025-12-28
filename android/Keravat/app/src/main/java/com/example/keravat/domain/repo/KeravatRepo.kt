@@ -12,6 +12,5 @@ interface  KeravatRepo  {
     suspend fun LoginCheckOtp(number: String , code : String) : Result<ResCheckOtp?>
     suspend fun readAttendance(MainToken : String) : Result<ResReadAttendance?>
     suspend fun addAttendanceDescription(token : String , text : String , date : String) : Result<ResAddDescription?>
-    suspend fun checkAttendanceDescription(token : String , date : String) : Result<ResCheckDescription?>
 
 }
