@@ -13,6 +13,7 @@ import com.example.keravat.data.remote.ReqOtpNum
 import com.example.keravat.data.remote.ResAddDescription
 import com.example.keravat.data.remote.ResCheckDescription
 import com.example.keravat.data.remote.ResCheckOtp
+import com.example.keravat.data.remote.ResGetName
 import com.example.keravat.data.remote.ResOtp
 import com.example.keravat.data.remote.ResReadAttendance
 import com.google.gson.Gson
@@ -102,6 +103,16 @@ class KeravatRepoImpl(
         runCatching {
             val response = api.addAttendanceDescription(token , ReqAddDescription(text , date))
             response.body()
+        }.onFailure {e ->
+            handleError(e)
+        }
+
+    override suspend fun GetName(MainToken: String): Result<ResGetName?>  =
+        runCatching {
+            val response = api.GetName(MainToken)
+            Log.d("resss1" ,response.body().toString() )
+            response.body()
+
         }.onFailure {e ->
             handleError(e)
         }

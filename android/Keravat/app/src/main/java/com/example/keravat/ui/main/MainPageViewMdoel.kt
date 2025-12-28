@@ -28,4 +28,28 @@ class MainPageViewModel @Inject constructor(
         sharedPref.edit().clear().apply()
     }
 
+    suspend fun getName(context: Context, token: String): String {
+        val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        val localName = prefs.getString("name", null)
+
+        
+        if (!localName.isNullOrEmpty() && localName != "Guest") {
+            return localName
+        }
+
+
+        val res = repo.GetName(token)
+        val name = res.getOrNull()?.name
+
+
+        name?.let { prefs.edit().putString("name", it).apply() }
+
+
+        return name ?: "Guest"
+    }
+
+
+
+
+
 }

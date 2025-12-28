@@ -73,6 +73,10 @@ data class ResCheckDescription(
 )
 
 
+data class ResGetName(
+    val name : String ,
+    val code : Int
+)
 
 
 interface KeravatApi {
@@ -88,6 +92,9 @@ interface KeravatApi {
     
     @POST("attendance/addDescription")
     suspend fun  addAttendanceDescription(@Header("Authorization") token : String , @Body request:ReqAddDescription ) : Response<ResAddDescription>
+
+    @GET("acc/getname")
+    suspend fun GetName(@Header("Authorization") token : String ) : Response<ResGetName>
 
 
 }

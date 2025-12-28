@@ -76,7 +76,7 @@ fun appColors(): Map<String, Color> {
  * The dynamic Header component that expands/collapses based on the [mode].
  */
 @Composable
-fun Header(mode: String, exitOnClick: () -> Unit = {}) {
+fun Header(mode: String, exitOnClick: () -> Unit = {} , name : String ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
@@ -141,7 +141,7 @@ fun Header(mode: String, exitOnClick: () -> Unit = {}) {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "ولی امیرحسین اخضری",
+                    text = "ولی ${name}",
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
                     fontSize = 30.sp,
@@ -185,10 +185,10 @@ fun mainPage(modifier: Modifier = Modifier, navController: NavController, mode: 
     val viewModel = hiltViewModel<MainPageViewModel>()
     val context = LocalContext.current
     val activity = context as? Activity
-
+    var name by remember { mutableStateOf("") }
     var headerMode by remember { mutableStateOf(mode) }
     var showDetails by remember { mutableStateOf(false) }
-
+    val token  = viewModel.GetMainToken(context)
     // Request Notification Permissions for Android 13+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         SideEffect {
@@ -206,6 +206,7 @@ fun mainPage(modifier: Modifier = Modifier, navController: NavController, mode: 
     LaunchedEffect(Unit) {
         if (mode != "firstTime") delay(200)
         showDetails = true
+        name = viewModel.getName(context ,token!!)!!
     }
     // Define the color here, inside the Composable function
     val statusBarColor = MaterialTheme.colorScheme.onBackground.toArgb()
@@ -256,18 +257,18 @@ fun mainPage(modifier: Modifier = Modifier, navController: NavController, mode: 
         // Header and Profile Icon Logic
         when {
             headerMode == mode -> {
-                Header(mode)
+                Header(mode = mode  , name = name)
                 Profile(onClick = { headerMode = "fullClose" }, isExpanded = false, isReversed = false)
             }
             headerMode == "openAfterFullClose" -> {
-                Header(headerMode)
+                Header(headerMode , name = name)
                 Profile(onClick = { headerMode = "fullClose" }, isExpanded = false, isReversed = true)
             }
             else -> {
                 Header(headerMode, exitOnClick = {
                     viewModel.ClearAllPreferences(context)
                     navController.navigate("login")
-                })
+                } ,name = name)
                 Profile(onClick = {}, isExpanded = true)
             }
         }
