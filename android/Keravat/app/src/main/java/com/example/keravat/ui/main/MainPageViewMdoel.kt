@@ -22,4 +22,10 @@ class MainPageViewModel @Inject constructor(
 
         return token
     }
+
+    fun ClearAllPreferences(context: Context) {
+        val sharedPref = context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+        sharedPref.edit().clear().apply()
+    }
+
 }
