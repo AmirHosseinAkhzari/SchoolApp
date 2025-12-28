@@ -138,6 +138,28 @@ async function ConnectTodb() {
             }, 
             getAllStu : async () => { 
                 return await User.find({role : "Student"}).select("_id firstname lastname birthday nationalid number ParentNumber LocalNumber classId")
+            } , 
+            getName : async (token) => {
+
+                try{
+                    try{
+                        payload = global.utils.token.verify(token)
+                    }catch (e){
+                        console.log(e)
+                        return {message : "توکن واقعی نیست " , code : 500}
+                    }
+
+                    const userId = payload.userId
+
+                    console.log(userId)
+                    const user =  await User.findById(userId)
+                    const name = user.firstname + " " + user.lastname
+
+                    return {name : name , code : 200}
+                }catch(e){  
+                    console.log(e)
+                    return {message : "مشکلی پیش آمده است" , code : 500}
+                }
             }
         }, 
         class : {
