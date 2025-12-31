@@ -50,6 +50,4 @@ class MainPageViewModel @Inject constructor(
 
 
 
-
-
 }

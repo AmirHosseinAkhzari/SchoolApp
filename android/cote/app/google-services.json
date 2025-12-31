@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "463020385420",
+    "project_id": "cote-283d0",
+    "storage_bucket": "cote-283d0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:463020385420:android:8463405215fb2b3f0347a9",
+        "android_client_info": {
+          "package_name": "com.example.cote"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoAixPi843nBknWpxb-_ium1f9I8wLXCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
