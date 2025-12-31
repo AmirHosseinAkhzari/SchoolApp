@@ -44,6 +44,7 @@ const loginKeravatRoutes = require('./router/android/keravat/login')
 
 const accKeravatRoutes = require('./router/android/keravat/accunt')
 
+const loginCotetRoutes = require('./router/android/cote/login')
 
 
 
@@ -100,6 +101,9 @@ async function main() {
   app.use('/android/keravat/attendance', AttendanceKeravatRoutes )
   app.use('/android/keravat/login',loginKeravatRoutes)
   app.use('/android/keravat/acc',accKeravatRoutes)
+
+  app.use('/android/cote/login',loginCotetRoutes)
+
 
 
   app.use('/attendance'  , AttendanceRoutes)
