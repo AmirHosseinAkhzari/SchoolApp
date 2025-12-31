@@ -6,5 +6,10 @@
     "sms": {
         "user": "09173819218",
         "password": "PH5OF"
+    } , 
+    "admin" : {
+        "firstname" : "امیرحسین" , 
+        "lastname" : "اخضری" , 
+        "number" : "09304682860"
     }
 }

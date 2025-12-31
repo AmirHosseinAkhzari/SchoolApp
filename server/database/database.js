@@ -85,11 +85,16 @@ async function ConnectTodb() {
     await mongoose.connect("mongodb://localhost:27017/school")
     console.log("✅ Connected to MongoDB")
     utils()
+
+    const config = await global.utils.config.read()
+    const adminData = config.admin
+
+    console.log(adminData)
     if(await User.findOne({"role" : "admin"}) == null ){
         const admin = User({
-            firstname : "عیسی" , 
-            lastname : "عسجدی" , 
-            number : "09304682860" , 
+            firstname : adminData.firstname , 
+            lastname : adminData.lastname , 
+            number : adminData.number , 
             role : "admin"
         })
         admin.save()
@@ -494,7 +499,10 @@ async function ConnectTodb() {
                         global.sms.send.lateness(user.ParentNumber , record.userFullName )
                     }
 
-                    global.sms.send.manager( "09304682860" , "عیسی عسجدی"  )
+                        const config = await global.utils.config.read()
+                        const adminData = config.admin
+
+                    global.sms.send.manager( adminData.number , `${adminData.firstname} ${adminData.lastname}` )
                     
                 }
 
@@ -815,6 +823,41 @@ async function ConnectTodb() {
 
 
 
+            }
+        } , 
+        admin : {
+            add : async ( number , firstname , lastname) => { 
+
+
+                const checkNumber = await User.findOne({number : number})
+                
+                if(checkNumber){
+                    return {message : "شماره قبلا ثبت شده است" , code : 500}
+                }
+
+                const admin = User({firstname : firstname , lastname : lastname , number : number , role : "admin"})
+
+                admin.save()
+
+                return {message : "عملیات با موفقیت انجام شد!"  , code : 200}
+
+            } , 
+            read : async () => {
+
+
+                const config = await global.utils.config.read()
+                const adminData = config.admin
+
+                const admins = User.find({role : "admin" , number : {$ne : adminData.number}}).select("_id firstname lastname number role")
+
+                return admins
+            } , 
+            delete : async (id) => {
+
+
+                await User.findByIdAndDelete(id)
+
+                return {message : "عملیات با موفقیت انجام شد!"  , code : 200}
             }
         }
     }

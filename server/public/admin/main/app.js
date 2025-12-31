@@ -18,6 +18,38 @@ function ReadClass() {
 }
 
 
+function readAdmins() {
+  return fetch("/adminControl/read", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then(res => res.json())
+    .catch(err => {
+      console.error("FETCH ERROR:", err);
+      return [];
+    });
+}
+
+function addAdmin(firstname, lastname, number) {
+  return fetch("/adminControl/add", {
+    method: "PATCH", // طبق مستندات شما PATCH است
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ firstname, lastname, number })
+  })
+    .then(res => res.json());
+}
+
+function deleteAdmin(id) {
+  return fetch("/adminControl/delete", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id })
+  })
+    .then(res => res.json());
+}
+
+
+
 function addClass(name) {
   return fetch("/class/add", {
     method: "POST",
@@ -173,7 +205,8 @@ const state = {
   classes: [],
   students: [],
   attendance: [],
-  cards: []
+  cards: [] , 
+  admins: [] 
 };
 
 const uiState = {
@@ -223,7 +256,9 @@ function init() {
     }),
     ReadCards().then(res => {
       state.cards = res || [];
-    })
+    }) , 
+    readAdmins().then(res => state.admins = res || [])
+    
   ]).then(() => {
     renderPage(uiState.activePage);
   });
@@ -252,6 +287,20 @@ function bindGlobalEvents() {
   document.getElementById("editStudentForm").addEventListener("submit", handleEditStudent);
   document.getElementById("addCardForm").addEventListener("submit", handleAddCard);
 
+  document.getElementById("addAdminForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fname = document.getElementById("adminFirstname").value;
+  const lname = document.getElementById("adminLastname").value;
+  const num = document.getElementById("adminNumber").value;
+
+  const res = await addAdmin(fname, lname, num);
+  if (res.code === 200) {
+    closePopup("addAdminPopup");
+    renderAdmins();
+  } else {
+    alert(res.message);
+  }
+});
   document.getElementById("confirmDelete").addEventListener("click", handleDeleteConfirm);
 
   const addPhotoInput = document.getElementById("addStudentPhoto");
@@ -311,6 +360,9 @@ function renderPage(page) {
       break;
     case "cards":
       renderCards();
+      break;
+    case "admins":
+      renderAdmins();
       break;
     default:
       renderDashboard();
@@ -959,50 +1011,62 @@ function openDeletePopup(entity, id) {
   openPopup("deletePopup");
 }
 
-function handleDeleteConfirm() {
+async function handleDeleteConfirm() {
   if (!deleteContext.entity || !deleteContext.id) {
     closePopup("deletePopup");
     return;
   }
 
-  // حذف دانش‌آموز
-  if (deleteContext.entity === "student") {
+  const { entity, id } = deleteContext;
 
-    deleteStu(deleteContext.id).then(() => {
-
-      closePopup("deletePopup");
-
-      // رندر دوباره دانش‌آموزها
-      renderPage("students");
-    });
-
+  // ۱. حذف ادمین (فیکس شده)
+  if (entity === "admin") {
+    try {
+      const result = await deleteAdmin(id);
+      if (result.code === 200) {
+        // آپدیت استیت محلی برای حذف فوری از جدول
+        state.admins = state.admins.filter(admin => admin._id !== id);
+        closePopup("deletePopup");
+        renderAdmins(); // رندر مجدد لیست ادمین‌ها
+      } else {
+        alert(result.message || "خطا در حذف مدیر");
+      }
+    } catch (err) {
+      console.error("Error deleting admin:", err);
+    }
     return;
   }
 
-  // حذف کلاس
-  if (deleteContext.entity === "class") {
+  // ۲. حذف دانش‌آموز
+  if (entity === "student") {
+    deleteStu(id).then(() => {
+      closePopup("deletePopup");
+      renderPage("students");
+    });
+    return;
+  }
 
-    deleteClass(deleteContext.id).then(() => {
+  // ۳. حذف کلاس
+  if (entity === "class") {
+    deleteClass(id).then(() => {
       closePopup("deletePopup");
       renderPage("classes");
     });
-
     return;
   }
 
-  // حذف کارت
-  if (deleteContext.entity === "card") {
-    deleteCard(deleteContext.id).then((result) => {
+  // ۴. حذف کارت
+  if (entity === "card") {
+    deleteCard(id).then((result) => {
       if (result.code === 200) {
         closePopup("deletePopup");
         renderPage("cards");
-      } else {
-        alert(result.message || "خطا در حذف کارت");
       }
     });
     return;
   }
 }
+
 
 
 function handleStatusChange(attendanceId, status) {
@@ -1362,4 +1426,151 @@ function handleAddCard(event) {
   });
 }
 
+
+
+/* --------------------------------------------------
+ * Admin Management Logic
+ * -------------------------------------------------- */
+
+async function renderAdmins() {
+  uiState.activePage = "admins";
+  const admins = await readAdmins();
+  state.admins = admins || [];
+
+  content.innerHTML = `
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">کنترل مدیران سیستم</h2>
+        <p class="page-subtitle">لیست افراد دارای دسترسی به پنل مدیریت</p>
+      </div>
+      <button class="btn primary add-btn" onclick="openPopup('addAdminPopup')">
+        <span>+ مدیر جدید</span>
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="class-table">
+        <thead>
+          <tr>
+            <th>نام و نام خانوادگی</th>
+            <th>شماره</th>
+            <th>نقش</th>
+            <th>عملیات</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${state.admins.map(admin => `
+            <tr>
+              <td>${admin.firstname} ${admin.lastname}</td>
+              <td style="font-family: monospace;">${admin.number}</td>
+              <td><span class="status-badge present">${admin.role}</span></td>
+              <td>
+                <button class="icon-btn delete-btn" onclick="confirmDelete('admin', '${admin._id}')">
+                  <img src="icons/trash.svg" alt="حذف">
+                </button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+
+
+async function renderAdmins() {
+  uiState.activePage = "admins";
+  updateMenuState("admins");
+  
+  // لود دوباره برای اطمینان از تازگی دیتا
+  const admins = await readAdmins();
+  state.admins = admins || [];
+
+  content.innerHTML = `
+    <section class="page-header">
+      <div>
+        <h2 class="page-title">مدیریت مدیران</h2>
+        <p class="page-subtitle">لیست افراد دارای دسترسی به پنل</p>
+      </div>
+      <button class="btn primary add-btn" onclick="openPopup('addAdminPopup')">
+        <span>+ ادمین جدید</span>
+      </button>
+    </section>
+
+    <div class="table-wrap">
+      <table class="class-table">
+        <thead>
+          <tr>
+            <th>نام و نام خانوادگی</th>
+            <th>شماره / شناسه</th>
+            <th>نقش</th>
+            <th>عملیات</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${state.admins.map(admin => `
+            <tr>
+              <td>${admin.firstname} ${admin.lastname}</td>
+              <td dir="ltr">${admin.number}</td>
+              <td><span class="status-badge present">${admin.role || 'admin'}</span></td>
+              <td>
+                <button class="icon-btn delete-btn" onclick="openAdminDeletePopup('${admin._id}')">
+                  <img src="icons/trash.svg" alt="حذف">
+                </button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+
+function confirmDelete(entity, id) {
+  deleteContext.entity = entity;
+  deleteContext.id = id;
+  
+  // باز کردن پاپ‌آپ حذف (مطابق ID شما در HTML)
+  const popup = document.getElementById("deletePopup");
+  if (popup) popup.classList.add("active");
+}
+
+
+let adminIdToDelete = null; // متغیر موقت برای ذخیره ID ادمین
+
+// ۱. تابع باز کردن پاپ‌آپ اختصاصی
+function openAdminDeletePopup(id) {
+    adminIdToDelete = id; // ذخیره ID
+    document.getElementById("deleteAdminPopup").classList.add("active");
+}
+
+// ۲. هندل کردن کلیک روی دکمه حذف نهایی در پاپ‌آپ جدید
+document.getElementById("confirmAdminDeleteBtn").addEventListener("click", async () => {
+    if (!adminIdToDelete) return;
+
+    try {
+        // فراخوانی API حذف که در ابتدای کدتان داشتید
+        const res = await deleteAdmin(adminIdToDelete);
+
+        if (res.code === 200 || res.message.includes("موفقیت")) {
+            // ۱. آپدیت استیت (حذف از لیست محلی)
+            state.admins = state.admins.filter(a => a._id !== adminIdToDelete);
+            
+            // ۲. بستن پاپ‌آپ
+            document.getElementById("deleteAdminPopup").classList.remove("active");
+            
+            // ۳. رندر مجدد جدول ادمین‌ها
+            renderAdmins();
+            
+            adminIdToDelete = null; // ریست کردن متغیر
+        } else {
+            alert(res.message || "خطا در حذف ادمین از سرور");
+        }
+    } catch (err) {
+      console.error("Network Error:", err);
+      alert("خطا در برقراری ارتباط با سرور");
+    }
+});
 init();

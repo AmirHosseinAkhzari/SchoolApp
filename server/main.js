@@ -22,6 +22,9 @@ const StudentRoutes = require('./router/student')
 
 const CardRoutes = require('./router/card')
 
+const adminControlRoutes = require('./router/adminControl')
+
+
 
 
 const NotificationAstinRoutes = require('./router/android/astin/notification')
@@ -97,9 +100,6 @@ async function main() {
   app.use('/android/keravat/attendance', AttendanceKeravatRoutes )
   app.use('/android/keravat/login',loginKeravatRoutes)
   app.use('/android/keravat/acc',accKeravatRoutes)
-  
-
-
 
 
   app.use('/attendance'  , AttendanceRoutes)
@@ -108,6 +108,8 @@ async function main() {
   app.use('/image',checkToken , imagesRoutes )
   app.use('/student',checkToken, StudentRoutes )
   app.use('/card',checkToken , CardRoutes )
+  app.use('/adminControl' , adminControlRoutes )
+
   
   app.use( "/dev/login", express.static(path.join(__dirname, "public/attendanceDevice/login")))
   app.use( "/dev", checkTokenAttendance,   express.static(path.join(__dirname, "public/attendanceDevice/main")))

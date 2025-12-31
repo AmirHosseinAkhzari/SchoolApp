@@ -260,6 +260,33 @@
   </div>
 </div>
 
+<div class="popup-overlay" id="addAdminPopup">
+  <div class="popup-box">
+    <h3>افزودن مدیر جدید</h3>
+    <form id="addAdminForm" class="popup-form">
+      <input type="text" id="adminFirstname" placeholder="نام" required />
+      <input type="text" id="adminLastname" placeholder="نام خانوادگی" required />
+      <input type="text" id="adminNumber" placeholder="شماره موبایل" required />
+      <div class="popup-buttons">
+        <button type="button" class="btn ghost" data-popup-close="addAdminPopup">انصراف</button>
+        <button type="submit" class="btn primary">ثبت مدیر</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="popup-overlay" id="deleteAdminPopup">
+  <div class="popup-box">
+    <h3 style="color: var(--danger);">حذف مدیر سیستم</h3>
+    <p>آیا از حذف این مدیر مطمئن هستید؟ این شخص دیگر به پنل دسترسی نخواهد داشت.</p>
+    <div class="popup-buttons">
+      <button type="button" class="btn ghost" data-popup-close="deleteAdminPopup">انصراف</button>
+      <button type="button" class="btn danger" id="confirmAdminDeleteBtn">بله، حذف شود</button>
+    </div>
+  </div>
+</div>
+
 
   <!-- Sidebar navigation -->
   <aside class="sidebar">
@@ -276,6 +303,8 @@
       <button type="button" class="menu-item" data-page="students">دانش‌آموزها</button>
       <button type="button" class="menu-item" data-page="classes">کلاس‌ها</button>
       <button type="button" class="menu-item" data-page="cards">کارت‌ها</button>
+      <button type="button" class="menu-item" data-page="admins">ادمین ها</button>
+      
     </nav>
   </aside>
 
