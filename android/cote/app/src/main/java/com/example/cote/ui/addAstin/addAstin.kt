@@ -198,11 +198,7 @@ fun NFCIsOn(modifier: Modifier = Modifier){
     }
 }
 
-data class Student(
-    val _id : String ,
-    val firstname : String ,
-    val lastname : String ,
-)
+
 
 
 

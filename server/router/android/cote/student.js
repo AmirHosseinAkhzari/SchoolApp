@@ -10,9 +10,9 @@ router.get("/read", async (req, res) => {
     if(checkToken){
         const data = await global.db.user.getAllStuIdAndName()
 
-        res.json(data)
+        res.json({message : "توکن صحیح نیست" , code : 500 , students : data})
     }else{
-        res.json({message : "توکن صحیح نیست" , code : 500})
+        res.json({message : "توکن صحیح نیست" , code : 500 , students : []})
     }
 
 })

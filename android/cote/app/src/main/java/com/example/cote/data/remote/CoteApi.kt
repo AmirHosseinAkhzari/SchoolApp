@@ -53,29 +53,18 @@ data class total (
     val absent  : Int
 )
 
-data class ReqAddDescription(
-    val text : String ,
-    val date : String
+
+
+data class Student(
+    val _id : String ,
+    val firstname : String ,
+    val lastname : String ,
 )
 
-data class ResAddDescription(
-    val message : String ,
-    val code : Int
-)
-
-data class ReqCheckDescription(
-    val date : String
-)
-
-data class ResCheckDescription(
-    val message : String ,
-    val code : Int
-)
-
-
-data class ResGetName(
-    val name : String ,
-    val code : Int
+data class ResReadStudent(
+    val message: String ,
+    val code: Int ,
+    val students : List<Student>
 )
 
 
@@ -87,14 +76,10 @@ interface CoteApi {
     @POST("login/check")
     suspend fun logincheck(@Body request: ReqCheckOtp ) : Response<ResCheckOtp>
 
-    @GET("attendance/read")
-    suspend fun readAttendance(@Header("Authorization") token : String ) : Response<ResReadAttendance>
-    
-    @POST("attendance/addDescription")
-    suspend fun  addAttendanceDescription(@Header("Authorization") token : String , @Body request:ReqAddDescription ) : Response<ResAddDescription>
 
-    @GET("acc/getname")
-    suspend fun GetName(@Header("Authorization") token : String ) : Response<ResGetName>
+    @GET("student/read")
+    suspend fun logincheck(@Header("Authorization") token : String) : Response<ResReadStudent>
+
 
 
 }
