@@ -7,11 +7,17 @@ const router = express.Router()
 
 router.post("/add", async (req, res) => {
 
-    const data = await global.db.card.add(req.body.uid, req.body.ownerId)
+    
 
-    console.log(data)
+    const checkToken  = global.utils.admin.checkToken(req.headers['authorization'])
 
-    res.json(data)
+    if(checkToken){
+        const data = await global.db.card.add(req.body.uid, req.body.ownerId)
+
+        res.json(data)
+    }else{
+        res.json({message : "توکن صحیح نیست" , code : 500 , students : []})
+    }
 })
 
 module.exports = router;

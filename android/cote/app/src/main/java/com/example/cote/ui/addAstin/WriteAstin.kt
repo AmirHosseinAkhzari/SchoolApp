@@ -53,6 +53,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import com.example.cote.R
+import com.example.cote.data.remote.ReqAddAstin
 
 
 @Composable
@@ -104,7 +105,7 @@ fun Steps(id : String , step: String , navController : NavController , uid : Str
     if(step == "1" ){
         Step1(id , navController )
     }else if (step == "2"){
-        Step2(id , uid)
+        Step2(id , uid , navController)
 
     }
 
@@ -195,11 +196,18 @@ fun Step1(id : String , navController: NavController , ){
 
 
 @Composable
-fun Step2(id : String , uid: String) {
+fun Step2(id : String , uid: String , navController: NavController) {
 
     var dot by remember { mutableStateOf(".") }
 
     var SendIt by remember { mutableStateOf(false) }
+
+    val viewModel = hiltViewModel<AddAstinViewModel>()
+
+    val context = LocalContext.current
+
+    val token = viewModel.GetMainToken(context)!!
+
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -214,7 +222,13 @@ fun Step2(id : String , uid: String) {
 
     LaunchedEffect(SendIt) {
         if(SendIt){
-            
+            val res = viewModel.AddAstin(token , ReqAddAstin(uid = uid , ownerId = id))
+
+            if (res.isSuccess){
+                if(res.getOrNull()!!.code == 200 ){
+                    navController.navigate("addAstinNFCTag/${id}/3/${uid}")
+                }
+            }
         }
     }
 

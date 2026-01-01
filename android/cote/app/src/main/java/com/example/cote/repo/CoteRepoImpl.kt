@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.nfc.NfcAdapter
 import com.example.cote.data.remote.CoteApi
+import com.example.cote.data.remote.ReqAddAstin
 import com.example.cote.data.remote.ReqCheckOtp
 import com.example.cote.data.remote.ReqOtpNum
+import com.example.cote.data.remote.ResAddAstin
 import com.example.cote.data.remote.ResCheckOtp
 import com.example.cote.data.remote.ResOtp
 import com.example.cote.data.remote.ResReadStudent
@@ -116,8 +118,23 @@ class CoteRepoImpl(
         }
 
 
+    override suspend fun AddAstin(token: String, data: ReqAddAstin): Result<ResAddAstin?> =
+        runCatching {
+            val res = api.AddAstin(token , data)
 
+            if (res.isSuccessful) {
+                res.body()
+            } else {
 
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResAddAstin::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
 
 
     override suspend fun readNfcTag(context: Context): String? = suspendCancellableCoroutine { cont ->
@@ -137,11 +154,16 @@ class CoteRepoImpl(
         val callback = NfcAdapter.ReaderCallback { tag ->
             val uid = tag.id.joinToString("") { "%02X".format(it) }
 
-            // Disable reader mode
-//            nfcAdapter.disableReaderMode(activity)
 
-            // Return UID
-            cont.resume(uid)
+            val convertedUid = uid
+                .chunked(2)
+                .reversed()
+                .joinToString("")
+                .toLong(16)
+                .toString()
+                .padStart(10, '0')
+
+            cont.resume(convertedUid)
         }
 
         // Enable reader mode
@@ -157,5 +179,7 @@ class CoteRepoImpl(
 //            nfcAdapter.disableReaderMode(activity)
         }
     }
+
+
 
 }

@@ -3,6 +3,8 @@ package com.example.cote.ui.addAstin
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cote.data.remote.ReqAddAstin
+import com.example.cote.data.remote.ResAddAstin
 import com.example.cote.data.remote.ResReadStudent
 import com.example.cote.domain.repo.CoteRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,5 +39,9 @@ class AddAstinViewModel @Inject constructor(
 
         return repo.readNfcTag(context)
 
+    }
+
+    suspend fun AddAstin(token : String , data : ReqAddAstin): Result<ResAddAstin?> {
+        return repo.AddAstin(token , data)
     }
 }

@@ -303,7 +303,7 @@ fun StudentItem(student : Student , navController : NavController){
             .clip(RoundedCornerShape(30.dp))
             .background(Color.White )
             .clickable{
-                navController.navigate("addAstinNFCTag/${student._id}")
+                navController.navigate("addAstinNFCTag/${student._id}/1/0")
             }
     ){
         Row(

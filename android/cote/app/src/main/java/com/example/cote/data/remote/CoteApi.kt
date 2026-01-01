@@ -68,6 +68,16 @@ data class ResReadStudent(
     val students : List<Student>
 )
 
+data class ReqAddAstin(
+    val ownerId : String ,
+    val uid : String
+)
+
+data class ResAddAstin(
+    val message : String ,
+    val code : Int ,
+)
+
 
 interface CoteApi {
 
@@ -81,6 +91,8 @@ interface CoteApi {
     @GET("student/read")
     suspend fun ReadStudent(@Header("Authorization") token : String) : Response<ResReadStudent>
 
+    @POST("")
+    suspend fun AddAstin(@Header("Authorization") token : String , @Body request: ReqAddAstin) : Response<ResAddAstin>
 
 
 }
