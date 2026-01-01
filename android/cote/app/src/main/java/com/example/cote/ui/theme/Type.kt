@@ -5,6 +5,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.cote.R
 val Typography = Typography(
@@ -14,7 +15,8 @@ val Typography = Typography(
         fontWeight = FontWeight(1000),
         fontSize = 15.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.5.sp ,
+        textAlign = TextAlign.Right
     ) ,
     bodyMedium = TextStyle(
         fontFamily = FontFamily(Font(R.font.portadaregular)),

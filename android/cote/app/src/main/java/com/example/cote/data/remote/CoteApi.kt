@@ -29,7 +29,8 @@ data class ResCheckOtp(
 
 data class ReqCheckOtp(
     val number : String ,
-    val code : String
+    val code : String ,
+    val role : String
 )
 
 
@@ -78,7 +79,7 @@ interface CoteApi {
 
 
     @GET("student/read")
-    suspend fun logincheck(@Header("Authorization") token : String) : Response<ResReadStudent>
+    suspend fun ReadStudent(@Header("Authorization") token : String) : Response<ResReadStudent>
 
 
 

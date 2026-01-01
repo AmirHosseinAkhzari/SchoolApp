@@ -10,15 +10,25 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +40,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
@@ -40,6 +51,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.cote.R
+import com.example.cote.data.remote.Student
 import kotlinx.coroutines.delay
 
 @Composable
@@ -70,22 +82,22 @@ fun addAstinUi(modifier: Modifier , navController : NavController){
             style = MaterialTheme.typography.titleLarge ,
         )
 
-        Spacer(Modifier.size(100.dp))
-        NFCHnadeler(NFCStatus)
+        Spacer(Modifier.size(50.dp))
+        NFCHnadeler(NFCStatus , navController)
     }
 }
 
 
 
 @Composable
-fun NFCHnadeler(status : String){
+fun NFCHnadeler(status : String , navController: NavController){
 
     if(status == "NFCisUnAvilabel"){
         NFCisUnAvilabel(Modifier)
     }else if (status == "NFCisOff"){
         NFCisOff()
     }else{
-        NFCIsOn()
+        NFCIsOn(navController = navController)
     }
 }
 
@@ -186,18 +198,136 @@ fun NFCisOff(modifier: Modifier = Modifier){
 
 
 @Composable
-fun NFCIsOn(modifier: Modifier = Modifier){
+fun NFCIsOn(modifier: Modifier = Modifier , navController: NavController){
 
+
+    val viewModel = hiltViewModel<AddAstinViewModel>()
+
+    val context = LocalContext.current
+
+    val token = viewModel.GetMainToken(context)!!
+
+    var students by remember { mutableStateOf<List<Student>?>(null) }
+
+    var query by remember { mutableStateOf("") }
+
+
+    LaunchedEffect(Unit) {
+
+
+        val res = viewModel.ReadStudent(token)
+
+        if (res.isSuccess){
+            students = res.getOrNull()!!.students
+        }
+
+        Log.d("Stu" , students.toString())
+    }
+
+
+    TextField(
+        value = query,
+        onValueChange = { query = it },
+        placeholder = { Text(
+            text = "... جسستوجو کنید" ,
+            style = MaterialTheme.typography.bodySmall ,
+            textAlign = TextAlign.Right ,
+            modifier = Modifier.fillMaxWidth()
+        ) },
+        modifier = Modifier
+            .padding(end = 10.dp , start = 10.dp , bottom = 30.dp)
+            .fillMaxWidth()
+            .background(Color(0xFFF0F0F0), shape = RoundedCornerShape(12.dp)) ,
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            cursorColor = Color.Black ,
+        ),
+        shape = RoundedCornerShape(10.dp)  ,
+        singleLine = true ,
+        textStyle = MaterialTheme.typography.bodySmall ,
+
+
+
+    )
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
     ){
 
+        LazyColumn{
+            if(students != null ){
+                items(searchEngin(query , students!!)){
+                    StudentItem(it , navController )
+                }
+            }
+
+        }
     }
 }
 
+@Composable
+fun StudentItem(student : Student , navController : NavController){
+
+    val FullName = student.firstname + " " + student.lastname
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp , end = 20.dp)
+            .height(150.dp)
+            .clip(RoundedCornerShape(30.dp))
+            .background(Color.White )
+            .clickable{
+                navController.navigate("addAstinNFCTag/${student._id}")
+            }
+    ){
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+
+        ){
+
+            Spacer(Modifier.size(20.dp))
+
+
+            Spacer(Modifier.size(10.dp))
+
+            Text(
+                text = FullName,
+                style = MaterialTheme.typography.titleLarge ,
+                color = Color.Black ,
+                fontSize = 30.sp ,
+                textAlign = TextAlign.Right,
+                modifier = Modifier
+                    .padding(end = 20.dp)
+                    .fillMaxWidth()
+            )
+
+        }
+    }
+
+    Spacer(Modifier.size(20.dp))
+}
+
+
+fun searchEngin(q : String ,  allStu : List<Student>): List<Student> {
+
+    val query = q.trim()
+
+
+    return if (q.isEmpty()){
+        allStu
+    }else{
+         allStu.filter { student ->
+            student.firstname.trim().startsWith(query) ||
+                    student.lastname.trim().startsWith(query)
+        }
+    }
+
+
+}
 
 
 

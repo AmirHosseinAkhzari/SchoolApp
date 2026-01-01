@@ -2,9 +2,12 @@ package com.example.cote.ui.addAstin
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.cote.data.remote.ResReadStudent
 import com.example.cote.domain.repo.CoteRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.launch
 
 
 @HiltViewModel
@@ -15,5 +18,18 @@ class AddAstinViewModel @Inject constructor(
 
     fun GetNFCStatus(context: Context) : String{
         return repo.checkNFCStatus(context)
+    }
+
+    fun GetMainToken(context: Context): String? {
+        val sharedPref = context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+        val token = sharedPref.getString("token", null)
+
+        return token
+    }
+
+    suspend fun ReadStudent(token : String ): Result<ResReadStudent?> {
+
+        return repo.ReadStudent(token)
+
     }
 }

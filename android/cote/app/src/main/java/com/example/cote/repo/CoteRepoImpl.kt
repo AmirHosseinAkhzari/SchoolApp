@@ -7,6 +7,7 @@ import com.example.cote.data.remote.ReqCheckOtp
 import com.example.cote.data.remote.ReqOtpNum
 import com.example.cote.data.remote.ResCheckOtp
 import com.example.cote.data.remote.ResOtp
+import com.example.cote.data.remote.ResReadStudent
 import com.example.cote.domain.repo.CoteRepo
 import com.google.gson.Gson
 import retrofit2.HttpException
@@ -54,7 +55,7 @@ class CoteRepoImpl(
 
     override suspend fun LoginCheckOtp(number: String, code: String): Result<ResCheckOtp?> =
         runCatching {
-            val res = api.logincheck(ReqCheckOtp(number, code))
+            val res = api.logincheck(ReqCheckOtp(number, code , "admin"))
 
             if (res.isSuccessful) {
                 res.body()
@@ -89,6 +90,23 @@ class CoteRepoImpl(
     }
 
 
+    override suspend fun ReadStudent(token : String): Result<ResReadStudent?>  =
+        runCatching {
+            val res = api.ReadStudent(token)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResReadStudent::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
 
 
 }
