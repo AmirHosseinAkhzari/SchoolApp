@@ -249,7 +249,7 @@ fun LoginOtpCode(navController: NavController , MainNavController : NavControlle
 
             LaunchedEffect(token){
                 if (token != null){
-                    MainNavController.navigate("main/firstTime")
+                    MainNavController.navigate("main")
                 }
             }
             // Launcher to handle SMS user consent

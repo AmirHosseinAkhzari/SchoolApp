@@ -1,5 +1,7 @@
 package com.example.cote.domain.repo
 
+import android.content.Context
+import android.nfc.NfcAdapter
 import com.example.cote.data.remote.CoteApi
 import com.example.cote.data.remote.ReqCheckOtp
 import com.example.cote.data.remote.ReqOtpNum
@@ -67,6 +69,24 @@ class CoteRepoImpl(
         }.onFailure {
             handleError(it)
         }
+
+
+    override fun checkNFCStatus(context: Context): String {
+
+
+        val nfcAdapter : NfcAdapter? = NfcAdapter.getDefaultAdapter(context)
+
+        if(nfcAdapter == null){
+            return "NFCisUnAvilabel"
+        }else{
+            if(!nfcAdapter.isEnabled){
+                return "NFCisOff"
+            }else{
+                return "NFCIsOn"
+
+            }
+        }
+    }
 
 
 
