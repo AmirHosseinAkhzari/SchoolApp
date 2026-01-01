@@ -32,4 +32,10 @@ class AddAstinViewModel @Inject constructor(
         return repo.ReadStudent(token)
 
     }
+
+    suspend fun ReadNFCUid(context: Context): String? {
+
+        return repo.readNfcTag(context)
+
+    }
 }

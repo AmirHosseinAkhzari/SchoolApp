@@ -19,7 +19,7 @@ fun coteApp(modifier : Modifier = Modifier){
         MainNavHost(modifier , "login")
 
     }else{
-        MainNavHost(modifier , "addAstin")
+        MainNavHost(modifier , "addAstinNFCTag/hiii/2/asd")
     }
 
 

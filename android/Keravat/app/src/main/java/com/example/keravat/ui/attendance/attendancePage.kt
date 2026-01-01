@@ -226,9 +226,9 @@ fun DiscriptionAdded(onDismissRequest :() -> Unit , ) {
                         LottieCompositionSpec.RawRes(R.raw.success)
                     )
 
-                    LottieAnimation(
-                        composition = composition
-                    )
+                        LottieAnimation(
+                            composition = composition
+                        )
                 }
 
                 Spacer(Modifier.size(20.dp))

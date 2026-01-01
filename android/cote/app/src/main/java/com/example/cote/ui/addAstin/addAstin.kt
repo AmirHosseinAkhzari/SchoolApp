@@ -4,6 +4,7 @@ import android.content.Intent
 import android.nfc.NfcAdapter
 import android.provider.Settings
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,9 +13,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -53,6 +57,15 @@ import androidx.navigation.NavController
 import com.example.cote.R
 import com.example.cote.data.remote.Student
 import kotlinx.coroutines.delay
+
+
+@Composable
+fun isKeyboardOpen(): Boolean {
+    val ime = WindowInsets.ime
+    val density = LocalDensity.current
+    return ime.getBottom(density) > 0
+}
+
 
 @Composable
 fun addAstinUi(modifier: Modifier , navController : NavController){
@@ -76,11 +89,17 @@ fun addAstinUi(modifier: Modifier , navController : NavController){
             .fillMaxSize()
         ) {
 
-        Spacer(Modifier.size(60.dp))
-        Text(
-            text = "کُت",
-            style = MaterialTheme.typography.titleLarge ,
-        )
+        AnimatedVisibility(
+            visible = !isKeyboardOpen()
+        ) {
+            Column {
+                Spacer(Modifier.size(60.dp))
+                Text(
+                    text = "کُت",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+        }
 
         Spacer(Modifier.size(50.dp))
         NFCHnadeler(NFCStatus , navController)
@@ -212,6 +231,8 @@ fun NFCIsOn(modifier: Modifier = Modifier , navController: NavController){
     var query by remember { mutableStateOf("") }
 
 
+
+
     LaunchedEffect(Unit) {
 
 
@@ -256,7 +277,10 @@ fun NFCIsOn(modifier: Modifier = Modifier , navController: NavController){
             .fillMaxSize()
     ){
 
-        LazyColumn{
+        LazyColumn(
+            modifier = Modifier.fillMaxSize() ,
+            verticalArrangement = Arrangement.Top
+        ){
             if(students != null ){
                 items(searchEngin(query , students!!)){
                     StudentItem(it , navController )

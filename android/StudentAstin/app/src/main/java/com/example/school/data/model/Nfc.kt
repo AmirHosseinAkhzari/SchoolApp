@@ -7,7 +7,6 @@ import android.nfc.NfcAdapter
 
 class NfcManager(private val context: Context){
 
-
     private val adapter = NfcAdapter.getDefaultAdapter(context)
 
     var onTagRead : ((String) -> Unit)? = null

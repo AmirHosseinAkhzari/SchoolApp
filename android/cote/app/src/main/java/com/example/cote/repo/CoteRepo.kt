@@ -7,12 +7,23 @@ import com.example.cote.data.remote.ResReadStudent
 
 interface  CoteRepo  {
 
-    suspend fun LoginWithNumber(number: String) : Result<ResOtp?>
-    suspend fun LoginCheckOtp(number: String , code : String) : Result<ResCheckOtp?>
+    //Api
+
+        // login
+        suspend fun LoginWithNumber(number: String) : Result<ResOtp?>
+        suspend fun LoginCheckOtp(number: String , code : String) : Result<ResCheckOtp?>
 
 
-    suspend fun ReadStudent(token : String) : Result<ResReadStudent?>
-    fun checkNFCStatus(context: Context) : String
+        // Student
+        suspend fun ReadStudent(token : String) : Result<ResReadStudent?>
+
+    // NFC
+
+        //checker
+        fun checkNFCStatus(context: Context) : String
+
+        // reader
+        suspend fun readNfcTag(context: Context) : String?
 
 
 }

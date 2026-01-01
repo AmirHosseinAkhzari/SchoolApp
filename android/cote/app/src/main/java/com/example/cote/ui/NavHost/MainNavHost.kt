@@ -1,12 +1,16 @@
 package com.example.cote.ui
 
+import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.cote.ui.addAstin.WirteAstin
 import com.example.cote.ui.addAstin.addAstinUi
 import com.example.cote.ui.login.LoginPage
 import com.example.cote.ui.main.MainPageUi
@@ -37,6 +41,27 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
 
         composable("addAstin"){
             addAstinUi(modifier , navController)
+        }
+
+        composable(route= "addAstinNFCTag/{id}/{step}/{uid}"
+            , arguments = listOf(navArgument("id") {type = NavType.StringType},
+                    navArgument("step") {type = NavType.StringType} ,
+                navArgument("uid") {type = NavType.StringType})
+
+        ){
+
+            val id = it.arguments?.getString("id")
+            val step = it.arguments?.getString("step")
+            val uid = it.arguments?.getString("uid")
+
+            Log.d("data" , id!!)
+            Log.d("data" , step!!)
+            Log.d("data" , uid!!)
+
+
+
+
+            WirteAstin(modifier , navController , id, step , uid )
         }
 
 

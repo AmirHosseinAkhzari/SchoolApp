@@ -1,5 +1,6 @@
 package com.example.cote.di
 
+import android.app.Application
 import com.example.cote.data.remote.CoteApi
 import com.example.cote.domain.repo.CoteRepo
 import com.example.cote.domain.repo.CoteRepoImpl
@@ -30,10 +31,11 @@ object AppModule {
 
 
 
+
     @Provides
     @Singleton
-    fun provideAstinRepo(api : CoteApi ) : CoteRepo {
-        return CoteRepoImpl(api)
+    fun provideAstinRepo(api : CoteApi  ) : CoteRepo {
+        return CoteRepoImpl(api )
     }
 
 
