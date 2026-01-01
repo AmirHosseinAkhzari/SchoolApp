@@ -144,6 +144,9 @@ async function ConnectTodb() {
             getAllStu : async () => { 
                 return await User.find({role : "Student"}).select("_id firstname lastname birthday nationalid number ParentNumber LocalNumber classId")
             } , 
+            getAllStuIdAndName : async () => { 
+                return await User.find({role : "Student"}).select("_id firstname lastname ")
+            } , 
             getName : async (token) => {
 
                 try{

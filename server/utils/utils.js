@@ -106,6 +106,18 @@ function utils() {
 
                 return payload
             }
+        } , 
+        admin : {
+            checkToken : function (token){
+                const payload = jwt.verify(token , SECRET_KEY)
+
+                if(payload.role == 'admin'){
+                    return true
+                }else{
+                    return false
+                }
+
+            }
         }
     }
 }
