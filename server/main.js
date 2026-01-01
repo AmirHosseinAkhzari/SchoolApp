@@ -47,6 +47,8 @@ const accKeravatRoutes = require('./router/android/keravat/accunt')
 
 const loginCotetRoutes = require('./router/android/cote/login')
 const StudentCotetRoutes = require('./router/android/cote/student')
+const AstinCoteRoutes = require('./router/android/cote/astin')
+
 
 
 
@@ -106,6 +108,8 @@ async function main() {
 
   app.use('/android/cote/login',loginCotetRoutes)
   app.use('/android/cote/student',StudentCotetRoutes)
+  app.use('/android/cote/astin',AstinCoteRoutes)
+
 
 
 
