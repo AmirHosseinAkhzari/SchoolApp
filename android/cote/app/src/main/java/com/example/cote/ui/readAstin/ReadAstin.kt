@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.cote.R
 import com.example.cote.data.remote.Student
 import com.example.cote.data.remote.StudentFullData
@@ -162,14 +165,7 @@ fun Step1( navController: NavController , ){
             modifier = Modifier
                 .fillMaxSize()
         ){
-            Spacer(Modifier.size(60.dp))
-            Text(
-                text = "(0/2)",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Black ,
-                fontFamily = FontFamily(Font(R.font.sorena))
-            )
-            Spacer(Modifier.size(20.dp))
+            Spacer(Modifier.size(100.dp))
 
             Image(
                 painter = painterResource(R.drawable.astinguidimage) ,
@@ -190,7 +186,6 @@ fun Step1( navController: NavController , ){
                 text = dot,
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.Black ,
-
                 fontFamily = FontFamily(Font(R.font.portadaregular))
             )
 
@@ -204,6 +199,7 @@ fun Step2(navController: NavController, uid : String){
 
     var Student by remember { mutableStateOf<StudentFullData?>(null) }
 
+    var isEmpity by remember { mutableStateOf(false) }
     val viewModel = hiltViewModel<ReadAstinViewModel>()
 
     val context = LocalContext.current
@@ -219,8 +215,9 @@ fun Step2(navController: NavController, uid : String){
         if(res.isSuccess){
 
             if(res.getOrNull()!!.code == 200){
-
-                Student = res.getOrNull()!!.student
+                Student = res.getOrNull()!!.stu
+            }else if (res.getOrNull()!!.code == 500){
+                isEmpity = true
             }
         }
     }
@@ -270,7 +267,7 @@ fun Step2(navController: NavController, uid : String){
 
                     .background(MaterialTheme.colorScheme.background)
             ) {
-                if (Student != null) {
+                if (Student != null && !isEmpity) {
 
 
                     Spacer(Modifier.size(20.dp))
@@ -316,7 +313,7 @@ fun Step2(navController: NavController, uid : String){
                     Spacer(Modifier.size(20.dp))
 
                     Text(
-                        text = "کد ملی : ${Student!!.nationalId}",
+                        text = "کد ملی : ${Student!!.nationalid}",
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 20.sp,
                         color = Color.White,
@@ -333,6 +330,33 @@ fun Step2(navController: NavController, uid : String){
                         fontFamily = FontFamily(Font(R.font.tanha))
                     )
 
+                }else if (isEmpity){
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFDA6C6C))
+                    ){
+
+                            Text(
+                                text = "تگ خالی است",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(top = 50.dp)
+                            )
+
+                            val composition by rememberLottieComposition(
+                                LottieCompositionSpec.RawRes(R.raw.fail)
+                            )
+                            LottieAnimation(
+                                composition = composition ,
+                                modifier = Modifier
+                                    .padding(50.dp)
+                            )
+
+                    }
                 }
             }
         }

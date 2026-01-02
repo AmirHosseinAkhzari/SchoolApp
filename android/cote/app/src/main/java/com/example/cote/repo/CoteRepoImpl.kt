@@ -143,6 +143,9 @@ class CoteRepoImpl(
 
     override suspend fun ReadAstin(token: String, uid: String): Result<ResReadAstin?>  =
         runCatching {
+
+            Log.d("rese" , uid)
+
             val res = api.ReadAstin(token , uid)
 
             if (res.isSuccessful) {

@@ -87,7 +87,7 @@ data class ReqReadAstin (
 data class StudentFullData(
     val firstname: String ,
     val lastname: String ,
-    val nationalId : String ,
+    val nationalid : String ,
     val number : String ,
     val birthday : String ,
     val ParentNumber : String ,
@@ -98,7 +98,7 @@ data class StudentFullData(
 data class ResReadAstin(
     val code: Int ,
     val message: String ,
-    val student: StudentFullData
+    val stu: StudentFullData
 )
 
 
