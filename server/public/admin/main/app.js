@@ -1088,6 +1088,8 @@ function openAttendanceDetail(attendanceId) {
   document.getElementById("detailClass").textContent = getClassName(student.classId);
   document.getElementById("detailDate").textContent = record.date;
   document.getElementById("detailCheckIn").textContent = record.checkIn;
+  document.getElementById("detaildescription").textContent = record.description;
+
 
   const statusInfo = getStatusConfig(record.status);
   const statusElement = document.getElementById("detailStatus");

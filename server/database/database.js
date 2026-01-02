@@ -194,7 +194,6 @@ async function ConnectTodb() {
 
                 return {message : "عملیات با موفقیت انجام شد" , code : 200 , stu : result}
 
-
                 
             }
         }, 
@@ -343,13 +342,19 @@ async function ConnectTodb() {
                 );
 
                 if (record) {
+
+                    let description = "---"
+                    if(record.description != null){
+                        description = record.description
+                    }
                     
                     result.push({
                     id: record._id,          
                     studentId: stu._id,     
                     status: record.status,
                     checkIn: record.checkIn,
-                    date: record.date
+                    date: record.date  , 
+                    description : description
                     });
                 } else {
                     // ✔️ غایب است
@@ -358,7 +363,8 @@ async function ConnectTodb() {
                     studentId: stu._id,     
                     status: "غایب",
                     checkIn: "—",
-                    date: "—"
+                    date: "—" , 
+                    description : "-"
                     });
                 }
                 }
