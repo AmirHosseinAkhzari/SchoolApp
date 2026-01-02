@@ -91,7 +91,7 @@ interface CoteApi {
     @GET("student/read")
     suspend fun ReadStudent(@Header("Authorization") token : String) : Response<ResReadStudent>
 
-    @POST("")
+    @POST("astin/add")
     suspend fun AddAstin(@Header("Authorization") token : String , @Body request: ReqAddAstin) : Response<ResAddAstin>
 
 

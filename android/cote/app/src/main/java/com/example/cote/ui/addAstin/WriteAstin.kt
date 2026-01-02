@@ -33,6 +33,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +54,9 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import com.example.cote.R
+import com.example.cote.data.remote.Info
 import com.example.cote.data.remote.ReqAddAstin
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -106,7 +109,8 @@ fun Steps(id : String , step: String , navController : NavController , uid : Str
         Step1(id , navController )
     }else if (step == "2"){
         Step2(id , uid , navController)
-
+    }else{
+        step3(navController  , id , uid)
     }
 
 }
@@ -160,7 +164,7 @@ fun Step1(id : String , navController: NavController , ){
         ){
             Spacer(Modifier.size(60.dp))
             Text(
-                text = "(0/3)",
+                text = "(0/2)",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black ,
                 fontFamily = FontFamily(Font(R.font.sorena))
@@ -225,9 +229,7 @@ fun Step2(id : String , uid: String , navController: NavController) {
             val res = viewModel.AddAstin(token , ReqAddAstin(uid = uid , ownerId = id))
 
             if (res.isSuccess){
-                if(res.getOrNull()!!.code == 200 ){
-                    navController.navigate("addAstinNFCTag/${id}/3/${uid}")
-                }
+                navController.navigate("addAstinNFCTag/${res.getOrNull()!!.code}/3/${res.getOrNull()!!.message}")
             }
         }
     }
@@ -248,7 +250,7 @@ fun Step2(id : String , uid: String , navController: NavController) {
         ) {
             Spacer(Modifier.size(60.dp))
             Text(
-                text = "(1/3)",
+                text = "(1/2)",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
                 fontFamily = FontFamily(Font(R.font.sorena))
@@ -304,8 +306,29 @@ fun Step2(id : String , uid: String , navController: NavController) {
 
 
 @Composable
-fun step4(isPlaying : () -> Unit){
+fun step3(navController: NavController , code : String , message: String){
 
+    val time : Int
+    if(code == "200") {
+        time = 2500
+    }else{
+        time = 5000
+    }
+    LaunchedEffect(Unit) {
+        delay(time.toLong())
+        navController.navigate("main")
+    }
+
+    var color : Color
+    var resId : Int
+
+    if(code == "200") {
+        color = Color(0xFF028864D)
+        resId = R.raw.success
+    }else{
+        color =Color(0xFFE25D5D)
+        resId = R.raw.fail
+    }
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -313,7 +336,7 @@ fun step4(isPlaying : () -> Unit){
             .padding(end = 20.dp, start = 20.dp)
             .height(600.dp)
             .clip(RoundedCornerShape(40.dp))
-            .background(Color(0xFF028864D))
+            .background(color)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -322,25 +345,36 @@ fun step4(isPlaying : () -> Unit){
                 .fillMaxSize()
         ) {
 
-
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .clip(RoundedCornerShape(40.dp))
                     .size(300.dp)
-                    .clickable {
-                        isPlaying()
-                    }
+
 
             ) {
 
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
 
-                val composition by rememberLottieComposition(
-                    LottieCompositionSpec.RawRes(R.raw.success)
-                )
-                LottieAnimation(
-                    composition = composition
-                )
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White,
+                    )
+
+                    val composition by rememberLottieComposition(
+                        LottieCompositionSpec.RawRes(resId)
+                    )
+                    LottieAnimation(
+                        composition = composition
+                    )
+
+
+
+
+                }
             }
 
 
