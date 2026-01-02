@@ -1,6 +1,7 @@
 package com.example.cote.ui.readAstin
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.cote.data.remote.ResReadAstin
 import com.example.cote.data.remote.ResReadStudent
@@ -22,6 +23,7 @@ class ReadAstinViewModel @Inject constructor(
         val sharedPref = context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
         val token = sharedPref.getString("token", null)
 
+        Log.d("token" , token!!)
         return token
     }
 

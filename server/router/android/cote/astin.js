@@ -28,7 +28,9 @@ router.get("/read/:uid", async (req, res) => {
 
     if(checkToken){
 
+        const data = await global.db.user.getInfoWithUid(req.params.uid)
 
+        res.json(data)
     }else{
         res.json({message : "توکن صحیح نیست" , code : 500 , students : []})
     }
