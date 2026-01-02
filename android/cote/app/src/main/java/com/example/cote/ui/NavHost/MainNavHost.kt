@@ -14,6 +14,8 @@ import com.example.cote.ui.addAstin.WirteAstin
 import com.example.cote.ui.addAstin.addAstinUi
 import com.example.cote.ui.login.LoginPage
 import com.example.cote.ui.main.MainPageUi
+import com.example.cote.ui.readAstin.ReadAstin
+
 
 @Composable
 fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
@@ -63,6 +65,21 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
 
             WirteAstin(modifier , navController , id, step , uid )
         }
+
+//        composable(route= "ReadAstin/{step}/{uid}"
+//            , arguments = listOf(
+//                navArgument("step") {type = NavType.StringType} ,
+//                navArgument("uid") {type = NavType.StringType})
+//
+//        ){
+//
+//            val step = it.arguments?.getString("step")
+//            val uid = it.arguments?.getString("uid")
+//
+//
+//
+//            ReadAstin(modifier , navController , step!! , uid!! )
+//        }
 
 
 

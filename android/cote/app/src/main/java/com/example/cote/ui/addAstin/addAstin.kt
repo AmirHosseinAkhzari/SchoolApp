@@ -56,6 +56,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.cote.R
 import com.example.cote.data.remote.Student
+import com.example.cote.ui.readAstin.ReadAstinSteps
 import kotlinx.coroutines.delay
 
 
@@ -102,21 +103,25 @@ fun addAstinUi(modifier: Modifier , navController : NavController){
         }
 
         Spacer(Modifier.size(50.dp))
-        NFCHnadeler(NFCStatus , navController)
+        NFCHnadeler(NFCStatus , navController , "Add")
     }
 }
 
 
 
 @Composable
-fun NFCHnadeler(status : String , navController: NavController){
+fun NFCHnadeler(status : String , navController: NavController , mode : String){
 
     if(status == "NFCisUnAvilabel"){
         NFCisUnAvilabel(Modifier)
     }else if (status == "NFCisOff"){
         NFCisOff()
     }else{
-        NFCIsOn(navController = navController)
+        if(mode == "Add"){
+            NFCIsOn(navController = navController)
+        }else {
+            navController.navigate("ReadAstin/1/0")
+        }
     }
 }
 

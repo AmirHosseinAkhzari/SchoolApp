@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import retrofit2.HttpException
+import java.math.BigInteger
 import kotlin.coroutines.resume
 
 class CoteRepoImpl(
@@ -192,7 +193,17 @@ class CoteRepoImpl(
 
             val callback = NfcAdapter.ReaderCallback { tag ->
                 try {
-                    val uid = tag.id.joinToString("") { "%02X".format(it) }
+                    val uidHex = tag.id.joinToString("") { "%02X".format(it) }
+
+                    val bytes = uidHex.chunked(2).map { it.toInt(16).toByte() }
+                    val reversedBytes = bytes.reversed()
+
+                    var decimal = 0L
+                    for (b in reversedBytes) {
+                        decimal = (decimal shl 8) or (b.toInt() and 0xFF).toLong()
+                    }
+
+                    val uid = decimal.toString().padStart(10, '0')
 
                     val mfc = MifareClassic.get(tag)
                     mfc.connect()

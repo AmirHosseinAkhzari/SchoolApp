@@ -1,5 +1,6 @@
 package com.example.cote.data.remote
 
+import com.example.cote.ui.readAstin.ReadAstinViewModel
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -78,6 +79,27 @@ data class ResAddAstin(
     val code : Int ,
 )
 
+data class ReqReadAstin (
+    val uid  : String
+)
+
+data class StudentFullData(
+    val firstname: String ,
+    val lastname: String ,
+    val nationalId : String ,
+    val number : String ,
+    val birthday : String ,
+    val ParentNumber : String ,
+    val LocalNumber : String ,
+    val Classname : String
+)
+
+data class ResReadAstin(
+    val code: Int ,
+    val message: String ,
+    val student: StudentFullData
+)
+
 
 interface CoteApi {
 
@@ -93,6 +115,9 @@ interface CoteApi {
 
     @POST("astin/add")
     suspend fun AddAstin(@Header("Authorization") token : String , @Body request: ReqAddAstin) : Response<ResAddAstin>
+
+    @GET("astin/add")
+    suspend fun ReadAstin(@Header("Authorization") token : String , @Body request: ReqReadAstin) : Response<ResReadAstin>
 
 
 }

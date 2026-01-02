@@ -47,6 +47,13 @@ fun MainPageUi(modifier: Modifier , navController : NavController){
             "اضافه کردن آستین" ,
             painterResource(R.drawable.addastin) ,
             "addAstin"
+        ) ,
+
+        option(
+            Color.White ,
+            "خوندن آستین" ,
+                painterResource(R.drawable.readastin) ,
+            "readAstin"
         )
     )
     Column (
@@ -115,5 +122,7 @@ fun item(color : Color , text : String , image : Painter , route : String,navCon
 
         }
     }
+
+    Spacer(Modifier.size(20.dp))
 
 }
