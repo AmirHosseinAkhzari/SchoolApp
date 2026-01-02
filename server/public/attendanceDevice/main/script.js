@@ -1,16 +1,38 @@
-// گرفتن لوگو
+// ==== Wake Lock ====
+let wakeLock = null;
+
+async function enableWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake Lock فعال شد');
+
+      wakeLock.addEventListener('release', () => {
+        console.log('Wake Lock آزاد شد');
+      });
+    }
+  } catch (err) {
+    console.error('Wake Lock خطا:', err);
+  }
+}
+
+// ==== گرفتن لوگو ====
 const logo = document.querySelector('.logo');
 
-// وقتی روی لوگو کلیک شد، fullscreen بشه
-logo.addEventListener('click', () => {
+// وقتی روی لوگو کلیک شد → fullscreen + wake lock
+logo.addEventListener('click', async () => {
   const elem = document.documentElement;
+
   if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) { // Safari
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) { // IE11
-    elem.msRequestFullscreen();
+    await elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    await elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    await elem.msRequestFullscreen();
   }
+
+  // فعال‌سازی جلوگیری از خاموش شدن صفحه
+  enableWakeLock();
 });
 
 // جلوگیری از خروج از fullscreen
@@ -21,6 +43,7 @@ document.addEventListener('fullscreenchange', () => {
   }
 });
 
+// جلوگیری از ESC
 document.addEventListener('keydown', (e) => {
   if (e.key === "Escape") {
     e.preventDefault();
@@ -28,6 +51,7 @@ document.addEventListener('keydown', (e) => {
     if (elem.requestFullscreen) elem.requestFullscreen();
   }
 });
+
 
 // ==== کد موجود شما برای input و کارت خوان ====
 const input = document.getElementById('hidden-input');
@@ -46,8 +70,6 @@ input.addEventListener('keydown', async (event) => {
     const cardData = input.value.trim();
     if (cardData === '') return;
 
-    console.log('کارت خوانده شد:', cardData);
-
     try {
       const res = await fetch('/attendance/check', {
         method: 'POST',
@@ -56,7 +78,6 @@ input.addEventListener('keydown', async (event) => {
       });
 
       const data = await res.json();
-      console.log('پاسخ سرور:', data);
 
       if (res.ok && data.code === 200) {
         flash.classList.remove('shrink');
@@ -77,7 +98,6 @@ input.addEventListener('keydown', async (event) => {
         showError(data.message || "کارت شناسایی نشد");
       }
     } catch (err) {
-      console.error('خطا در ارتباط با سرور:', err);
       showError("خطا در اتصال به سرور");
     }
 
