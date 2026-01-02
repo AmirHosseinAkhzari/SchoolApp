@@ -4,13 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.nfc.NfcAdapter
 import android.nfc.tech.MifareClassic
+import android.util.Log
 import com.example.cote.data.remote.CoteApi
 import com.example.cote.data.remote.ReqAddAstin
 import com.example.cote.data.remote.ReqCheckOtp
 import com.example.cote.data.remote.ReqOtpNum
+import com.example.cote.data.remote.ReqReadAstin
 import com.example.cote.data.remote.ResAddAstin
 import com.example.cote.data.remote.ResCheckOtp
 import com.example.cote.data.remote.ResOtp
+import com.example.cote.data.remote.ResReadAstin
 import com.example.cote.data.remote.ResReadStudent
 import com.example.cote.domain.repo.CoteRepo
 import com.google.gson.Gson
@@ -138,49 +141,68 @@ class CoteRepoImpl(
             handleError(it)
         }
 
+    override suspend fun ReadAstin(token: String, uid: String): Result<ResReadAstin?>  =
+        runCatching {
+            val res = api.ReadAstin(token , uid)
 
-//    override suspend fun readNfcTag(context: Context): String? = suspendCancellableCoroutine { cont ->
-//
-//        val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
-//        if (nfcAdapter == null) {
-//            cont.resume(null) // Device doesn't support NFC
-//            return@suspendCancellableCoroutine
-//        }
-//
-//        val activity = context as? Activity
-//        if (activity == null) {
-//            cont.resume(null) // Context is not an Activity
-//            return@suspendCancellableCoroutine
-//        }
-//
-//        val callback = NfcAdapter.ReaderCallback { tag ->
-//            val uid = tag.id.joinToString("") { "%02X".format(it) }
-//
-//
-//            val convertedUid = uid
-//                .chunked(2)
-//                .reversed()
-//                .joinToString("")
-//                .toLong(16)
-//                .toString()
-//                .padStart(10, '0')
-//
-//            cont.resume(convertedUid)
-//        }
-//
-//        // Enable reader mode
-//        nfcAdapter.enableReaderMode(
-//            activity,
-//            callback,
-//            NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
-//            null
-//        )
-//
-//        // If coroutine is cancelled, disable reader mode
-//        cont.invokeOnCancellation {
-//
-//        }
-//    }
+            if (res.isSuccessful) {
+                Log.d("rese" , res.body()!!.message)
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResReadAstin::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+
+    override suspend fun ReadNFCOnlyUID(context: Context): String? = suspendCancellableCoroutine { cont ->
+
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
+        if (nfcAdapter == null) {
+            cont.resume(null) // Device doesn't support NFC
+            return@suspendCancellableCoroutine
+        }
+
+        val activity = context as? Activity
+        if (activity == null) {
+            cont.resume(null) // Context is not an Activity
+            return@suspendCancellableCoroutine
+        }
+
+        val callback = NfcAdapter.ReaderCallback { tag ->
+            val uid = tag.id.joinToString("") { "%02X".format(it) }
+
+
+            val convertedUid = uid
+                .chunked(2)
+                .reversed()
+                .joinToString("")
+                .toLong(16)
+                .toString()
+                .padStart(10, '0')
+
+            cont.resume(convertedUid)
+        }
+
+        // Enable reader mode
+        nfcAdapter.enableReaderMode(
+            activity,
+            callback,
+            NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
+            null
+        )
+
+        // If coroutine is cancelled, disable reader mode
+        cont.invokeOnCancellation {
+
+        }
+    }
 
     override suspend fun readNfcTag(context: Context): String? =
         suspendCancellableCoroutine { cont ->

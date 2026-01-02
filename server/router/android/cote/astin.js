@@ -20,7 +20,7 @@ router.post("/add", async (req, res) => {
     }
 })
 
-router.post("/read", async (req, res) => {
+router.get("/read/:uid", async (req, res) => {
 
     
 
@@ -28,9 +28,7 @@ router.post("/read", async (req, res) => {
 
     if(checkToken){
 
-        const data = await global.db.user.getInfoWithUid(req.body.uid)
 
-        res.json(data)
     }else{
         res.json({message : "توکن صحیح نیست" , code : 500 , students : []})
     }

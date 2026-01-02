@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,8 +41,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.cote.R
+import com.example.cote.data.remote.Student
 import com.example.cote.data.remote.StudentFullData
 import com.example.cote.ui.addAstin.AddAstinViewModel
 import com.example.cote.ui.addAstin.NFCHnadeler
@@ -60,8 +63,6 @@ fun ReadAstin(modifier: Modifier = Modifier , navController: NavController , ste
     val context = LocalContext.current
 
     var NFCStatus by remember {  mutableStateOf(viewModel.GetNFCStatus(context))}
-
-
 
 
     LaunchedEffect(Unit) {
@@ -105,21 +106,13 @@ fun ReadAstin(modifier: Modifier = Modifier , navController: NavController , ste
 @Composable
 fun ReadAstinSteps(step: String , navController : NavController , uid : String){
 
-    Log.d("uid1" , step)
+
 
     if(step == "1" ){
         Step1( navController )
     }else if (step == "2"){
-        Step2( navController , StudentFullData(
-            firstname = "امیرحسین" ,
-            lastname = "اخضری" ,
-            birthday = "1390/05/19" ,
-            number = "09304682860" ,
-            ParentNumber = "09304682860" ,
-            LocalNumber = "07152249874" ,
-            nationalId = "2500766111" ,
-            Classname = "نهم"
-        ))
+
+        Step2( navController , uid)
     }
 
 }
@@ -131,7 +124,7 @@ fun Step1( navController: NavController , ){
     var dot by remember { mutableStateOf(".") }
 
 
-    val viewModel = hiltViewModel<AddAstinViewModel>()
+    val viewModel = hiltViewModel<ReadAstinViewModel>()
     LaunchedEffect(Unit) {
         while (true){
             if(dot.length == 3){
@@ -207,7 +200,30 @@ fun Step1( navController: NavController , ){
 
 
 @Composable
-fun Step2(navController: NavController, Student : StudentFullData){
+fun Step2(navController: NavController, uid : String){
+
+    var Student by remember { mutableStateOf<StudentFullData?>(null) }
+
+    val viewModel = hiltViewModel<ReadAstinViewModel>()
+
+    val context = LocalContext.current
+
+    val token = viewModel.GetMainToken(context)
+
+
+    LaunchedEffect(Unit) {
+
+        val res = viewModel.ReadAstin(token!! , uid)
+        Log.d("gigi" , res.toString())
+
+        if(res.isSuccess){
+
+            if(res.getOrNull()!!.code == 200){
+
+                Student = res.getOrNull()!!.student
+            }
+        }
+    }
 
     Box(
         contentAlignment = Alignment.Center,
@@ -223,6 +239,8 @@ fun Step2(navController: NavController, Student : StudentFullData){
         BackButton {
             navController.navigate("main")
         }
+
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -252,68 +270,70 @@ fun Step2(navController: NavController, Student : StudentFullData){
 
                     .background(MaterialTheme.colorScheme.background)
             ) {
+                if (Student != null) {
 
 
-                Spacer(Modifier.size(20.dp))
+                    Spacer(Modifier.size(20.dp))
 
-                Text(
-                    text = "نام : ${Student.firstname + " " + Student.lastname}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.tanha))
-                )
+                    Text(
+                        text = "نام : ${Student!!.firstname + " " + Student!!.lastname}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.tanha))
+                    )
 
-                Spacer(Modifier.size(20.dp))
+                    Spacer(Modifier.size(20.dp))
 
-                Text(
-                    text = "تاریخ تولد  : ${Student.birthday}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.tanha))
-                )
+                    Text(
+                        text = "تاریخ تولد  : ${Student!!.birthday}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.tanha))
+                    )
 
-                Spacer(Modifier.size(20.dp))
+                    Spacer(Modifier.size(20.dp))
 
-                Text(
-                    text = "شماره تلفن : ${Student.number}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.tanha))
-                )
+                    Text(
+                        text = "شماره تلفن : ${Student!!.number}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.tanha))
+                    )
 
-                Spacer(Modifier.size(20.dp))
+                    Spacer(Modifier.size(20.dp))
 
-                Text(
-                    text = "شماره تلفن ولی : ${Student.ParentNumber}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.tanha))
-                )
+                    Text(
+                        text = "شماره تلفن ولی : ${Student!!.ParentNumber}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.tanha))
+                    )
 
-                Spacer(Modifier.size(20.dp))
+                    Spacer(Modifier.size(20.dp))
 
-                Text(
-                    text = "کد ملی : ${Student.nationalId}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.tanha))
-                )
+                    Text(
+                        text = "کد ملی : ${Student!!.nationalId}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.tanha))
+                    )
 
-                Spacer(Modifier.size(20.dp))
+                    Spacer(Modifier.size(20.dp))
 
-                Text(
-                    text = " کلاس : ${Student.Classname}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.tanha))
-                )
+                    Text(
+                        text = " کلاس : ${Student!!.className}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.tanha))
+                    )
 
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 
 data class ReqOtpNum(
@@ -91,7 +92,7 @@ data class StudentFullData(
     val birthday : String ,
     val ParentNumber : String ,
     val LocalNumber : String ,
-    val Classname : String
+    val className : String
 )
 
 data class ResReadAstin(
@@ -116,8 +117,8 @@ interface CoteApi {
     @POST("astin/add")
     suspend fun AddAstin(@Header("Authorization") token : String , @Body request: ReqAddAstin) : Response<ResAddAstin>
 
-    @GET("astin/add")
-    suspend fun ReadAstin(@Header("Authorization") token : String , @Body request: ReqReadAstin) : Response<ResReadAstin>
+    @GET("astin/read/{uid}")
+    suspend fun ReadAstin(@Header("Authorization") token : String , @Path("uid") uid : String) : Response<ResReadAstin>
 
 
 }

@@ -19,7 +19,7 @@ fun coteApp(modifier : Modifier = Modifier){
         MainNavHost(modifier , "login")
 
     }else{
-        MainNavHost(modifier , "ReadAstin/2/hiu")
+        MainNavHost(modifier , "ReadAstin/0/hiu")
     }
 
 

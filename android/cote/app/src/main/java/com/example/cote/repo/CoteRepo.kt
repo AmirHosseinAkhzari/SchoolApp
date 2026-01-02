@@ -5,6 +5,7 @@ import com.example.cote.data.remote.ReqAddAstin
 import com.example.cote.data.remote.ResAddAstin
 import com.example.cote.data.remote.ResCheckOtp
 import com.example.cote.data.remote.ResOtp
+import com.example.cote.data.remote.ResReadAstin
 import com.example.cote.data.remote.ResReadStudent
 
 interface  CoteRepo  {
@@ -21,6 +22,7 @@ interface  CoteRepo  {
 
         //Astin
         suspend fun AddAstin(token : String , data : ReqAddAstin) : Result<ResAddAstin?>
+        suspend fun ReadAstin(token : String , uid : String) : Result<ResReadAstin?>
 
 
     // NFC
@@ -30,6 +32,7 @@ interface  CoteRepo  {
 
         // reader
         suspend fun readNfcTag(context: Context) : String?
+        suspend fun ReadNFCOnlyUID(context: Context): String?
 
 
 }
