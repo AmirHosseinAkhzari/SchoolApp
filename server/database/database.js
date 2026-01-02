@@ -168,6 +168,34 @@ async function ConnectTodb() {
                     console.log(e)
                     return {message : "مشکلی پیش آمده است" , code : 500}
                 }
+            } , 
+            getInfoWithUid : async (uid) => {
+
+
+                const card = await Card.findOne({ uid })
+
+                if(card == null){
+                    return {message : "کارت خالی است" , code : 500 , stu : {}}
+                }
+                const ownerId = card.ownerId  
+
+
+                const stuDoc = await User.findById(ownerId)
+                .select("firstname lastname birthday nationalid number ParentNumber LocalNumber classId")
+
+                const c = await Class.findById(stuDoc.classId)
+
+                const { classId, ...stu } = stuDoc.toObject()
+
+                const result = {
+                ...stu,
+                className: c.name
+                }
+
+                return {message : "عملیات با موفقیت انجام شد" , code : 200 , stu : result}
+
+
+                
             }
         }, 
         class : {
