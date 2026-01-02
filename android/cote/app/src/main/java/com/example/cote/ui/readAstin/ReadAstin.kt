@@ -1,10 +1,14 @@
 package com.example.cote.ui.readAstin
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +16,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.cote.R
@@ -51,6 +60,8 @@ fun ReadAstin(modifier: Modifier = Modifier , navController: NavController , ste
     val context = LocalContext.current
 
     var NFCStatus by remember {  mutableStateOf(viewModel.GetNFCStatus(context))}
+
+
 
 
     LaunchedEffect(Unit) {
@@ -79,7 +90,14 @@ fun ReadAstin(modifier: Modifier = Modifier , navController: NavController , ste
         }
 
         Spacer(Modifier.size(50.dp))
-        NFCHnadeler(NFCStatus , navController , "Read" )
+        if(step == "0"){
+            NFCHnadeler(NFCStatus , navController , "Read" )
+        }else if (step == "1") {
+            ReadAstinSteps(step = "1" , navController , uid = "0")
+        }else{
+            ReadAstinSteps(step = "2" , navController , uid = uid)
+
+        }
     }
 
 }
@@ -93,14 +111,14 @@ fun ReadAstinSteps(step: String , navController : NavController , uid : String){
         Step1( navController )
     }else if (step == "2"){
         Step2( navController , StudentFullData(
-            firstname = "adf" ,
-            lastname = "dasd" ,
-            birthday = "dad" ,
-            number = "0dasf" ,
-            ParentNumber = "asdasd" ,
-            LocalNumber = "dasd" ,
-            nationalId = "wasd" ,
-            Classname = "adad"
+            firstname = "امیرحسین" ,
+            lastname = "اخضری" ,
+            birthday = "1390/05/19" ,
+            number = "09304682860" ,
+            ParentNumber = "09304682860" ,
+            LocalNumber = "07152249874" ,
+            nationalId = "2500766111" ,
+            Classname = "نهم"
         ))
     }
 
@@ -131,6 +149,7 @@ fun Step1( navController: NavController , ){
         val res = viewModel.ReadNFCUid(context)
 
         if (res != null){
+            Log.d("rades" , res)
             navController.navigate("ReadAstin/2/${res}")
         }
     }
@@ -190,6 +209,128 @@ fun Step1( navController: NavController , ){
 @Composable
 fun Step2(navController: NavController, Student : StudentFullData){
 
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = 20.dp , start = 20.dp )
+            .height(600.dp)
+            .clip(RoundedCornerShape(40.dp))
+            .background(Color.White)
+    ) {
 
-    Text(Student.toString())
+
+        BackButton {
+            navController.navigate("main")
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+
+
+            Spacer(Modifier.size(50.dp))
+
+            Text(
+                text = "اطلاعات آستین",
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 30.sp,
+                color = Color.Black,
+                fontFamily = FontFamily(Font(R.font.tanha))
+            )
+            Spacer(Modifier.size(50.dp))
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(400.dp)
+
+                    .clip(RoundedCornerShape(30.dp))
+
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+
+
+                Spacer(Modifier.size(20.dp))
+
+                Text(
+                    text = "نام : ${Student.firstname + " " + Student.lastname}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.tanha))
+                )
+
+                Spacer(Modifier.size(20.dp))
+
+                Text(
+                    text = "تاریخ تولد  : ${Student.birthday}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.tanha))
+                )
+
+                Spacer(Modifier.size(20.dp))
+
+                Text(
+                    text = "شماره تلفن : ${Student.number}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.tanha))
+                )
+
+                Spacer(Modifier.size(20.dp))
+
+                Text(
+                    text = "شماره تلفن ولی : ${Student.ParentNumber}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.tanha))
+                )
+
+                Spacer(Modifier.size(20.dp))
+
+                Text(
+                    text = "کد ملی : ${Student.nationalId}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.tanha))
+                )
+
+                Spacer(Modifier.size(20.dp))
+
+                Text(
+                    text = " کلاس : ${Student.Classname}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.tanha))
+                )
+
+            }
+        }
+    }
+
 }
+
+@Composable
+private fun BoxScope.BackButton(onClick: () -> Unit) {
+    Icon(
+        modifier = Modifier
+            .size(60.dp)
+            .padding(10.dp)
+            .align(Alignment.TopStart)
+            .clickable { onClick() },
+        imageVector = Icons.Default.ArrowBack,
+        contentDescription = "back",
+        tint = MaterialTheme.colorScheme.background,
+    )
+}
+

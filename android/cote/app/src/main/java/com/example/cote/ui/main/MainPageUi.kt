@@ -53,7 +53,7 @@ fun MainPageUi(modifier: Modifier , navController : NavController){
             Color.White ,
             "خوندن آستین" ,
                 painterResource(R.drawable.readastin) ,
-            "readAstin"
+            "readAstin/1/0"
         )
     )
     Column (

@@ -66,20 +66,24 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
             WirteAstin(modifier , navController , id, step , uid )
         }
 
-//        composable(route= "ReadAstin/{step}/{uid}"
-//            , arguments = listOf(
-//                navArgument("step") {type = NavType.StringType} ,
-//                navArgument("uid") {type = NavType.StringType})
-//
-//        ){
-//
-//            val step = it.arguments?.getString("step")
-//            val uid = it.arguments?.getString("uid")
-//
-//
-//
-//            ReadAstin(modifier , navController , step!! , uid!! )
-//        }
+        composable(route= "ReadAstin/{step}/{uid}"
+            , arguments = listOf(
+                navArgument("step") {type = NavType.StringType} ,
+                navArgument("uid") {type = NavType.StringType})
+
+        ){
+
+            val step = it.arguments?.getString("step")
+            val uid = it.arguments?.getString("uid")
+
+
+            Log.d("testNav" , step!!)
+            Log.d("testNav" , uid!!)
+
+
+
+            ReadAstin(modifier , navController , step , uid )
+        }
 
 
 
