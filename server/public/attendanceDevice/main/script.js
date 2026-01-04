@@ -91,7 +91,7 @@ input.addEventListener('keydown', async (event) => {
           flash.classList.remove('expand');
           flash.classList.add('shrink');
           document.body.style.color = "white";
-          tit.textContent = "آستینتو بالا بزن، حضورتو ثبت کن";
+          tit.textContent = "آستین بزن ,  حضورت رو ثبت کن";
           nameBox.textContent = "منتظر آستینم...";
         }, 2000);
       } else {
