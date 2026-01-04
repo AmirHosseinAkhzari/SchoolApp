@@ -31,6 +31,8 @@ logo.addEventListener('click', async () => {
     await elem.msRequestFullscreen();
   }
 
+  logo.style.display = 'none';
+
   // فعال‌سازی جلوگیری از خاموش شدن صفحه
   enableWakeLock();
 });

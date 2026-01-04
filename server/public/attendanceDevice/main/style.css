@@ -113,14 +113,17 @@ h1 {
 }
 
 
-* {
-  -webkit-user-select: none; /* Chrome, Safari */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* IE/Edge */
-  user-select: none;         /* استاندارد */
+.ui-hide {
+  transition: opacity 0.4s ease;
 }
 
-img {
-  pointer-events: none; /* جلوگیری از save image */
+.fullscreen-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ==== جلوگیری از انتخاب و سیو ==== */
+* {
+  user-select: none;
 }
 
