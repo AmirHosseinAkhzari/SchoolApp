@@ -114,7 +114,7 @@ function showError(message) {
 
   setTimeout(() => {
     document.body.classList.remove("error-mode");
-    tit.textContent = "آستینتو بالا بزن، حضورتو ثبت کن";
+    tit.textContent = "آستین بزن ,  حضورت رو ثبت کن";
     nameBox.textContent = "منتظر آستینم...";
   }, 2500);
 }
