@@ -539,9 +539,10 @@ async function ConnectTodb() {
                         const config = await global.utils.config.read()
                         const adminData = config.admin
 
-                    global.sms.send.manager( adminData.number , `${adminData.firstname} ${adminData.lastname}` )
                     
                 }
+                global.sms.send.manager( adminData.number , `${adminData.firstname} ${adminData.lastname}` )
+
 
             } , 
             changeStarttime : async (time) =>{
