@@ -48,6 +48,8 @@ const accKeravatRoutes = require('./router/android/keravat/accunt')
 const loginCotetRoutes = require('./router/android/cote/login')
 const StudentCotetRoutes = require('./router/android/cote/student')
 const AstinCoteRoutes = require('./router/android/cote/astin')
+const AttendanceCoteRoutes = require('./router/android/cote/attendance')
+
 
 
 
@@ -84,17 +86,6 @@ async function main() {
   app.use(cookieParser())
 
 
-  // global.db.user.add({
-  //   firstname : "امیرحسین" , 
-  //   lastname : "اخضری" , 
-  //   birthday : Date.now() , 
-  //   nationalid : "2500766111"  , 
-  //   number : "09304682860" , 
-  //   classId : "690000926aa70ec7aa4d4731" , 
-  //   role : "Student" , 
-    
-  // })
-
 
   app.use('/android/astin/login',loginAstinRoutes)
   app.use('/android/astin/notification', NotificationAstinRoutes )
@@ -109,6 +100,8 @@ async function main() {
   app.use('/android/cote/login',loginCotetRoutes)
   app.use('/android/cote/student',StudentCotetRoutes)
   app.use('/android/cote/astin',AstinCoteRoutes)
+  app.use('/android/cote/attendance',AttendanceCoteRoutes)
+
 
 
 
