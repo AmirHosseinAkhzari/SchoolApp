@@ -1,4 +1,4 @@
-package com.example.cote.ui.addAstin
+package com.example.cote.ui.Astin.addAstin
 
 import android.content.Context
 import androidx.lifecycle.ViewModel

@@ -326,13 +326,20 @@ async function ConnectTodb() {
 
 
             } , 
-            getall: async () => {
+            getall: async (date = "today") => {
             try {
-                const jDate = jalaali.toJalaali(new Date());
-                const today = `${jDate.jy}/${jDate.jm}/${jDate.jd}`;
+
+                let maindate = date
+                if(date == "today"){
+                    const jDate = jalaali.toJalaali(new Date());
+                    const today = `${jDate.jy}/${jDate.jm}/${jDate.jd}`;
+
+                    maindate = today
+                }
+
 
                 const students = await User.find({ role: "Student" });
-                const todayRecords = await Attendance.find({ date: today });
+                const todayRecords = await Attendance.find({ date: maindate });
 
                 const result = [];
 
@@ -369,6 +376,8 @@ async function ConnectTodb() {
                 }
                 }
 
+                console.log(result)
+
                 return { code: 200, data: result };
 
             } catch (err) {
@@ -376,13 +385,24 @@ async function ConnectTodb() {
                 return { code: 500, message: "خطا در دریافت حضور و غیاب" };
             }
             } , 
-            changeStatus : async(id , status) => {
+            getAllDate : async() => {
+
+                
+                const data = await Attendance.distinct("date")
+
+                return data
+
+            } , 
+            changeStatus : async(id , status , date) => {
 
 
                 try{
 
+                    console.log(date)
+                    console.log(id)
+
                 
-                await Attendance.findByIdAndUpdate(id , {status : status})
+                await Attendance.updateOne({id : id , date : date} , {status : status})
 
                     if (!updated) {
                         throw new Error("Attendance not found"); 

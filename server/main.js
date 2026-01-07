@@ -114,13 +114,13 @@ async function main() {
 
 
 
-  app.use('/attendance'  , AttendanceRoutes)
+  app.use('/attendance'  , checkToken , AttendanceRoutes)
   app.use('/admin' , AdminRoutes )
   app.use('/class',checkToken , ClassRoutes )
   app.use('/image',checkToken , imagesRoutes )
   app.use('/student',checkToken, StudentRoutes )
   app.use('/card',checkToken , CardRoutes )
-  app.use('/adminControl' , adminControlRoutes )
+  app.use('/adminControl' , checkToken, adminControlRoutes )
 
   
   app.use( "/dev/login", express.static(path.join(__dirname, "public/attendanceDevice/login")))

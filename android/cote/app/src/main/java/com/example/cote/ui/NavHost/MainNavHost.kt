@@ -10,11 +10,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.cote.ui.addAstin.WirteAstin
-import com.example.cote.ui.addAstin.addAstinUi
+import com.example.cote.ui.Astin.AstinMainPageUi
+import com.example.cote.ui.Astin.addAstin.WirteAstin
+import com.example.cote.ui.Astin.addAstin.addAstinUi
 import com.example.cote.ui.login.LoginPage
 import com.example.cote.ui.main.MainPageUi
-import com.example.cote.ui.readAstin.ReadAstin
+import com.example.cote.ui.Astin.readAstin.ReadAstin
+import com.example.cote.ui.attendance.AttendanceMainPageUi
 
 
 @Composable
@@ -39,6 +41,14 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
 
         composable("main"){
             MainPageUi(modifier , navController)
+        }
+
+        composable("mainAstin"){
+            AstinMainPageUi(modifier , navController)
+        }
+
+        composable("mainAttendance"){
+            AttendanceMainPageUi(modifier , navController)
         }
 
         composable("addAstin"){

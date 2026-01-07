@@ -44,16 +44,15 @@ fun MainPageUi(modifier: Modifier , navController : NavController){
     val options : List<option> = listOf(
         option(
             Color.White ,
-            "اضافه کردن آستین" ,
+            "آستین" ,
             painterResource(R.drawable.addastin) ,
-            "addAstin"
+            "mainAstin"
         ) ,
-
         option(
             Color.White ,
-            "خوندن آستین" ,
-                painterResource(R.drawable.readastin) ,
-            "readAstin/0/0"
+            "حضور و غیاب" ,
+            painterResource(R.drawable.attendance) ,
+            "attendance"
         )
     )
     Column (

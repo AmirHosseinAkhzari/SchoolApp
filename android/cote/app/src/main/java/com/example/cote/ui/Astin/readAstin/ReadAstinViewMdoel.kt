@@ -1,4 +1,4 @@
-package com.example.cote.ui.readAstin
+package com.example.cote.ui.Astin.readAstin
 
 import android.content.Context
 import android.util.Log

@@ -1,6 +1,5 @@
 package com.example.cote.data.remote
 
-import com.example.cote.ui.readAstin.ReadAstinViewModel
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

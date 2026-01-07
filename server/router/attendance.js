@@ -36,8 +36,10 @@ router.patch("/changeStatus", async (req , res) =>{
 
     console.log("done")
     
-    const data  = await global.db.attendance.changeStatus(req.body.id , req.body.status)
+    const data  = await global.db.attendance.changeStatus(req.body.id , req.body.status , req.body.date)
 
+
+    console.log(data)
     if(data.code != 200){
         res.status(data.code).json(data)
     }
@@ -51,10 +53,11 @@ router.patch("/changeStatus", async (req , res) =>{
 
 router.get("/read", async (req , res) =>{
 
-    console.log("done")
-    
 
-    const data  = await global.db.attendance.getall()
+    const date = req.query.date
+    const data  = await global.db.attendance.getall(date)
+
+    console.log(date)
 
     console.log(data)
 
@@ -83,6 +86,13 @@ router.patch("/changeStarttime", async (req , res) =>{
 
     // res.status(200).json()
 
+})
+
+router.get("/date" , async (req , res) => {
+
+    const date = await global.db.attendance.getAllDate()
+
+    res.json({date})
 })
 
 

@@ -345,16 +345,14 @@ fun AddDiscriptionDialog(onDismissRequest :() -> Unit , time : String , date : S
                         textStyle = MaterialTheme.typography.bodySmall,
                         shape = RoundedCornerShape(14.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            focusedBorderColor = backgroundColor,
                             unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                            cursorColor = MaterialTheme.colorScheme.secondary,
+                            focusedLabelColor = backgroundColor,
+                            cursorColor = backgroundColor,
                             focusedContainerColor = MaterialTheme.colorScheme.background,
                             unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-
-
+                            focusedTextColor = backgroundColor,
+                            unfocusedTextColor = backgroundColor,
                             )
                     )
 
@@ -406,7 +404,7 @@ fun AddDiscriptionDialog(onDismissRequest :() -> Unit , time : String , date : S
                             imageVector = Icons.Rounded.Done,
                             contentDescription = "Confirm",
                             modifier = Modifier.size(180.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            tint = backgroundColor
                         )
                     }
                 }
@@ -470,6 +468,11 @@ fun StatusItem(time : String , date : String , status : String , descriptionMode
 
     var mode by remember { mutableStateOf(descriptionMode) }
 
+
+    Spacer(Modifier.size(20.dp))
+
+
+    Log.d("status" , status)
     Box(
         Modifier
             .clickable{
@@ -488,6 +491,7 @@ fun StatusItem(time : String , date : String , status : String , descriptionMode
 
 
     ){
+
 
         Text(
             text = time ,
@@ -510,11 +514,15 @@ fun StatusItem(time : String , date : String , status : String , descriptionMode
         )
         Spacer(Modifier.size(8.dp))
 
+
+
     }
 
     if(DialogMode == true){
         if(mode){
-            AddDiscriptionDialog({DialogMode = false} , time , date , status , {mode = !mode})
+            if(status != "present") {
+                AddDiscriptionDialog({DialogMode = false} , time , date , status , {mode = !mode})
+            }
         }else{
             DiscriptionAdded({DialogMode = false})
         }
@@ -694,7 +702,7 @@ fun translateStatusToPersian(name : String) : String{
     return when (name){
         "present" -> "حاضر"
         "absent" -> "غایب"
-        "lateness" -> "دیر اومده"
+        "lateness" -> "دیرکرد"
         else -> ""
     }
 }
