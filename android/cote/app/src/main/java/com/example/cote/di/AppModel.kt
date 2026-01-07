@@ -23,7 +23,7 @@ object AppModule {
     fun ProvideAstinApi() : CoteApi {
         return Retrofit
             .Builder()
-            .baseUrl("https://astinapp.ir/android/cote/")
+            .baseUrl("https://diptap.sbs/android/cote/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(CoteApi::class.java)

@@ -24,6 +24,7 @@ interface  CoteRepo  {
         suspend fun AddAstin(token : String , data : ReqAddAstin) : Result<ResAddAstin?>
         suspend fun ReadAstin(token : String , uid : String) : Result<ResReadAstin?>
 
+        //attendance
 
     // NFC
 

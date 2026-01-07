@@ -22,5 +22,9 @@ class SmsSenderViewModel @Inject constructor(
         ) == BiometricManager.BIOMETRIC_SUCCESS
     }
 
+    fun sendSms(){
+
+    }
+
 
 }

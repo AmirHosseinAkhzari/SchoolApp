@@ -119,5 +119,8 @@ interface CoteApi {
     @GET("astin/read/{uid}")
     suspend fun ReadAstin(@Header("Authorization") token : String , @Path("uid") uid : String) : Response<ResReadAstin>
 
+    @GET
+    suspend fun SnedSms(@Header("Authorization") token : String ) uid : String) : Response<ResReadAstin>
+
 
 }
