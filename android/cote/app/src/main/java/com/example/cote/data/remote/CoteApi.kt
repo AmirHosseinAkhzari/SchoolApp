@@ -100,6 +100,11 @@ data class ResReadAstin(
     val stu: StudentFullData
 )
 
+data class ResSendSms(
+    val message : String ,
+    val code : Int ,
+)
+
 
 interface CoteApi {
 
@@ -119,8 +124,8 @@ interface CoteApi {
     @GET("astin/read/{uid}")
     suspend fun ReadAstin(@Header("Authorization") token : String , @Path("uid") uid : String) : Response<ResReadAstin>
 
-    @GET
-    suspend fun SnedSms(@Header("Authorization") token : String ) uid : String) : Response<ResReadAstin>
+    @POST("attendance/sendsms")
+    suspend fun SnedSms(@Header("Authorization") token : String ) : Response<ResSendSms>
 
 
 }

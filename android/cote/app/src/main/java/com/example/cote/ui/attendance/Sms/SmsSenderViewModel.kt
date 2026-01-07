@@ -3,6 +3,7 @@ package com.example.cote.ui.attendance.Sms
 import android.content.Context
 import androidx.biometric.BiometricManager
 import androidx.lifecycle.ViewModel
+import com.example.cote.data.remote.ResSendSms
 import com.example.cote.domain.repo.CoteRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -22,8 +23,16 @@ class SmsSenderViewModel @Inject constructor(
         ) == BiometricManager.BIOMETRIC_SUCCESS
     }
 
-    fun sendSms(){
+    fun GetMainToken(context: Context): String? {
+        val sharedPref = context.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+        val token = sharedPref.getString("token", null)
 
+        return token
+    }
+
+
+    suspend fun SendSms(token: String): Result<ResSendSms?> {
+        return repo.SendSms(token)
     }
 
 

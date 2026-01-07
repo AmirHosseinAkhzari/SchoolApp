@@ -7,6 +7,7 @@ import com.example.cote.data.remote.ResCheckOtp
 import com.example.cote.data.remote.ResOtp
 import com.example.cote.data.remote.ResReadAstin
 import com.example.cote.data.remote.ResReadStudent
+import com.example.cote.data.remote.ResSendSms
 
 interface  CoteRepo  {
 
@@ -25,6 +26,7 @@ interface  CoteRepo  {
         suspend fun ReadAstin(token : String , uid : String) : Result<ResReadAstin?>
 
         //attendance
+        suspend fun SendSms(token : String) : Result<ResSendSms?>
 
     // NFC
 

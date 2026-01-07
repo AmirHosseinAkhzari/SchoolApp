@@ -15,6 +15,7 @@ import com.example.cote.data.remote.ResCheckOtp
 import com.example.cote.data.remote.ResOtp
 import com.example.cote.data.remote.ResReadAstin
 import com.example.cote.data.remote.ResReadStudent
+import com.example.cote.data.remote.ResSendSms
 import com.example.cote.domain.repo.CoteRepo
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -122,6 +123,24 @@ class CoteRepoImpl(
             handleError(it)
         }
 
+    override suspend fun SendSms(token: String): Result<ResSendSms?>  =
+        runCatching {
+            val res = api.SnedSms(token )
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResSendSms::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
 
     override suspend fun AddAstin(token: String, data: ReqAddAstin): Result<ResAddAstin?> =
         runCatching {
@@ -162,6 +181,8 @@ class CoteRepoImpl(
         }.onFailure {
             handleError(it)
         }
+
+
 
 
     override suspend fun ReadNFCOnlyUID(context: Context): String? = suspendCancellableCoroutine { cont ->

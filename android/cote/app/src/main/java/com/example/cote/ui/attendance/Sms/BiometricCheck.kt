@@ -7,6 +7,10 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
@@ -22,18 +26,35 @@ fun BiometricChecker(
     navController: NavController
 ) {
     val viewModel = hiltViewModel<SmsSenderViewModel>()
+
     val context = LocalContext.current
 
     val canAuthenticate = viewModel.canAuthenticate(context)
+
+    val token = viewModel.GetMainToken(context)
+
+    var mode by remember { mutableStateOf(false) }
 
     val activity = context as FragmentActivity
 
     LaunchedEffect(canAuthenticate) {
         if (canAuthenticate == true) {
             showBiometric(activity ,
-                {navController.navigate("main")} ,
-                {navController.navigate("mainAstin")}
+                {mode = true} ,
+                {navController.navigate("main")}
             )
+        }
+    }
+
+    LaunchedEffect(mode) {
+
+        if(mode){
+            val res = viewModel.SendSms(token!!)
+
+            if(res.isSuccess){
+                val message = "عملیات با موفقیت انجام شد"
+                navController.navigate("checkMarkPage/200/${message}")
+            }
         }
     }
 }
