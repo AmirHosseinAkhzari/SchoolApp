@@ -76,17 +76,7 @@ fun ReadAstin(modifier: Modifier = Modifier , navController: NavController , ste
             .fillMaxSize()
     ) {
 
-        AnimatedVisibility(
-            visible = !isKeyboardOpen()
-        ) {
-            Column {
-                Spacer(Modifier.size(60.dp))
-                Text(
-                    text = "کُت",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-        }
+
 
         Spacer(Modifier.size(50.dp))
         if(step == "0"){

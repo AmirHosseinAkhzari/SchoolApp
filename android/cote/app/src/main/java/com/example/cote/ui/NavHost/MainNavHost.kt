@@ -17,6 +17,8 @@ import com.example.cote.ui.login.LoginPage
 import com.example.cote.ui.main.MainPageUi
 import com.example.cote.ui.Astin.readAstin.ReadAstin
 import com.example.cote.ui.attendance.AttendanceMainPageUi
+import com.example.cote.ui.attendance.Sms.BiometricChecker
+import com.example.cote.ui.pages.CheckMarkPage
 
 
 @Composable
@@ -49,6 +51,10 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
 
         composable("mainAttendance"){
             AttendanceMainPageUi(modifier , navController)
+        }
+
+        composable("SendSms"){
+            BiometricChecker(modifier , navController)
         }
 
         composable("addAstin"){
@@ -93,6 +99,25 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
 
 
             ReadAstin(modifier , navController , step , uid )
+        }
+
+
+        composable(route= "checkMarkPage/{code}/{message}"
+            , arguments = listOf(
+                navArgument("code") {type = NavType.StringType} ,
+                navArgument("message") {type = NavType.StringType})
+
+        ){
+
+            val code = it.arguments?.getString("code")
+            val message = it.arguments?.getString("message")
+
+
+
+
+
+
+            CheckMarkPage(modifier , navController , code!! , message!! )
         }
 
 

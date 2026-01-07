@@ -75,27 +75,13 @@ fun addAstinUi(modifier: Modifier , navController : NavController){
         }
     }
     Log.d("NFC" ,NFCStatus)
-    Column (
-        horizontalAlignment = Alignment.CenterHorizontally ,
-        modifier = Modifier
-            .fillMaxSize()
-        ) {
 
-        AnimatedVisibility(
-            visible = !isKeyboardOpen()
-        ) {
-            Column {
-                Spacer(Modifier.size(60.dp))
-                Text(
-                    text = "کُت",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-        }
 
+    Column {
         Spacer(Modifier.size(50.dp))
-        NFCHnadeler(NFCStatus , navController , "Add")
+        NFCHnadeler(NFCStatus, navController, "Add")
     }
+
 }
 
 

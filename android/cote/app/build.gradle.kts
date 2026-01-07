@@ -72,5 +72,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
     implementation("com.airbnb.android:lottie-compose:6.0.0")
     implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
+    implementation("androidx.biometric:biometric:1.1.0")
 
 }

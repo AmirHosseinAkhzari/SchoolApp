@@ -67,18 +67,6 @@ fun WirteAstin(modifier: Modifier , navController : NavController , id : String 
             .fillMaxSize()
     ) {
 
-        AnimatedVisibility(
-            visible = !isKeyboardOpen()
-        ) {
-            Column {
-                Spacer(Modifier.size(60.dp))
-                Text(
-                    text = "کُت",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-        }
-
         Spacer(Modifier.size(20.dp))
         Steps(id , step , navController , uid!!)
 

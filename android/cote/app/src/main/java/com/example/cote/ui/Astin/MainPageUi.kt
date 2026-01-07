@@ -28,6 +28,7 @@ fun AstinMainPageUi(modifier: Modifier , navController : NavController){
         option(
             Color.White,
             "اضافه کردن آستین",
+            90 ,
             painterResource(R.drawable.addastin),
             "addAstin"
         ),
@@ -35,20 +36,12 @@ fun AstinMainPageUi(modifier: Modifier , navController : NavController){
         option(
             Color.White ,
             "خوندن آستین" ,
+            90 ,
                 painterResource(R.drawable.readastin) ,
             "readAstin/0/0"
         )
     )
-    Column (
-        horizontalAlignment = Alignment.CenterHorizontally ,
-        modifier = modifier
-    ){
 
-        Spacer(Modifier.size(60.dp))
-        Text(
-            text = "کُت",
-            style = MaterialTheme.typography.titleLarge
-        )
 
         LazyColumn(
             modifier = Modifier
@@ -56,11 +49,11 @@ fun AstinMainPageUi(modifier: Modifier , navController : NavController){
         ) {
 
             items(options) {
-                item(color = it.color, text = it.text, image = it.image , route = it.route , navController = navController )
+                item(it ,  navController )
             }
         }
     }
     
 
-}
+
 

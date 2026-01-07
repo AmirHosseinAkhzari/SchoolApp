@@ -1,5 +1,6 @@
 package com.example.cote.ui.main
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,10 +35,12 @@ import java.nio.file.WatchEvent
 data class option (
     val color: Color ,
     val text: String ,
+    val size : Int ,
     val image: Painter ,
     val route : String
 )
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun MainPageUi(modifier: Modifier , navController : NavController){
 
@@ -45,26 +48,18 @@ fun MainPageUi(modifier: Modifier , navController : NavController){
         option(
             Color.White ,
             "آستین" ,
-            painterResource(R.drawable.addastin) ,
+            90 ,
+            painterResource(R.drawable.astin) ,
             "mainAstin"
         ) ,
         option(
             Color.White ,
             "حضور و غیاب" ,
+            90 ,
             painterResource(R.drawable.attendance) ,
-            "attendance"
+            "mainAttendance"
         )
     )
-    Column (
-        horizontalAlignment = Alignment.CenterHorizontally ,
-        modifier = modifier
-    ){
-
-        Spacer(Modifier.size(60.dp))
-        Text(
-            text = "کُت",
-            style = MaterialTheme.typography.titleLarge
-        )
 
         LazyColumn(
             modifier = Modifier
@@ -72,26 +67,26 @@ fun MainPageUi(modifier: Modifier , navController : NavController){
         ) {
 
             items(options) {
-                item(color = it.color, text = it.text, image = it.image , route = it.route , navController = navController )
+                item(it ,  navController )
             }
         }
     }
     
 
-}
+
 
 
 @Composable
-fun item(color : Color , text : String , image : Painter , route : String,navController: NavController){
+fun item(option: option , navController: NavController){
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 10.dp , end = 20.dp)
             .height(150.dp)
             .clip(RoundedCornerShape(30.dp))
-            .background(color )
+            .background(option.color )
             .clickable{
-                navController.navigate(route = route)
+                navController.navigate(route = option.route)
             }
     ){
         Row(
@@ -104,16 +99,16 @@ fun item(color : Color , text : String , image : Painter , route : String,navCon
             Spacer(Modifier.size(20.dp))
 
             Image(
-                painter = image ,
+                painter = option.image ,
                 contentDescription = "Icon" ,
                 modifier = Modifier
-                    .size(90.dp)
+                    .size(size = option.size.dp)
             )
 
             Spacer(Modifier.size(10.dp))
 
             Text(
-                text = text,
+                text = option.text,
                 style = MaterialTheme.typography.titleLarge ,
                 color = Color.Black ,
                 fontSize = 30.sp

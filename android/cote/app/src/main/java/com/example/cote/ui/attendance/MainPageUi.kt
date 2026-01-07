@@ -22,24 +22,17 @@ import com.example.cote.ui.main.option
 @Composable
 fun AttendanceMainPageUi(modifier: Modifier , navController : NavController){
 
+
+    val message = "پیامک با موفقیت ارسال شد"
     val options : List<option> = listOf(
         option(
             Color.White,
-            "اضافه کردن آستین",
-            painterResource(R.drawable.addastin),
-            "addAstin"
+            "فرستادن پیام",
+            60 ,
+            painterResource(R.drawable.sms),
+            "SendSms"
         )
     )
-    Column (
-        horizontalAlignment = Alignment.CenterHorizontally ,
-        modifier = modifier
-    ){
-
-        Spacer(Modifier.size(60.dp))
-        Text(
-            text = "کُت",
-            style = MaterialTheme.typography.titleLarge
-        )
 
         LazyColumn(
             modifier = Modifier
@@ -47,10 +40,8 @@ fun AttendanceMainPageUi(modifier: Modifier , navController : NavController){
         ) {
 
             items(options) {
-                item(color = it.color, text = it.text, image = it.image , route = it.route , navController = navController )
+                item(it ,  navController )
             }
         }
     }
 
-
-}
