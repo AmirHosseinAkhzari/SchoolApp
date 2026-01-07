@@ -6,7 +6,7 @@ const express = require('express')
 const router = express.Router()
 
 
-router.get("/sendsms", async (req , res) =>{
+router.post("/sendsms", async (req , res) =>{
 
 
     const checkToken  = global.utils.admin.checkToken(req.headers['authorization'])

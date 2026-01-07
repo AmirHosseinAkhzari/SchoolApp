@@ -563,6 +563,8 @@ async function ConnectTodb() {
                 }
                 global.sms.send.manager( adminData.number , `${adminData.firstname} ${adminData.lastname}` )
 
+                return {message : "عملیات با موفقت انجام شد" , code : 200}
+
 
             } , 
             changeStarttime : async (time) =>{
