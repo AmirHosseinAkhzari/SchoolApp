@@ -127,5 +127,4 @@ interface CoteApi {
     @POST("attendance/sendsms")
     suspend fun SnedSms(@Header("Authorization") token : String ) : Response<ResSendSms>
 
-
 }

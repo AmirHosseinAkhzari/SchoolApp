@@ -54,6 +54,9 @@ fun BiometricChecker(
             if(res.isSuccess){
                 val message = "عملیات با موفقیت انجام شد"
                 navController.navigate("checkMarkPage/200/${message}")
+            }else {
+                val message = "مشکلی پیش آمده"
+                navController.navigate("checkMarkPage/500/${message}")
             }
         }
     }

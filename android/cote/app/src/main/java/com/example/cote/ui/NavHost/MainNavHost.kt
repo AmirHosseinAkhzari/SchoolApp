@@ -18,6 +18,7 @@ import com.example.cote.ui.main.MainPageUi
 import com.example.cote.ui.Astin.readAstin.ReadAstin
 import com.example.cote.ui.attendance.AttendanceMainPageUi
 import com.example.cote.ui.attendance.Sms.BiometricChecker
+import com.example.cote.ui.attendance.read.ReadAttendance
 import com.example.cote.ui.pages.CheckMarkPage
 
 
@@ -55,6 +56,10 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
 
         composable("SendSms"){
             BiometricChecker(modifier , navController)
+        }
+
+        composable("ReadAttendance"){
+            ReadAttendance(modifier , navController)
         }
 
         composable("addAstin"){

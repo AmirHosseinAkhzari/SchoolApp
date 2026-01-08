@@ -73,5 +73,7 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.0.0")
     implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
     implementation("androidx.biometric:biometric:1.1.0")
+    implementation("com.github.razaghimahdi:Compose-Persian-Date-Picker:1.1.1")
+    implementation("com.github.samanzamani:PersianDate:1.7.1")
 
 }

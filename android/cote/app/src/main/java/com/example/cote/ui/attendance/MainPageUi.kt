@@ -1,5 +1,6 @@
 package com.example.cote.ui.attendance
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import com.example.cote.R
 import com.example.cote.ui.main.item
 import com.example.cote.ui.main.option
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun AttendanceMainPageUi(modifier: Modifier , navController : NavController){
 
@@ -30,7 +32,7 @@ fun AttendanceMainPageUi(modifier: Modifier , navController : NavController){
             "فرستادن پیام",
             60 ,
             painterResource(R.drawable.sms),
-            "SendSms"
+            "ReadAttendance"
         )
     )
 
