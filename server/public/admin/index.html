@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>کتُ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background-color: #e8e9c6;
+            color: white;
+            font-family: "Vazir", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        .title {
+            margin-top: 40px;
+            font-size: 96px;   /* خیلی بزرگ */
+            font-weight: 900;
+            color: #000;
+        }
+
+        .subtitle {
+            margin-top: 20px; /* فاصله کم */
+            font-size: 56px;  /* بزرگ، ولی کوچیک‌تر از title */
+            font-weight: 700;
+            color: #000;
+
+        }
+
+        .qr {
+            margin-top: 40px;
+            width: 550px;     /* خیلی خیلی بزرگ */
+            height: 550px;
+        }
+
+        .qr img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* موبایل */
+        @media (max-width: 1000px) {
+            .title {
+                font-size: 20vw;
+            }
+            .subtitle {
+                font-size: 10vw;
+            }
+            .qr {
+                width: 90vw;
+                height: 90vw;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="title">کتُ</div>
+
+    <div class="subtitle">
+        جای اون اشغال کت رو دانلود کن
+    </div>
+
+    <div class="qr">
+        <!-- عکس QR رو اینجا بذار -->
+        <img src="qrcode.png" alt="QR Code">
+    </div>
+
+</body>
+</html>

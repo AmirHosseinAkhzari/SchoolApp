@@ -27,7 +27,5 @@ router.delete("/delete" , async (req , res) => {
 })
 
 
-
-
 module.exports = router;
 

@@ -16,6 +16,9 @@ import com.example.cote.ui.Astin.addAstin.addAstinUi
 import com.example.cote.ui.login.LoginPage
 import com.example.cote.ui.main.MainPageUi
 import com.example.cote.ui.Astin.readAstin.ReadAstin
+import com.example.cote.ui.Class.ClassMainPage
+import com.example.cote.ui.Student.StudentMainPage
+import com.example.cote.ui.admin.AdminControlMainPage
 import com.example.cote.ui.attendance.AttendanceMainPageUi
 import com.example.cote.ui.attendance.Sms.BiometricChecker
 import com.example.cote.ui.attendance.read.ReadAttendance
@@ -54,6 +57,11 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
             AttendanceMainPageUi(modifier , navController)
         }
 
+        composable("mainClassPage"){
+            ClassMainPage(modifier , navController)
+        }
+
+
         composable("SendSms"){
             BiometricChecker(modifier , navController)
         }
@@ -64,6 +72,14 @@ fun MainNavHost(modifier: Modifier = Modifier, starterRoute  :String){
 
         composable("addAstin"){
             addAstinUi(modifier , navController)
+        }
+
+        composable("AdminControlMainPage"){
+            AdminControlMainPage(modifier , navController)
+        }
+
+        composable("StudentMainPage"){
+            StudentMainPage(modifier , navController)
         }
 
         composable(route= "addAstinNFCTag/{id}/{step}/{uid}"

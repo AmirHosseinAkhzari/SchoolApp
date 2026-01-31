@@ -136,7 +136,19 @@ async function ConnectTodb() {
                 return data
             } ,
             getone : async (id) =>{
-                return await User.findById(id)
+                const stu = await User.findById(id).select("firstname lastname birthday nationalid number ParentNumber LocalNumber classId _id ")
+
+                console.log(stu)
+
+                const c = await Class.findById(stu.classId)
+
+
+
+                return {
+                    ...stu.toObject() , 
+                    className : c.name
+                }
+
             },
             deleteAll : async () => {
                 await User.deleteMany({})
@@ -219,6 +231,8 @@ async function ConnectTodb() {
 
                 await User.find({classId : id}).deleteMany({})
                 return {code : 200 , message :"کلاس با موفقیت حذف شد"}
+
+
             } , 
             deleteAll : async () => {
                 await Class.deleteMany({})
@@ -326,16 +340,17 @@ async function ConnectTodb() {
 
 
             } , 
-            getall: async (date = "today") => {
+            getall: async (date) => {
             try {
 
+                console.log(date)
                 let maindate = date
-                if(date == "today"){
-                    const jDate = jalaali.toJalaali(new Date());
-                    const today = `${jDate.jy}/${jDate.jm}/${jDate.jd}`;
 
-                    maindate = today
-                }
+                console.log(maindate)
+                const jDate = jalaali.toJalaali(new Date())
+                const today = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
+
+                console.log(maindate)
 
 
                 const students = await User.find({ role: "Student" });
@@ -348,6 +363,17 @@ async function ConnectTodb() {
                     a => a.userId.toString() === stu._id.toString()
                 );
 
+                const fullname = stu.firstname + " " + stu.lastname
+                const classId = stu.classId
+                const c = await Class.findById(classId)
+                const className = c.name
+
+                console.log(classId)
+                console.log(c)
+                console.log(className)
+
+
+
                 if (record) {
 
                     let description = "---"
@@ -356,29 +382,37 @@ async function ConnectTodb() {
                     }
                     
                     result.push({
-                    id: record._id,          
-                    studentId: stu._id,     
+                    id: record._id,   
+                    fullname : fullname ,     
+                    className :   className  , 
+                    userId : stu._id , 
                     status: record.status,
                     checkIn: record.checkIn,
-                    date: record.date  , 
                     description : description
                     });
                 } else {
-                    // ✔️ غایب است
-                    result.push({
-                    id: stu._id ,                  
-                    studentId: stu._id,     
-                    status: "غایب",
-                    checkIn: "—",
-                    date: "—" , 
-                    description : "-"
-                    });
+
+                    if(date == today){
+                        console.log("hi")
+                        result.push({
+                        id: stu._id , 
+                        fullname : fullname ,  
+                        className :   className  ,  
+                        userId : stu._id ,               
+                        status: "غایب",
+                        checkIn: "—",
+                        description : "—"
+                        });
+                    }
+
+
                 }
                 }
 
                 console.log(result)
 
-                return { code: 200, data: result };
+
+                return { code: 200, data: result  };
 
             } catch (err) {
                 console.error("❌ ERROR getall:", err);
@@ -398,15 +432,11 @@ async function ConnectTodb() {
 
                 try{
 
-                    console.log(date)
-                    console.log(id)
+                const res = await Attendance.updateOne({userId : id , date : date} , {status : status})
 
-                
-                await Attendance.updateOne({id : id , date : date} , {status : status})
-
-                    if (!updated) {
-                        throw new Error("Attendance not found"); 
-                        }
+                if(res.matchedCount == 0) {
+                    ErrorEvent("bad error")
+                }
 
                 return { code: 200 , message : "تغیرات با موفیت انجام شد"};
 
@@ -446,11 +476,7 @@ async function ConnectTodb() {
 
                 console.log(config)
 
-                const jDate = jalaali.toJalaali(new Date())
 
-                const date  = `${jDate.jy}/${jDate.jm}/${jDate.jd}`
-
-                console.log(date)
 
                 const existing = await Attendance.findOne({
                     userId: user._id,
@@ -474,10 +500,13 @@ async function ConnectTodb() {
                     checkIn : time  ,
                     status : status ,
                     userFullName :fullname, 
-                    date :date
+                    date : date
                     })
 
                 data.save()
+
+                return {message : "عملیات با موفقت انجام شد" , code : 200}
+
                 }
             } , 
             sendsms : async () => {
@@ -556,12 +585,18 @@ async function ConnectTodb() {
                         global.sms.send.lateness(user.ParentNumber , record.userFullName )
                     }
 
-                        const config = await global.utils.config.read()
-                        const adminData = config.admin
-
                     
                 }
-                global.sms.send.manager( adminData.number , `${adminData.firstname} ${adminData.lastname}` )
+
+
+
+                const admins = await User.find({"role" : "admin"})
+
+                for (const admin of  admins){
+                    global.sms.send.manager( admin.number , `آقای ${admin.lastname}` )
+                }
+
+                console.log(admins)
 
                 return {message : "عملیات با موفقت انجام شد" , code : 200}
 
@@ -908,7 +943,7 @@ async function ConnectTodb() {
                 const config = await global.utils.config.read()
                 const adminData = config.admin
 
-                const admins = User.find({role : "admin" , number : {$ne : adminData.number}}).select("_id firstname lastname number role")
+                const admins = User.find({role : "admin" , number : {$ne : adminData.number}}).select("_id firstname lastname number")
 
                 return admins
             } , 

@@ -1,326 +1,0 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FR4QH1MPBG"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-FR4QH1MPBG');
-  </script>
-  <meta charset="UTF-8" />
-  <title>پنل آستین</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
-  <script src="app.js" defer></script>
-</head>
-<body>
-  <!-- Delete confirmation popup -->
-  <div class="popup-overlay" id="deletePopup">
-    <div class="popup-box">
-      <h3 id="deleteTitle">حذف کلاس</h3>
-      <p id="deleteMessage">
-        آیا مطمئن هستید که می‌خواهید این کلاس را حذف کنید؟ با انجام این کار تمام اطلاعات مربوطه پاک می‌شود.
-      </p>
-      <div class="popup-buttons">
-        <button type="button" class="btn ghost" data-popup-close="deletePopup">انصراف</button>
-        <button type="button" class="btn danger" id="confirmDelete">بله، حذف شود</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add class popup -->
-  <div class="popup-overlay" id="addClassPopup">
-    <div class="popup-box">
-      <h3>افزودن کلاس جدید</h3>
-      <p class="popup-description">نام کلاس را وارد کنید:</p>
-      <form id="addClassForm" class="popup-form">
-        <input type="text" id="addClassInput" placeholder="مثلاً دوازدهم تجربی" required />
-        <div class="popup-buttons">
-          <button type="button" class="btn ghost" data-popup-close="addClassPopup">انصراف</button>
-          <button type="submit" class="btn primary">افزودن</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Edit class popup -->
-  <div class="popup-overlay" id="editClassPopup">
-    <div class="popup-box">
-      <h3>ویرایش کلاس</h3>
-      <p class="popup-description">نام جدید کلاس را وارد کنید:</p>
-      <form id="editClassForm" class="popup-form">
-        <input type="text" id="editClassInput" required />
-        <div class="popup-buttons">
-          <button type="button" class="btn ghost" data-popup-close="editClassPopup">انصراف</button>
-          <button type="submit" class="btn primary">ذخیره</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Edit student popup -->
-  <div class="popup-overlay full" id="editStudentPopup">
-    <div class="popup-box full-box">
-      <header class="student-header centered">
-        <div class="profile-container">
-          <img id="studentPhotoPreview" src="https://i.pravatar.cc/150?u=default" alt="student" class="profile-big" />
-          <button type="button" class="edit-photo-btn" data-action="select-photo" data-target="studentPhoto" data-preview="studentPhotoPreview">
-            <img src="icons/edit.svg" alt="edit" />
-          </button>
-          <input type="file" id="studentPhoto" accept="image/*" hidden />
-        </div>
-        <div class="student-header-text">
-          <h2>ویرایش دانش‌آموز</h2>
-          <p>اطلاعات این دانش‌آموز را ویرایش کنید</p>
-        </div>
-      </header>
-      <form id="editStudentForm" class="student-form">
-        <div class="form-grid">
-          <label class="form-field">
-            <span>نام</span>
-            <input type="text" id="studentFirstName" required />
-          </label>
-          <label class="form-field">
-            <span>نام خانوادگی</span>
-            <input type="text" id="studentLastName" required />
-          </label>
-          <label class="form-field">
-            <span>تاریخ تولد (شمسی)</span>
-            <input type="text" id="studentBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10" />
-          </label>
-          <label class="form-field">
-            <span>کد ملی</span>
-            <input type="text" id="studentNationalId" />
-          </label>
-          <label class="form-field">
-            <span>شماره دانش‌آموز</span>
-            <input type="text" id="number" />
-          </label>
-          <label class="form-field">
-            <span>شماره ولی</span>
-            <input type="text" id="studentParentPhone" />
-          </label>
-          <label class="form-field">
-            <span>شماره منزل</span>
-            <input type="text" id="studentHomePhone" />
-          </label>
-          <label class="form-field">
-            <span>کلاس</span>
-            <select id="studentClass" required></select>
-          </label>
-        </div>
-        <div class="popup-buttons">
-          <button type="button" class="btn ghost" data-popup-close="editStudentPopup">انصراف</button>
-          <button type="submit" class="btn primary">ذخیره تغییرات</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Add student popup -->
-  <div class="popup-overlay full" id="addStudentPopup">
-  <div class="popup-box full-box">
-    <header class="student-header centered">
-      <div class="profile-container">
-        <img id="addStudentPhotoPreview" src="https://i.pravatar.cc/150?u=new" alt="student" class="profile-big" />
-        <button type="button" class="edit-photo-btn" data-action="select-photo" data-target="addStudentPhoto" data-preview="addStudentPhotoPreview">
-          <img src="icons/edit.svg" alt="edit" />
-        </button>
-        <input type="file" id="addStudentPhoto" accept="image/*" hidden />
-      </div>
-      <div class="student-header-text">
-        <h2>افزودن دانش‌آموز جدید</h2>
-        <p>اطلاعات دانش‌آموز را وارد کنید</p>
-      </div>
-    </header>
-
-    <form id="addStudentForm" class="student-form" autocomplete="off">
-      <div class="form-grid">
-
-        <label class="form-field">
-          <span>نام</span>
-          <input type="text" id="addFirstName" placeholder="مثلاً امیرحسین" required autocomplete="off" />
-        </label>
-
-        <label class="form-field">
-          <span>نام خانوادگی</span>
-          <input type="text" id="addLastName" placeholder="مثلاً اخضری" required autocomplete="off" />
-        </label>
-
-        <label class="form-field">
-          <span>تاریخ تولد (شمسی)</span>
-          <input type="text" id="addBirth" placeholder="۱۴۰۳/۰۵/۱۲" maxlength="10" autocomplete="off" />
-        </label>
-
-        <label class="form-field">
-          <span>کد ملی</span>
-          <input type="text" id="addNationalId" placeholder="۰۰۵۶۷۳۲۹۴۱" autocomplete="off" />
-        </label>
-
-        <label class="form-field">
-          <span>شماره دانش‌آموز</span>
-          <input type="text" id="addStudentNumber" placeholder="۱۲۳۴۵۶" autocomplete="off" />
-        </label>
-
-        <label class="form-field">
-          <span>شماره ولی</span>
-          <input type="text" id="addParentPhone" placeholder="۰۹۱۲۳۴۵۶۷۸۹" autocomplete="off" />
-        </label>
-
-        <label class="form-field">
-          <span>شماره منزل</span>
-          <input type="text" id="addHomePhone" placeholder="۰۷۱۵۲۳۴۵۶۷۸" autocomplete="off" />
-        </label>
-
-        <label class="form-field">
-          <span>کلاس</span>
-          <select id="addStudentClass" required></select>
-        </label>
-
-      </div>
-
-      <div class="popup-buttons">
-        <button type="button" class="btn ghost" data-popup-close="addStudentPopup">انصراف</button>
-        <button type="submit" class="btn primary">افزودن</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-  <!-- Attendance detail popup -->
-  <div class="popup-overlay" id="attendanceDetailPopup">
-    <div class="popup-box detail-box">
-      <h3>جزئیات حضور</h3>
-      <div class="attendance-details">
-        <p><strong>نام:</strong> <span id="detailName">—</span></p>
-        <p><strong>کلاس:</strong> <span id="detailClass">—</span></p>
-        <p><strong>تاریخ:</strong> <span id="detailDate">—</span></p>
-        <p><strong>ساعت ورود:</strong> <span id="detailCheckIn">—</span></p>
-        <p><strong>وضعیت:</strong> <span id="detailStatus" class="status-text">—</span></p>
-        <p><strong>توضیحات</strong> <span id="detaildescription">—</span></p>
-
-      </div>
-      <div class="popup-buttons">
-        <button type="button" class="btn ghost" data-popup-close="attendanceDetailPopup" id="closeAttendanceDetail">بستن</button>
-      </div>
-    </div>
-  </div>
-
-<!-- Add card popup -->
-<div class="popup-overlay" id="addCardPopup">
-  <div class="popup-box">
-    <h3>افزودن کارت جدید</h3>
-    <p class="popup-description">اطلاعات کارت را وارد کنید:</p>
-    <form id="addCardForm" class="popup-form">
-      <label class="form-field">
-        <span>UID کارت</span>
-        <input type="text" id="addCardUid" placeholder="مثلاً A1B2C3D4" required />
-      </label>
-      <label class="form-field">
-        <span>دانش‌آموز</span>
-        <div class="searchable-select-wrapper">
-          <input type="text" id="addCardStudentSearch" class="searchable-select-input" placeholder="جستجو و انتخاب دانش‌آموز..." autocomplete="off" />
-          <div class="searchable-select-dropdown" id="addCardStudentDropdown"></div>
-          <input type="hidden" id="addCardStudent" required />
-        </div>
-      </label>
-      <div class="popup-buttons">
-        <button type="button" class="btn ghost" data-popup-close="addCardPopup">انصراف</button>
-        <button type="submit" class="btn primary">افزودن</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Attendance settings popup -->
-<div class="popup-overlay" id="settingsPopup">
-  <div class="popup-box settings-box">
-    <h3>تنظیمات حضور و غیاب</h3>
-    <p class="popup-description">مدیریت ساعت پایان و ارسال پیامک</p>
-
-    <!-- ساعت پایان -->
-    <div class="form-field">
-      <span>⏰ ساعت پایان حضور و غیاب</span>
-      <input type="text" id="attendanceEndTime" placeholder="مثلاً 14:45" maxlength="5" />
-      <small>فرمت ۲۴ ساعته (HH:MM)</small>
-    </div>
-
-    <!-- ارسال پیامک -->
-    <div class="form-field">
-      <span>📩 ارسال پیامک</span>
-      <button type="button" id="sendSmsBtn" class="btn secondary">ارسال پیامک</button>
-    </div>
-
-    <!-- دکمه‌ها -->
-    <div class="popup-buttons">
-      <button type="button" class="btn ghost" data-popup-close="settingsPopup" id="cancelSettings">انصراف</button>
-      <button type="button" class="btn primary" id="saveSettings">ذخیره</button>
-    </div>
-  </div>
-</div>
-
-<div class="popup-overlay" id="addAdminPopup">
-  <div class="popup-box">
-    <h3>افزودن مدیر جدید</h3>
-    <form id="addAdminForm" class="popup-form">
-      <input type="text" id="adminFirstname" placeholder="نام" required />
-      <input type="text" id="adminLastname" placeholder="نام خانوادگی" required />
-      <input type="text" id="adminNumber" placeholder="شماره موبایل" required />
-      <div class="popup-buttons">
-        <button type="button" class="btn ghost" data-popup-close="addAdminPopup">انصراف</button>
-        <button type="submit" class="btn primary">ثبت مدیر</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<div class="popup-overlay" id="deleteAdminPopup">
-  <div class="popup-box">
-    <h3 style="color: var(--danger);">حذف مدیر سیستم</h3>
-    <p>آیا از حذف این مدیر مطمئن هستید؟ این شخص دیگر به پنل دسترسی نخواهد داشت.</p>
-    <div class="popup-buttons">
-      <button type="button" class="btn ghost" data-popup-close="deleteAdminPopup">انصراف</button>
-      <button type="button" class="btn danger" id="confirmAdminDeleteBtn">بله، حذف شود</button>
-    </div>
-  </div>
-</div>
-
-
-  <!-- Sidebar navigation -->
-  <aside class="sidebar">
-    <div class="logo-box">
-      <div class="logo"><img src="logo.png" alt="Asteen" /></div>
-      <div class="title-wrap">
-        <span class="name">آستین</span>
-        <span class="sub">پنل مدیریت</span>
-      </div>
-    </div>
-    <nav class="menu">
-      <button type="button" class="menu-item active" data-page="dashboard">داشبورد</button>
-      <button type="button" class="menu-item" data-page="attendance">حضور و غیاب</button>
-      <button type="button" class="menu-item" data-page="students">دانش‌آموزها</button>
-      <button type="button" class="menu-item" data-page="classes">کلاس‌ها</button>
-      <button type="button" class="menu-item" data-page="cards">کارت‌ها</button>
-      <button type="button" class="menu-item" data-page="admins">ادمین ها</button>
-      
-    </nav>
-  </aside>
-
-  <!-- Main content area -->
-  <div class="main">
-    <header class="topbar">
-      <div class="top-left">
-      </div>
-      <div class="profile">
-        <div class="avatar"></div>
-        <div class="name">Admin</div>
-      </div>
-    </header>
-    <main class="content" id="content"></main>
-  </div>
-</body>
-</html>

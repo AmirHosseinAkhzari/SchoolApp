@@ -13,6 +13,16 @@ router.get("/read", async (req, res) => {
     res.json(data)
 })
 
+router.get("/readone", async (req, res) => {
+
+    const data = await global.db.user.getone(req.query.id)
+
+    console.log(data)
+
+    res.json({data : data , code : 200 })
+})
+
+
 
 router.post("/add", async (req, res) => {
 

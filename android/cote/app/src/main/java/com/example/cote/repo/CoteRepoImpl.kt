@@ -6,16 +6,35 @@ import android.nfc.NfcAdapter
 import android.nfc.tech.MifareClassic
 import android.util.Log
 import com.example.cote.data.remote.CoteApi
+import com.example.cote.data.remote.ReqAddAdmin
 import com.example.cote.data.remote.ReqAddAstin
+import com.example.cote.data.remote.ReqAddStudent
+import com.example.cote.data.remote.ReqAttendanceChangeStatus
+import com.example.cote.data.remote.ReqChangeClassName
 import com.example.cote.data.remote.ReqCheckOtp
 import com.example.cote.data.remote.ReqOtpNum
 import com.example.cote.data.remote.ReqReadAstin
+import com.example.cote.data.remote.ReqUpdateStudent
+import com.example.cote.data.remote.ResAddAdmin
 import com.example.cote.data.remote.ResAddAstin
+import com.example.cote.data.remote.ResAddClass
+import com.example.cote.data.remote.ResAddStudent
+import com.example.cote.data.remote.ResAttendanceChangeStatus
+import com.example.cote.data.remote.ResChangeClassName
 import com.example.cote.data.remote.ResCheckOtp
+import com.example.cote.data.remote.ResDeleteAdmin
+import com.example.cote.data.remote.ResDeleteClass
+import com.example.cote.data.remote.ResDeleteStudent
 import com.example.cote.data.remote.ResOtp
+import com.example.cote.data.remote.ResReadAdmins
 import com.example.cote.data.remote.ResReadAstin
+import com.example.cote.data.remote.ResReadAttendance
+import com.example.cote.data.remote.ResReadClass
+import com.example.cote.data.remote.ResReadOneStudent
 import com.example.cote.data.remote.ResReadStudent
 import com.example.cote.data.remote.ResSendSms
+import com.example.cote.data.remote.ResUpdateStudent
+import com.example.cote.data.remote.StudentFullData
 import com.example.cote.domain.repo.CoteRepo
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,6 +127,7 @@ class CoteRepoImpl(
     override suspend fun ReadStudent(token : String): Result<ResReadStudent?>  =
         runCatching {
             val res = api.ReadStudent(token)
+            Log.d("SRESR" , res.toString())
 
             if (res.isSuccessful) {
                 res.body()
@@ -120,6 +140,9 @@ class CoteRepoImpl(
                 ebody
             }
         }.onFailure {
+
+            Log.d("SRESR" , it.toString() )
+
             handleError(it)
         }
 
@@ -182,6 +205,278 @@ class CoteRepoImpl(
             handleError(it)
         }
 
+
+    override suspend fun ReadAttendance(token: String, date: String): Result<ResReadAttendance?>    =
+        runCatching {
+
+
+        val res = api.ReadAttendance(token , date)
+
+        if (res.isSuccessful) {
+            res.body()
+        } else {
+
+            val ebody  = res.errorBody()?.string()?.let {
+                Gson().fromJson(it, ResReadAttendance::class.java)
+            }
+
+            ebody
+        }
+    }.onFailure {
+        handleError(it)
+    }
+
+    override suspend fun ChangeStatusAttendance(
+        token: String,
+        data: ReqAttendanceChangeStatus
+    ): Result<ResAttendanceChangeStatus?>  =
+        runCatching {
+
+
+            val res = api.ChangeStatusAttendance(token , data)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResAttendanceChangeStatus::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun ReadClass(token: String): Result<ResReadClass?>  =
+        runCatching {
+
+
+            val res = api.ReadClass(token)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResReadClass::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun DeleteClass(token: String, id: String): Result<ResDeleteClass?>  =
+        runCatching {
+
+
+            val res = api.DeleteClass(token , id )
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResDeleteClass::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun ChangeClassName(
+        token: String,
+        id: String,
+        NewName: String
+    ): Result<ResChangeClassName?>  =
+        runCatching {
+
+
+            val res = api.ChangeClassName(token , ReqChangeClassName(id , NewName))
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResChangeClassName::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun AddClass(token: String, name: String): Result<ResAddClass?>  =
+        runCatching {
+
+
+            val res = api.AddClass(token , name)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResAddClass::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun AddStudent(token: String, stu: ReqAddStudent): Result<ResAddStudent?> =
+        runCatching {
+
+
+            val res = api.AddStudent(token , stu)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResAddStudent::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun DeleteStudent(token: String, id: String): Result<ResDeleteStudent?>  =
+        runCatching {
+
+
+            val res = api.DeleteStudent(token , id)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResDeleteStudent::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+
+    override suspend fun ReadOneStudent(token: String, id: String): Result<ResReadOneStudent?>  =
+        runCatching {
+
+
+            val res = api.ReadOneStudent(token , id)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResReadOneStudent::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun UpdateStudent(
+        token: String,
+        id: String,
+        stu: ReqAddStudent
+    ): Result<ResUpdateStudent?>  =
+        runCatching {
+
+
+            val res = api.UpdateStudent(token , ReqUpdateStudent(id , stu ))
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResUpdateStudent::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun AddAdmin(token: String, admin: ReqAddAdmin): Result<ResAddAdmin?>  =
+        runCatching {
+
+
+            val res = api.AddAdmin(token , admin)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResAddAdmin::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun DeleteAdmin(token: String, id: String): Result<ResDeleteAdmin?>  =
+        runCatching {
+
+
+            val res = api.DeleteAdmin(token , id)
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResDeleteAdmin::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
+
+    override suspend fun ReadAdmins(token: String): Result<ResReadAdmins?> =
+        runCatching {
+
+
+            val res = api.ReadAdmin(token )
+
+            if (res.isSuccessful) {
+                res.body()
+            } else {
+
+                val ebody  = res.errorBody()?.string()?.let {
+                    Gson().fromJson(it, ResReadAdmins::class.java)
+                }
+
+                ebody
+            }
+        }.onFailure {
+            handleError(it)
+        }
 
 
 

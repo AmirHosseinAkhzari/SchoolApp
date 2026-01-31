@@ -7,16 +7,20 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
-        mavenCentral()
-        gradlePluginPortal()
+//        mavenCentral()
+//        gradlePluginPortal()
+        maven(url = "https://maven.myket.ir")
+
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
-        mavenCentral()
+//        google()
+//        mavenCentral()
+        maven(url = "https://maven.myket.ir")
         maven(url = "https://jitpack.io")
+
     }
 }
 

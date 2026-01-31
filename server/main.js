@@ -46,9 +46,14 @@ const accKeravatRoutes = require('./router/android/keravat/accunt')
 
 
 const loginCotetRoutes = require('./router/android/cote/login')
+const ClassCotetRoutes = require('./router/android/cote/class')
 const StudentCotetRoutes = require('./router/android/cote/student')
 const AstinCoteRoutes = require('./router/android/cote/astin')
 const AttendanceCoteRoutes = require('./router/android/cote/attendance')
+const AdminControlCoteRoutes = require('./router/android/cote/adminControl')
+const DownloadCoteRoutes = require('./router/android/cote/download')
+
+
 
 
 
@@ -101,13 +106,19 @@ async function main() {
   app.use('/android/cote/student',StudentCotetRoutes)
   app.use('/android/cote/astin',AstinCoteRoutes)
   app.use('/android/cote/attendance',AttendanceCoteRoutes)
+  app.use('/android/cote/class',ClassCotetRoutes)
+  app.use('/android/cote/adminControl',AdminControlCoteRoutes)
+  app.use('/android/cote/download',DownloadCoteRoutes)
 
 
 
 
 
 
-  app.use('/attendance'  , checkToken , AttendanceRoutes)
+
+
+
+  app.use('/attendance'   , AttendanceRoutes)
   app.use('/admin' , AdminRoutes )
   app.use('/class',checkToken , ClassRoutes )
   app.use('/image',checkToken , imagesRoutes )
@@ -120,8 +131,8 @@ async function main() {
   app.use( "/dev", checkTokenAttendance,   express.static(path.join(__dirname, "public/attendanceDevice/main")))
 
 
-  app.use( "/adminPanel/login", express.static(path.join(__dirname, "public/admin/login")))
-  app.use("/adminPanel", checkToken , express.static(path.join(__dirname, "public/admin/main")));
+  app.use( "/adminPanel/login", express.static(path.join(__dirname, "public/admin/")))
+  app.use("/adminPanel" , express.static(path.join(__dirname, "public/admin/")));
   app.use("/" , express.static(path.join(__dirname, "public/main")));
 
 

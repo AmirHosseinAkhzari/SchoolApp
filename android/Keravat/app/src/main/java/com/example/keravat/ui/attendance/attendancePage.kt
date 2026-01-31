@@ -701,7 +701,7 @@ fun translateStatus(name : String) : String{
 fun translateStatusToPersian(name : String) : String{
     return when (name){
         "present" -> "حاضر"
-        "absent" -> "غایب"
+        "absent" -> "غیبت"
         "lateness" -> "دیرکرد"
         else -> ""
     }

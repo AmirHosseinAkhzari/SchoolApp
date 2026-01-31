@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,6 +59,27 @@ fun MainPageUi(modifier: Modifier , navController : NavController){
             90 ,
             painterResource(R.drawable.attendance) ,
             "mainAttendance"
+        ) ,
+        option(
+            Color.White ,
+            "کلاس ها" ,
+            90 ,
+            painterResource(R.drawable.classroomlogo) ,
+            "mainClassPage"
+        ) ,
+        option(
+            Color.White ,
+            "دانش آموز ها" ,
+            90,
+            painterResource(R.drawable.student) ,
+            "StudentMainPage"
+        ) ,
+        option(
+            Color.White ,
+            "ادمین" ,
+            90,
+            painterResource(R.drawable.admin) ,
+            "AdminControlMainPage"
         )
     )
 
@@ -98,11 +120,12 @@ fun item(option: option , navController: NavController){
 
             Spacer(Modifier.size(20.dp))
 
-            Image(
+            Icon(
                 painter = option.image ,
                 contentDescription = "Icon" ,
                 modifier = Modifier
-                    .size(size = option.size.dp)
+                    .size(size = option.size.dp) ,
+                tint = Color.Black
             )
 
             Spacer(Modifier.size(10.dp))

@@ -32,8 +32,15 @@ fun AttendanceMainPageUi(modifier: Modifier , navController : NavController){
             "فرستادن پیام",
             60 ,
             painterResource(R.drawable.sms),
-            "ReadAttendance"
-        )
+            "SendSms"
+        ) ,
+        option(
+              Color.White,
+        "چک کردن حضور و غیاب",
+        60 ,
+        painterResource(R.drawable.attendance),
+        "ReadAttendance"
+    )
     )
 
         LazyColumn(
